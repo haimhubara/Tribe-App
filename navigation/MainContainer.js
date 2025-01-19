@@ -13,6 +13,7 @@ const chatName='Chat';
 const searchName='Search';
 const newName='New';
 const profileName='Profile';
+let x=3;
 
 const Tab=createBottomTabNavigator();
 

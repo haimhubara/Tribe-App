@@ -11,7 +11,7 @@ export default function HomeScreen({navigation}){
 
     return (
         <View style={styles.container}>
-          <Text>HomeScreen HomeScreen</Text>
+          <Text>HomeScreen HomeScreen madafaka</Text>
         </View>
       );
 }
