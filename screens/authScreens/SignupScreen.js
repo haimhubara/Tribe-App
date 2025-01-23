@@ -15,24 +15,13 @@ const SignupScreen = () => {
    const [phoneNumber, setPhoneNumber] = useState('');
    const [age, setAge] = useState('');
    const [selectedHobbies, setSelectedHobbies] = useState([]);
+   const [religion, setReligion] = useState('');
 
 
-
-
-   const handleHobbyChange = (itemValue) => {
-    setSelectedHobbies((prevState) => {
-  
-      if (prevState.includes(itemValue)) {
-        return prevState.filter(hobby => hobby !== itemValue);
-      }
-     
-      return [...prevState, itemValue];
-    });
-  };
 
   return (
-   <View style={styles.root}>
-    <ScrollView>
+  <ScrollView>
+     <View style={styles.root}>
       <Text  style={styles.text}>Sign up:</Text>
       <Input setField={setEmail} field={email} text="Email"/>
       <Input setField={setConfirmEmail} field={confirmEmail} text="Confirm email"/>
@@ -45,12 +34,19 @@ const SignupScreen = () => {
             { label: 'Female', value: 'Female' },
           ]}
         />
+        <InputPicker text="Religion" selectedValue={religion} onValueChange={setReligion}
+          options={[
+            { label: 'Christianity', value: 'Christianity' },
+            { label: 'Islam', value: 'Islam' },
+            { label: 'Judaism', value: 'Judaism' },
+          ]}
+        />
         <Input setField={setPhoneNumber} field={phoneNumber} text="Phone number"/>
         <Input setField={setAge} field={age} text="Age"/>
         <HobbiesPicker selectedHobbies={selectedHobbies} setSelectedHobbies={setSelectedHobbies} />
 
-      </ScrollView>
-   </View>
+     </View>
+   </ScrollView>
   )
 }
 
