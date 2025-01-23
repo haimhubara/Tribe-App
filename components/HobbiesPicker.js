@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { GlobalStyles } from '../constants/styles';
 
-const HobbiesPicker = ({ selectedHobbies, setSelectedHobbies }) => {
+const HobbiesPicker = ({ selectedHobbies, setSelectedHobbies,array,text }) => {
   const handleHobbyChange = (hobby) => {
     if (selectedHobbies.includes(hobby)) {
       setSelectedHobbies(selectedHobbies.filter(item => item !== hobby));
@@ -13,9 +13,9 @@ const HobbiesPicker = ({ selectedHobbies, setSelectedHobbies }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Select your hobbies:</Text>
+      <Text style={styles.title}>{text}</Text>
       <ScrollView contentContainerStyle={styles.scrollView}>
-        {['Reading', 'Traveling', 'Cooking', 'Sports', 'Music', 'Gaming', 'Photography', 'Art'].map(hobby => (
+        {array.map(hobby => (
           <TouchableOpacity
             key={hobby}
             style={[

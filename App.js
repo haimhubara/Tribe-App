@@ -55,7 +55,7 @@ function App() {
       <StatusBar style="dark" />
       <Stack.Navigator >
         {true && <Stack.Screen name="SignUp" component={SignupScreen}  options={{ headerShown: false }}  />}
-        {false && <Stack.Screen name="SingIn" component={SinginScreen}  options={{ headerShown: false }}  />}
+        {true && <Stack.Screen name="SingIn" component={SinginScreen}  options={{ headerShown: false }}  />}
         {false && <Stack.Screen name="WellcomeWindow" component={WellcomeWindow} options={{ headerShown: false }} />}
       </Stack.Navigator>
     </NavigationContainer>

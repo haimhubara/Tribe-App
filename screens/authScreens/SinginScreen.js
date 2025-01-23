@@ -2,14 +2,15 @@ import { View,StyleSheet,Text, Pressable } from 'react-native'
 import Input from '../../components/Input';
 import { useState } from 'react';
 import { GlobalStyles } from '../../constants/styles';
+import { useNavigation } from '@react-navigation/native';
 
 const SinginScreen = () => {
+  const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   function handleLogin(){
-    console.log(email+"   "+password);
-    setEmail("");
-    setPassword("");
+    console.log(email+'\n');
+    console.log(password+'\n');
   }
   return (
     <View style={styles.root}>
@@ -19,6 +20,12 @@ const SinginScreen = () => {
         <Pressable style={({pressed}) =>[styles.button,pressed? styles.clicked:null]} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </Pressable>
+      <Text style={styles.signupText}>
+              Dont have an account?
+              <Pressable onPress={() => {navigation.navigate("SignUp")}}>
+                <Text style={styles.loginText}> Sign Up</Text>
+              </Pressable>
+            </Text>
     </View>
   )
 }
@@ -34,11 +41,12 @@ const styles = StyleSheet.create({
     fontWeight:'bold'
   },
   button: {
+    margin:16,
     marginTop: 24,
     backgroundColor:GlobalStyles.colors.mainColor,
     paddingVertical: 12,
     paddingHorizontal: 24,
-    borderRadius: 8,
+    borderRadius: 17,
     alignItems: 'center',
   },
   buttonText: {
@@ -48,7 +56,17 @@ const styles = StyleSheet.create({
   },
   clicked:{
     opacity:0.75
-  }
+  },
+  signupText: {
+    textAlign: 'center',
+    fontSize: 16,
+    marginBottom: 20, 
+    lineHeight: 24, 
+  },
+  loginText: {
+    color: GlobalStyles.colors.mainColor,
+    fontWeight: 'bold',
+  },
 });
 
 
