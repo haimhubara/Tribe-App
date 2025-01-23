@@ -17,6 +17,7 @@ import dayjs from "dayjs";
 import { Picker } from "@react-native-picker/picker";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import { SafeAreaView } from "react-native-safe-area-context";
+import HobbiesPicker from "../components/HobbiesPicker";
 
 const AddNewEventScreen = () => {
   const [name, setName] = useState("");
@@ -28,6 +29,7 @@ const AddNewEventScreen = () => {
   const [selectedGender, setSelectedGender] = useState();
   const [isGenderVisible, setGenderVisible] = useState(false);
   const [ages, setAges] = useState({ values: [18, 35] });
+  const [language, setLanguage]=useState("");
 
   const handleDateChange = (event, selectedDate) => {
     setDatePickerVisible(false);
@@ -185,10 +187,12 @@ const AddNewEventScreen = () => {
                 {`From ${ages.values[0]} to ${ages.values[1]} years`}
               </Text>
             </View>
+            <HobbiesPicker text="Pick Language Of The Partition:" array={["Hebrew","Arabic","English","Russin"]} selectedHobbies={language} setSelectedHobbies={setLanguage}/>
 
             <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
               <Text style={styles.submitButtonText}>Submit</Text>
             </TouchableOpacity>
+
           </View>
         </ScrollView>
       </TouchableWithoutFeedback>
@@ -197,7 +201,7 @@ const AddNewEventScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  flexContainer: { flex: 1 },
+  flexContainer: { flex: 1 ,marginTop:32},
   scrollContainer: { flexGrow: 1, justifyContent: "center", padding: 20 },
   container: { flex: 1, justifyContent: "center", backgroundColor: "#f5f5f5" },
   title: { fontSize: 24, fontWeight: "bold", marginBottom: 20, textAlign: "center" },

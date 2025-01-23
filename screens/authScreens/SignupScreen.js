@@ -47,7 +47,7 @@ const SignupScreen = () => {
         />
         <Input setField={setPhoneNumber} field={phoneNumber} text="Phone number"/>
         <Input setField={setAge} field={age} text="Age"/>
-        <HobbiesPicker selectedHobbies={selectedHobbies} setSelectedHobbies={setSelectedHobbies} />
+        <HobbiesPicker selectedHobbies={selectedHobbies} setSelectedHobbies={setSelectedHobbies} text="Select your hobbies:" array={['Reading', 'Traveling', 'Cooking', 'Sports', 'Music', 'Gaming', 'Photography', 'Art']}/>
 
       </ScrollView>
    </View>
