@@ -16,5 +16,9 @@ export const GlobalStyles = {
       backgroundColor: '#FFFFFF',
       backgroundColorLight: '#F8F8F8',
       backgroundColorDark: '#E0E0E0',
+
+      errorColor: '#D32F2F', 
+      errorColorLight: '#FF6659',
+      errorColorDark: '#9A0007', 
     },
   };
