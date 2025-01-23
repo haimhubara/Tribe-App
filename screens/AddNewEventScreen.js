@@ -4,62 +4,30 @@ import {
   StyleSheet,
   View,
   TextInput,
-  Button,
   ScrollView,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
   TouchableOpacity,
   Modal,
+  Button,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import dayjs from "dayjs";
-import axios from "axios";
 import { Picker } from "@react-native-picker/picker";
+import MultiSlider from "@ptomasroos/react-native-multi-slider";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const AddNewEventScreen = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(new Date());
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
-  const [imageURL, setImageURL] = useState("");
   const [selectedNumPartitions, setSelectedNumPartitions] = useState();
   const [isPartitionsVisible, setPartitionsVisible] = useState(false);
   const [selectedGender, setSelectedGender] = useState();
   const [isGenderVisible, setGenderVisible] = useState(false);
-  
-
-  // const handleSignUp = async () => { ///////////////////////////////////////API ADD
-  //   const apiKey = "YOUR_OPENAI_API_KEY";
-  //   const url = "https://api.openai.com/v1/images/generations";
-
-  //   try {
-  //     const response = await axios.post(
-  //       url,
-  //       {
-  //         prompt: `${name}: ${description}`,
-  //         n: 1,
-  //         size: "1024x1024",
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${apiKey}`,
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-
-  //     if (response.data?.data?.[0]?.url) {
-  //       setImageURL(response.data.data[0].url);
-  //       alert("Image generated successfully!");
-  //     } else {
-  //       alert("No image generated.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error generating image:", error.response?.data || error.message);
-  //     alert("Failed to generate image. Check the console for details.");
-  //   }
-  // };///////////////////////////////////////////////////////////////////////API ADD
+  const [ages, setAges] = useState({ values: [18, 35] });
 
   const handleDateChange = (event, selectedDate) => {
     setDatePickerVisible(false);
@@ -76,6 +44,23 @@ const AddNewEventScreen = () => {
   const handleGenderItemChange = (itemValue) => {
     setSelectedGender(itemValue);
     setGenderVisible(false);
+  };
+
+  const multiSliderValuesChange = (values) => {
+    setAges({ values });
+  };
+
+  const handleSubmit = () => {
+    const eventData = {
+      name,
+      description,
+      date,
+      selectedNumPartitions,
+      selectedGender,
+      ageRange: ages.values,
+    };
+    console.log("Event Data:", eventData);
+    alert("Event created successfully!");
   };
 
   return (
@@ -153,18 +138,14 @@ const AddNewEventScreen = () => {
                   </View>
                 </View>
               </Modal>
-              
             )}
 
-
-<Text style={styles.label}>Select Gender:</Text>
+            <Text style={styles.label}>Select Gender:</Text>
             <TouchableOpacity
               style={styles.input}
               onPress={() => setGenderVisible(true)}
             >
-              <Text>
-                {selectedGender ? selectedGender : "Select Gender"}
-              </Text>
+              <Text>{selectedGender ? selectedGender : "Select Gender"}</Text>
             </TouchableOpacity>
 
             {isGenderVisible && (
@@ -179,17 +160,35 @@ const AddNewEventScreen = () => {
                       selectedValue={selectedGender}
                       onValueChange={handleGenderItemChange}
                     >
-                     <Picker.Item label="Any" value="Any"/>
-                     <Picker.Item label="Male" value="Male"/>
-                     <Picker.Item label="Female" value="Female"/>
+                      <Picker.Item label="Any" value="Any" />
+                      <Picker.Item label="Male" value="Male" />
+                      <Picker.Item label="Female" value="Female" />
                     </Picker>
                     <Button title="Close" onPress={() => setGenderVisible(false)} />
                   </View>
                 </View>
               </Modal>
-              
             )}
-            
+
+            <Text style={styles.label}>Age Range:</Text>
+            <View style={styles.sliderContainer}>
+              <MultiSlider
+                values={[ages.values[0], ages.values[1]]}
+                sliderLength={280}
+                selectedStyle={{ backgroundColor: "#4285F4" }}
+                onValuesChange={multiSliderValuesChange}
+                min={0}
+                max={100}
+                step={1}
+              />
+              <Text style={styles.ageText}>
+                {`From ${ages.values[0]} to ${ages.values[1]} years`}
+              </Text>
+            </View>
+
+            <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+              <Text style={styles.submitButtonText}>Submit</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </TouchableWithoutFeedback>
@@ -198,31 +197,11 @@ const AddNewEventScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  flexContainer: {
-    flex: 1,
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: "center",
-    padding: 20,
-  },
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    backgroundColor: "#f5f5f5",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-    color: "#333",
-    textAlign: "left",
-  },
+  flexContainer: { flex: 1 },
+  scrollContainer: { flexGrow: 1, justifyContent: "center", padding: 20 },
+  container: { flex: 1, justifyContent: "center", backgroundColor: "#f5f5f5" },
+  title: { fontSize: 24, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
+  label: { fontSize: 16, marginBottom: 5, color: "#333", textAlign: "left" },
   input: {
     height: 40,
     borderColor: "gray",
@@ -255,6 +234,20 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     width: "80%",
+  },
+  sliderContainer: { marginVertical: 20, alignItems: "center" },
+  ageText: { marginTop: 10, fontSize: 16, color: "#333" },
+  submitButton: {
+    backgroundColor: "#4285F4",
+    paddingVertical: 15,
+    borderRadius: 5,
+    alignItems: "center",
+    marginTop: 20,
+  },
+  submitButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
 
