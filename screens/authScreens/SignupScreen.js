@@ -5,6 +5,8 @@ import InputPicker from '../../components/InputPicker';
 import HobbiesPicker from '../../components/HobbiesPicker';
 import { GlobalStyles } from '../../constants/styles';
 import { useNavigation } from '@react-navigation/native';
+import ImagePicker from '../../components/ImagePicker';
+import SelectImages from '../../components/SelectImages';
 
 
 const SignupScreen = () => {
@@ -21,7 +23,14 @@ const SignupScreen = () => {
    const [age, setAge] = useState('');
    const [selectedHobbies, setSelectedHobbies] = useState([]);
    const [religion, setReligion] = useState('');
-   const [language, setLanguage]=useState("");
+   const [language, setLanguage] = useState("");
+
+   const [pickedImage1, setPickedImage1] = useState(null);
+   const [pickedImage2, setPickedImage2] = useState(null);
+   const [pickedImage3, setPickedImage3] = useState(null);
+   const [pickedImage4, setPickedImage4] = useState(null);
+   const [pickedImage5, setPickedImage5] = useState(null);
+   const [pickedImage6, setPickedImage6] = useState(null);
 
 
    function handleSignup() {
@@ -64,6 +73,15 @@ const SignupScreen = () => {
         />
         <Input setField={setPhoneNumber} field={phoneNumber} text="Phone number"/>
         <Input setField={setAge} field={age} text="Age"/>
+        <SelectImages
+          pickedImage1={pickedImage1} setPickedImage1={setPickedImage1}
+          pickedImage2={pickedImage2} setPickedImage2={setPickedImage2}
+          pickedImage3={pickedImage3} setPickedImage3={setPickedImage3}
+          pickedImage4={pickedImage4} setPickedImage4={setPickedImage4}
+          pickedImage5={pickedImage5} setPickedImage5={setPickedImage5}
+          pickedImage6={pickedImage6} setPickedImage6={setPickedImage6}
+        />
+
         <HobbiesPicker selectedHobbies={selectedHobbies} setSelectedHobbies={setSelectedHobbies} text="Select your hobbies:" array={['Reading', 'Traveling', 'Cooking', 'Sports', 'Music', 'Gaming', 'Photography', 'Art']}/>
         <HobbiesPicker text="Select Languages:" array={["Hebrew","Arabic","English","Russin"]} selectedHobbies={language} setSelectedHobbies={setLanguage}/>
         <Pressable style={({pressed}) =>[styles.button,pressed? styles.clicked:null]} onPress={handleSignup}>
