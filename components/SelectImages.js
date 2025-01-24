@@ -11,7 +11,7 @@ const SelectImages = ({ pickedImage1, setPickedImage1,pickedImage2, setPickedIma
         <View style={styles.container}>
         
         <ImagePicker pickedImage={pickedImage1} setPickedImage={setPickedImage1} />
-        <ImagePicker pickedImage={pickedImage2} setPickedImage={setPickedImage2} />
+        <ImagePicker pickedImage={pickedImage2} setPickedImage={setPickedImage2}/>
         <ImagePicker pickedImage={pickedImage3} setPickedImage={setPickedImage3} />
         <ImagePicker pickedImage={pickedImage4} setPickedImage={setPickedImage4} />
         <ImagePicker pickedImage={pickedImage5} setPickedImage={setPickedImage5} />
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
      
     },
     title: {
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 20,  
         width: '100%',  

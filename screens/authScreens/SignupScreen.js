@@ -5,7 +5,6 @@ import InputPicker from '../../components/InputPicker';
 import HobbiesPicker from '../../components/HobbiesPicker';
 import { GlobalStyles } from '../../constants/styles';
 import { useNavigation } from '@react-navigation/native';
-import ImagePicker from '../../components/ImagePicker';
 import SelectImages from '../../components/SelectImages';
 
 

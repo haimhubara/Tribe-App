@@ -3,7 +3,7 @@ import { launchCameraAsync, launchImageLibraryAsync, useCameraPermissions, Permi
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 
-const ImagePicker = ({pickedImage,setPickedImage}) => {
+const ImagePicker = ({pickedImage,setPickedImage,imageSytle,buttonStyle}) => {
     const [cameraPermissionInformation,requestPermision] =  useCameraPermissions();
     
     async function verifyPermissions(){
@@ -48,9 +48,9 @@ const ImagePicker = ({pickedImage,setPickedImage}) => {
 
     async function pickImageHandle() {
         const result = await launchImageLibraryAsync({
-            allowsEditing: true, // מאפשר עריכת התמונה
-            aspect: [16, 9], // יחס גובה-רוחב
-            quality: 0.5, // איכות התמונה
+            allowsEditing: true, 
+            aspect: [16, 9], 
+            quality: 0.5, 
         });
     
         if (result.canceled) {
@@ -71,10 +71,10 @@ const ImagePicker = ({pickedImage,setPickedImage}) => {
 
   return (
     <View style={styles.root}>
-        <View style={styles.imagePreview}>
+        <View style={[styles.imagePreview,imageSytle]}>
             <Image style={styles.image} source={{ uri: pickedImage }} />
         </View>
-        <View style={styles.buttonsContainer}>
+        <View style={[styles.buttonsContainer,buttonStyle]}>
         <Pressable 
                     style={({ pressed }) => [
                         styles.icon,
