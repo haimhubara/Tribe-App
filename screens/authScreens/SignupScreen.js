@@ -6,6 +6,7 @@ import HobbiesPicker from '../../components/HobbiesPicker';
 import { GlobalStyles } from '../../constants/styles';
 import { useNavigation } from '@react-navigation/native';
 import SelectImages from '../../components/SelectImages';
+import Button from '../../components/Button';
 
 
 const SignupScreen = () => {
@@ -16,7 +17,9 @@ const SignupScreen = () => {
    const [confirmEmail,setConfirmEmail] = useState('');
    const [password, setPassword] = useState('');
    const [confirmPassword, setConfirmPassword] = useState('');
-   const [fullName, setFulName] = useState('');
+   const [username, setUsername] = useState('');
+   const [FirstName, setFirstName] = useState('');
+   const [LastName, setLastName] = useState('');
    const [gender, setGender] = useState('');
    const [phoneNumber, setPhoneNumber] = useState('');
    const [age, setAge] = useState('');
@@ -51,12 +54,14 @@ const SignupScreen = () => {
   return (
   <ScrollView>
      <View style={styles.root}>
-      <Text  style={styles.text}>Sign up:</Text>
-      <Input setField={setEmail} field={email} text="Email"/>
-      <Input setField={setConfirmEmail} field={confirmEmail} text="Confirm email"/>
-      <Input setField={setPassword} field={password} text="Password"/>
-      <Input setField={setConfirmPassword} field={confirmPassword} text="Confirm password"/>
-      <Input setField={setFulName} field={fullName} text="Full name"/>
+      <Text  style={styles.text}>Sign up</Text>
+      <Input setField={setEmail} field={email} LabelText="Email" placeholderText="Email" />
+      <Input setField={setConfirmEmail} field={confirmEmail} LabelText="Confirm email" placeholderText="Confirm email"/>
+      <Input setField={setPassword} field={password} LabelText="Password" placeholderText="Password"/>
+      <Input setField={setConfirmPassword} field={confirmPassword} LabelText="Confirm password" placeholderText="Confirm password"/>
+      <Input setField={setUsername} field={username} LabelText="Username" placeholderText="Enter username"/>
+      <Input setField={setFirstName} field={FirstName} LabelText="First name" placeholderText="First name"/>
+      <Input setField={setLastName} field={LastName} LabelText="Last name" placeholderText="Last name"/>
       <InputPicker text="Gender" selectedValue={gender} onValueChange={setGender}
           options={[
             { label: 'Male', value: 'Male' },
@@ -70,8 +75,8 @@ const SignupScreen = () => {
             { label: 'Judaism', value: 'Judaism' },
           ]}
         />
-        <Input setField={setPhoneNumber} field={phoneNumber} text="Phone number"/>
-        <Input setField={setAge} field={age} text="Age"/>
+        <Input setField={setPhoneNumber} field={phoneNumber} LabelText="Phone number" placeholderText="Phone number"/>
+        <Input setField={setAge} field={age} LabelText="Age" placeholderText="Age"/>
         <SelectImages
           pickedImage1={pickedImage1} setPickedImage1={setPickedImage1}
           pickedImage2={pickedImage2} setPickedImage2={setPickedImage2}
@@ -83,9 +88,7 @@ const SignupScreen = () => {
 
         <HobbiesPicker selectedHobbies={selectedHobbies} setSelectedHobbies={setSelectedHobbies} text="Select your hobbies:" array={['Reading', 'Traveling', 'Cooking', 'Sports', 'Music', 'Gaming', 'Photography', 'Art']}/>
         <HobbiesPicker text="Select Languages:" array={["Hebrew","Arabic","English","Russin"]} selectedHobbies={language} setSelectedHobbies={setLanguage}/>
-        <Pressable style={({pressed}) =>[styles.button,pressed? styles.clicked:null]} onPress={handleSignup}>
-                <Text style={styles.buttonText}>Sing Up</Text>
-        </Pressable>
+        <Button text="Sing Up" handleClick={handleSignup}/>
         <Text style={styles.signupText}>
         Already have an account?
         <Pressable onPress={() => {navigation.navigate("SingIn")}}>

@@ -1,16 +1,17 @@
 import React from 'react';
 import { View, TextInput, Text, StyleSheet } from 'react-native';
 
-const Input = ({field,setField,text}) => {
+const Input = ({field,setField,LabelText,placeholderText, inputStyle,editable }) => {
   return (
     <View style={styles.root}>
-      <Text style={styles.label}>{text}:</Text>
+      <Text style={styles.label}>{LabelText}:</Text>
       <TextInput 
-        placeholder={`${text} `}
-        style={styles.input} 
+        placeholder={`${placeholderText} `}
+        style={[styles.input,inputStyle]} 
         placeholderTextColor="#888" 
         onChangeText={(data)=>{setField(data)}}
         value={field}
+        editable={editable}
       />
     </View>
   );

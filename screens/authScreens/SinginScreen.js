@@ -3,6 +3,7 @@ import Input from '../../components/Input';
 import { useState } from 'react';
 import { GlobalStyles } from '../../constants/styles';
 import { useNavigation } from '@react-navigation/native';
+import Button from '../../components/Button';
 
 const SinginScreen = () => {
   const navigation = useNavigation();
@@ -14,12 +15,10 @@ const SinginScreen = () => {
   }
   return (
     <View style={styles.root}>
-        <Text  style={styles.text}>Sign in:</Text>
-        <Input setField={setEmail} field = {email} text="Enter email"/>
-        <Input setField = {setPassword} field = {password} text="Enter password"/>
-        <Pressable style={({pressed}) =>[styles.button,pressed? styles.clicked:null]} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </Pressable>
+        <Text  style={styles.text}>Sign in</Text>
+        <Input setField={setEmail} field = {email} LabelText="Enter email" placeholderText="Enter email"/>
+        <Input setField = {setPassword} field = {password} LabelText="Enter password" placeholderText="Enter password"/>
+      <Button text="Login" handleClick={handleLogin}/>
       <Text style={styles.signupText}>
               Dont have an account?
               <Pressable onPress={() => {navigation.navigate("SignUp")}}>

@@ -10,11 +10,11 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@expo/metro-runtime": "~4.0.0",
+    "@expo/metro-runtime": "~4.0.1",
     "@ptomasroos/react-native-multi-slider": "^2.2.2",
     "@react-native-community/checkbox": "^0.5.17",
     "@react-native-community/datetimepicker": "^8.2.0",
-    "@react-native-picker/picker": "^2.11.0",
+    "@react-native-picker/picker": "^2.9.0",
     "@react-native-vector-icons/ionicons": "^7.4.0",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
@@ -22,7 +22,7 @@
     "@react-navigation/stack": "^7.1.1",
     "axios": "^1.7.9",
     "deprecated-react-native-prop-types": "^5.0.0",
-    "expo": "~52.0.25",
+    "expo": "~52.0.26",
     "expo-image-picker": "~16.0.4",
     "expo-status-bar": "~2.0.1",
     "firebase": "^11.2.0",

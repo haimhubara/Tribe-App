@@ -20,5 +20,6 @@ export const GlobalStyles = {
       errorColor: '#D32F2F', 
       errorColorLight: '#FF6659',
       errorColorDark: '#9A0007', 
+      nearWhite:'#F0F0F0'
     },
   };
