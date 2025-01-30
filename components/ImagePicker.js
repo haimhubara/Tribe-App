@@ -101,20 +101,30 @@ const ImagePicker = ({pickedImage,setPickedImage,imageSytle,buttonStyle}) => {
 
 const styles = StyleSheet.create({
     root:{
-        margin:4
+        margin:4,
+        
     },
     imagePreview:{
-        borderWidth:1,
-        width: "100%",
+        borderWidth:0.25,
+        width: 180,
         height:200,
+        aspectRatio: 16 / 9,
         marginVertical:8,
         backgroundColor:'white',
-        borderRadius:4
+        borderRadius:4,
+         // Shadow for iOS
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
+        // Shadow for Android
+        elevation: 5,
     },
     image:{
         width:'100%',
         height:'100%',
-        borderRadius:4
+        borderRadius:4,
+       
     },
     buttonsContainer: {
         flexDirection: 'row',

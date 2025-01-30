@@ -12,9 +12,7 @@ const ImageToShow = ({imageUrl,imageStyle, rootStyle}) => {
 }
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    marginTop:32,
+  root: { 
   },
   imagePreview:{
     borderWidth:0.1,

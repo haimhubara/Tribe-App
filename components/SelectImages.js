@@ -1,39 +1,35 @@
 import { View ,StyleSheet,Text} from "react-native";
 import ImagePicker from "./ImagePicker";
+import { GlobalStyles } from "../constants/styles";
 
 const SelectImages = ({ pickedImage1, setPickedImage1,pickedImage2, setPickedImage2,pickedImage3, setPickedImage3,pickedImage4, setPickedImage4,pickedImage5, setPickedImage5, pickedImage6, setPickedImage6,}) => {
   return (
 
     <View style={styles.root}>
-        <View>
-            <Text style={styles.title}>Choose Images:</Text>
-        </View>
         <View style={styles.container}>
-        
-        <ImagePicker pickedImage={pickedImage1} setPickedImage={setPickedImage1} />
-        <ImagePicker pickedImage={pickedImage2} setPickedImage={setPickedImage2}/>
-        <ImagePicker pickedImage={pickedImage3} setPickedImage={setPickedImage3} />
-        <ImagePicker pickedImage={pickedImage4} setPickedImage={setPickedImage4} />
-        <ImagePicker pickedImage={pickedImage5} setPickedImage={setPickedImage5} />
-        <ImagePicker pickedImage={pickedImage6} setPickedImage={setPickedImage6} />
+        <ImagePicker pickedImage={pickedImage1} setPickedImage={setPickedImage1} imageSytle={{backgroundColor:GlobalStyles.colors.nearWhite}} />
+        <ImagePicker pickedImage={pickedImage2} setPickedImage={setPickedImage2} imageSytle={{backgroundColor:GlobalStyles.colors.nearWhite}}  />
+        <ImagePicker pickedImage={pickedImage3} setPickedImage={setPickedImage3} imageSytle={{backgroundColor:GlobalStyles.colors.nearWhite}} />
+        <ImagePicker pickedImage={pickedImage4} setPickedImage={setPickedImage4} imageSytle={{backgroundColor:GlobalStyles.colors.nearWhite}} />
+        <ImagePicker pickedImage={pickedImage5} setPickedImage={setPickedImage5}  imageSytle={{backgroundColor:GlobalStyles.colors.nearWhite}}/>
+        <ImagePicker pickedImage={pickedImage6} setPickedImage={setPickedImage6} imageSytle={{backgroundColor:GlobalStyles.colors.nearWhite}} />
         </View>
     </View>
   )
 }
 const styles = StyleSheet.create({
-    root:{
-        marginVertical:16,
-    },
-    container: {
-      flex: 1,
-     
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 20,  
-        width: '100%',  
-        textAlign: 'center', 
-      },
-  });
+  root: {
+    flex:1,
+    marginVertical: 16,
+
+  },
+  container: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between', 
+    gap: 10, 
+
+  },
+ 
+});
 export default SelectImages

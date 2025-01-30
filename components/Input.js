@@ -4,7 +4,7 @@ import { View, TextInput, Text, StyleSheet } from 'react-native';
 const Input = ({field,setField,LabelText,placeholderText, inputStyle,editable }) => {
   return (
     <View style={styles.root}>
-      <Text style={styles.label}>{LabelText}:</Text>
+      <Text style={styles.label}>{LabelText}</Text>
       <TextInput 
         placeholder={`${placeholderText} `}
         style={[styles.input,inputStyle]} 

@@ -7,7 +7,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { HomeScreen, ProfileScreen, ChatScreen, SearchScreen, AddNewEventScreen } from './screens';
 import SignupScreen from './screens/authScreens/SignupScreen';
 import SinginScreen from './screens/authScreens/SinginScreen';
-import { useState } from 'react';
+import UploadPhotosScreen from './screens/authScreens/UploadPhotosScreen';
+import FriendsScreen from './screens/FriendsScreen';
+import FriendProfileScreen from './screens/FriendProfileScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -54,9 +56,12 @@ function App() {
     <NavigationContainer>
       <StatusBar style="dark" />
       <Stack.Navigator >
+        {false&& <Stack.Screen name="SingIn" component={SinginScreen}  options={{ headerShown: false }}  />}
         {false && <Stack.Screen name="SignUp" component={SignupScreen}  options={{ headerShown: false }}  />}
-        {false && <Stack.Screen name="SingIn" component={SinginScreen}  options={{ headerShown: false }}  />}
+        {false && <Stack.Screen name="UploadPhotos" component={UploadPhotosScreen}  options={{ headerShown: false }}  />}
         {true && <Stack.Screen name="WellcomeWindow" component={WellcomeWindow} options={{ headerShown: false }} />}
+        {true && <Stack.Screen name="FriendsScreen" component={FriendsScreen} options={{ headerShown: false }} />}
+        {true && <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={{ headerShown: false }} />}
       </Stack.Navigator>
     </NavigationContainer>
   );
