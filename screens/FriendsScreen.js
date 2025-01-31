@@ -1,7 +1,8 @@
-import { View,Text,StyleSheet, TextInput, FlatList } from "react-native"
+import { View,Text,StyleSheet, TextInput, FlatList, Platform  } from "react-native"
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from "react";
 import FriendComponent from "../components/FriendComponent";
+import Header from "../components/Header";
 
 const FriendsScreen = ({navigation}) => {
     const [search, setSearch] = useState('');
@@ -22,13 +23,9 @@ const FriendsScreen = ({navigation}) => {
 
   return (
     <View style={styles.root}>
-       <View style={styles.titleContainer}>
-              <Ionicons name="arrow-back" size={32} color="black" onPress={backArrowHandle} />
-            <View style={styles.textContainer}>
-                <Text style={styles.title}>Friends</Text>
-            </View>
-       </View>
-      <View style={styles.searchContainer}>
+      <Header title="Friends" onBackPress={backArrowHandle}/>
+      
+      <View style={[styles.searchContainer, Platform.OS === 'ios' && styles.inputIOS]}>
           <Ionicons name="search" size={16} color="grey" />
           <TextInput placeholder="Search"
           onChangeText={(data)=>{setSearch(data)}}
@@ -62,11 +59,6 @@ const styles = StyleSheet.create({
         flex: 1,
         marginTop:32
       },
-      text:{
-        textAlign:'center',
-        fontSize:32,
-        fontWeight:'bold'
-      },
       searchContainer:{
         flexDirection:'row',
         alignItems:'center',
@@ -95,22 +87,10 @@ const styles = StyleSheet.create({
         fontSize:16,
         color:'grey'
       },
-      title: {
-        textAlign:'center',
-        justifyContent:'center',
-        fontSize:28,
-        marginRight:30,
-        fontWeight:'bold',
-      },
-      titleContainer:{
-        flexDirection:'row',
-        alignItems: 'center', 
-      },
-      textContainer:{
-        flex: 1, 
-        alignItems: 'center', 
-        justifyContent: 'center'
+      inputIOS:{
+        paddingVertical:13
       }
+
      
 });
 

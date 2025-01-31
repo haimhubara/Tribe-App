@@ -3,6 +3,7 @@ import SelectImages from "../../components/SelectImages";
 import { useState } from "react";
 import Button from "../../components/Button";
 import Ionicons from '@expo/vector-icons/Ionicons';
+import Header from "../../components/Header";
 
 
 const UploadPhotosScreen = ({navigation,route}) => {
@@ -26,13 +27,9 @@ const UploadPhotosScreen = ({navigation,route}) => {
   return (
     <ScrollView>
          <View style={styles.root}>
-        <View style={styles.imageContainer}>
-          <View style={styles.titleContainer}>
-              <Ionicons name="arrow-back" size={32} color="black" onPress={backArrowHandle} />
-            <View style={styles.textContainer}>
-                <Text style={styles.title}>Select Images</Text>
-            </View>
-          </View>
+          <Header title="Select images" onBackPress={backArrowHandle}/>
+           <View style={styles.imageContainer}>
+          
         
             <SelectImages
             pickedImage1={pickedImage1} setPickedImage1={setPickedImage1}
@@ -43,7 +40,7 @@ const UploadPhotosScreen = ({navigation,route}) => {
             pickedImage6={pickedImage6} setPickedImage6={setPickedImage6}
             />
 
-        </View>
+          </View>
 
         <View style={styles.button}>
           <Button text="Sing Up" handleClick={handleSignup}/>
@@ -58,7 +55,7 @@ const UploadPhotosScreen = ({navigation,route}) => {
 const styles = StyleSheet.create({
     root: {
         flex: 1,
-        marginTop:16
+        marginTop:32
       
                   
     },
@@ -68,25 +65,6 @@ const styles = StyleSheet.create({
        
             
     },
-    button: {
-     
-       
-    },
-    title: {
-      textAlign:'center',
-      justifyContent:'center',
-      fontSize:28,
-      fontWeight:'bold',
-    },
-    titleContainer:{
-      flexDirection:'row',
-      alignItems: 'center', 
-    },
-    textContainer:{
-      flex: 1, 
-      alignItems: 'center', 
-      justifyContent: 'center'
-    }
 });
 
 export default UploadPhotosScreen

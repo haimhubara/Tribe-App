@@ -34,7 +34,7 @@ const SignupScreen = ({route,navigation}) => {
   }
  
   return (
-  <ScrollView>
+  <ScrollView sytle = {styles.scroll}>
      <View style={styles.root}>
       <Text  style={styles.text}>Sign up</Text>
       <Input setField={setEmail} field={email} LabelText="Email" placeholderText="Email" />
@@ -113,6 +113,9 @@ const styles = StyleSheet.create({
       color: GlobalStyles.colors.mainColor,
       fontWeight: 'bold',
     },
+    scroll:{
+      flex:1
+    }
 });
 
 export default SignupScreen

@@ -6,6 +6,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import ImageToShow from "../components/ImageToShow";
 import ShowCoupleStuf from "../components/ShowCoupleStuf";
 import Button from "../components/Button";
+import Header from "../components/Header";
 
    
 
@@ -41,12 +42,8 @@ const FriendProfileScreen = ({navigation, route}) => {
     return (
         <ScrollView>
          <View style={styles.root}>
-            <View style={styles.titleContainer}>
-                  <Ionicons name="arrow-back" size={32} color="black" onPress={backArrowHandle} />
-                <View style={styles.textContainer}>
-                    <Text style={styles.title}>Profile</Text>
-                </View>
-           </View>
+          <Header title="Profile" onBackPress={backArrowHandle}/>
+            
             <ImageToShow imageUrl={null} imageStyle={imageStyle} rootStyle={imageRootStyle}/>
             <View style={styles.buttons}>
                 {isFriend && <Button text={<Ionicons name="person-remove-outline" size={24} color="black" />} handleClick={AddFreindHandle} />}
@@ -95,22 +92,7 @@ const FriendProfileScreen = ({navigation, route}) => {
         flexDirection:"row",
         justifyContent:'center'
       },
-      title: {
-        textAlign:'center',
-        justifyContent:'center',
-        marginRight:30,
-        fontSize:28,
-        fontWeight:'bold',
-      },
-      titleContainer:{
-        flexDirection:'row',
-        alignItems: 'center', 
-      },
-      textContainer:{
-        flex: 1, 
-        alignItems: 'center', 
-        justifyContent: 'center'
-      }
+    
      
 });
 
