@@ -23,7 +23,8 @@ const SignupScreen = ({route,navigation}) => {
    const [selectedHobbies, setSelectedHobbies] = useState([]);
    const [languages, setLanguages] = useState([]);
    const [date,setDate] = useState(new Date());
-   const [selectedLinks, setSelectedLinks] = useState([]);
+   const [linkValues, setLinkValues] = useState({})
+
 
    
 
@@ -31,6 +32,7 @@ const SignupScreen = ({route,navigation}) => {
    
 
    function handleNext() {
+    console.log(linkValues);
     navigation.navigate("UploadPhotos");
   }
  
@@ -64,7 +66,7 @@ const SignupScreen = ({route,navigation}) => {
 
         <HobbiesPicker selectedHobbies={selectedHobbies} setSelectedHobbies={setSelectedHobbies} text="Select your hobbies:" array={['Reading', 'Traveling', 'Cooking', 'Sports', 'Music', 'Gaming', 'Photography', 'Art']}/>
         <HobbiesPicker text="Select Languages:" array={["Hebrew","Arabic","English","Russin"]} selectedHobbies={languages} setSelectedHobbies={setLanguages}/>
-        <SocialLinks selectedLinks={selectedLinks} setSelectedLinks={setSelectedLinks} availableLinks={ ["Facebook", "Instagram", "Twitter"]} />
+        <SocialLinks setLinkValues={setLinkValues} linkValues={linkValues}  availableLinks={ ["Facebook", "Instagram", "Twitter"]} />
         <Button text="Next"handleClick={handleNext}/>
       
         <Text style={styles.signupText}>
