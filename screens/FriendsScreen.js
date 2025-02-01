@@ -1,4 +1,4 @@
-import { View,Text,StyleSheet, TextInput, FlatList, Platform  } from "react-native"
+import { View,Text,StyleSheet, TextInput, FlatList, Platform ,ScrollView } from "react-native"
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from "react";
 import FriendComponent from "../components/FriendComponent";

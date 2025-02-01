@@ -1,6 +1,6 @@
 import { Text, View, StyleSheet, ScrollView, Linking} from "react-native";
 import Input from "../components/Input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GlobalStyles } from "../constants/styles";
 import ImageToShow from "../components/ImageToShow";
 import ShowCoupleStuf from "../components/ShowCoupleStuf";
@@ -9,6 +9,10 @@ import HobbiesPicker from "../components/HobbiesPicker";
 import { useLayoutEffect } from 'react';
 import DatePicker from "../components/DatePicker";
 import ImagePicker from "../components/ImagePicker";
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import SelectImages from "../components/SelectImages";
+import Header from "../components/Header";
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const ProfileScreen = ({navigation}) => {
     const [email,setEmail] = useState('');
@@ -22,6 +26,22 @@ const ProfileScreen = ({navigation}) => {
     const [languages, setLanguages] = useState(["Hebrew","English"]);
     const [date,setDate] = useState(new Date());
     const [pickedImage,setPickedImage] = useState(null);
+    const [isWachingGallery,setIWsachingGallery] =  useState(false);
+
+    const [pickedImage1, setPickedImage1] = useState(null);
+    const [pickedImage2, setPickedImage2] = useState(null);
+    const [pickedImage3, setPickedImage3] = useState(null);
+    const [pickedImage4, setPickedImage4] = useState(null);
+    const [pickedImage5, setPickedImage5] = useState(null);
+    const [pickedImage6, setPickedImage6] = useState(null);
+    const [imagesEditing, setImagesEditing] = useState(true);
+    let width = 0;
+   
+    if(!imagesEditing){
+      width = null;
+    }else{
+      width = 0;
+    }
     
    
     
@@ -43,6 +63,9 @@ const ProfileScreen = ({navigation}) => {
     function handleLogout(){
 
     }
+    function watchGalleryHandle(){
+      setIWsachingGallery(!isWachingGallery);
+    }
     
     const handleLinkChange = (linkName, value) => {
       setLinks(prevLinks => ({
@@ -59,23 +82,57 @@ const ProfileScreen = ({navigation}) => {
     function saveClickHandle(){
       setIsEdit(!isEdit);
     }
+    function saveImagesHandle(){
+      setImagesEditing(!imagesEditing)
+    }
 
     useLayoutEffect(() => {
-      if(isEdit){
+      if (isEdit || !imagesEditing) {
         navigation.setOptions({
           tabBarStyle: { display: 'none' }, 
         });
-    
-        return () => {
-         
-          navigation.setOptions({
-            tabBarStyle: { display: 'flex' }, 
-          });
-        };
-
+      } else {
+        navigation.setOptions({
+          tabBarStyle: { display: 'flex' }, 
+        });
       }
-     
-    }, [navigation,isEdit]);
+    
+      return () => {
+        navigation.setOptions({
+          tabBarStyle: { display: 'flex' }, 
+        });
+      };
+    }, [navigation, isEdit, imagesEditing]);
+
+    if(isWachingGallery){
+      return(
+        <ScrollView >
+         <View style={styles.root}>
+          <View style={styles.headerContainer}>
+            {imagesEditing?<Header title="My Gallery" onBackPress={watchGalleryHandle}/> :<Text style={styles.title}>My Gallery</Text>}
+            <View style={styles.iconContainer}>
+                { imagesEditing &&<MaterialIcons name="edit" size={32} color="black" onPress={()=>{setImagesEditing(!imagesEditing)}} />}
+                { !imagesEditing &&<Ionicons name="save" size={32} color="black"  onPress={()=>saveImagesHandle()}/>}
+            </View>
+          </View>
+           <View style={styles.imageContainer}>
+          
+           
+            <SelectImages buttonSytle={{width:width}}
+            pickedImage1={pickedImage1} setPickedImage1={setPickedImage1}
+            pickedImage2={pickedImage2} setPickedImage2={setPickedImage2}
+            pickedImage3={pickedImage3} setPickedImage3={setPickedImage3}
+            pickedImage4={pickedImage4} setPickedImage4={setPickedImage4}
+            pickedImage5={pickedImage5} setPickedImage5={setPickedImage5}
+            pickedImage6={pickedImage6} setPickedImage6={setPickedImage6}
+            />
+
+          </View>
+    </View>
+
+    </ScrollView>
+      )
+    }
 
   return (
     <ScrollView>
@@ -115,8 +172,9 @@ const ProfileScreen = ({navigation}) => {
         <Text  style={styles.text}>Profile</Text>
         <ImageToShow imageUrl={pickedImage} imageStyle={imageStyle} rootStyle={imageRootStyle}/>
         <View style={styles.buttons}>
-           <Button text="Edit profile" handleClick={handleEditProfileClick} />
-           <Button text="Friends" handleClick={handleFriendsClick}/>
+           <Button  buttonStyle={{marginHorizontal:1}} text="Edit profile" handleClick={handleEditProfileClick} />
+           <Button  buttonStyle={{marginHorizontal:1}} text="Friends" handleClick={handleFriendsClick}/>
+           <Button buttonStyle={{marginHorizontal:1}} text="Watch gallery" handleClick={watchGalleryHandle}/>
         </View>
         <Input setField={setEmail} field={email} LabelText="Email" placeholderText="" inputStyle={inputStyle} editable={isEdit} />
         <Input setField={setUsername} field={username} LabelText="Username" placeholderText="" inputStyle={inputStyle} editable={isEdit}/>
@@ -191,9 +249,28 @@ const styles = StyleSheet.create({
     borderRadius: 8, 
     paddingHorizontal: 10, 
     height: 50,
-    textAlignVertical: 'center', // למרכז אנכית
-    textAlign: 'left', // כדי שיראה כמו טקסט רגיל ב-Input
-  }
+    textAlignVertical: 'center', 
+    textAlign: 'left', 
+  },
+  iconContainer: {
+    marginTop:6,
+    alignItems: 'center', 
+    justifyContent:'center'
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center', 
+    justifyContent: 'space-between', 
+    paddingHorizontal: 16, 
+  },
+  title: {
+    flex: 1,
+    textAlign: "center",
+    fontSize:32,
+    fontWeight: "bold",
+    padding: 10,
+    marginLeft:28
+  },
  
 });
 

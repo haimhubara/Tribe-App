@@ -68,10 +68,10 @@ function App() {
     <NavigationContainer>
       <StatusBar style="dark" />
       <Stack.Navigator >
-        {false && <Stack.Screen name="AuthScreens" component={AuthScreens} options={{ headerShown: false }}/>} 
-        {true && <Stack.Screen name="WellcomeWindow" component={WellcomeWindow} options={{ headerShown: false }} />}
-        {true && <Stack.Screen name="FriendsScreen" component={FriendsScreen} options={{ headerShown: false }} />}
-        {true && <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={{ headerShown: false }} />}
+        {true && <Stack.Screen name="AuthScreens" component={AuthScreens} options={{ headerShown: false }}/>} 
+        {false && <Stack.Screen name="WellcomeWindow" component={WellcomeWindow} options={{ headerShown: false }} />}
+        {false && <Stack.Screen name="FriendsScreen" component={FriendsScreen} options={{ headerShown: false }} />}
+        {false && <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={{ headerShown: false }} />}
       </Stack.Navigator>
     </NavigationContainer>
   );
