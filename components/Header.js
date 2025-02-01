@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
     textAlign: "center",
-    fontSize: 28,
+    fontSize:32,
     fontWeight: "bold",
   },
 });

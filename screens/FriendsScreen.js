@@ -18,7 +18,7 @@ const FriendsScreen = ({navigation}) => {
     ]);
 
     function backArrowHandle(){
-      navigation.navigate("WellcomeWindow", { screen: "Profile" })
+      navigation.goBack();
     }
 
   return (

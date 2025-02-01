@@ -10,6 +10,7 @@ import SinginScreen from './screens/authScreens/SinginScreen';
 import UploadPhotosScreen from './screens/authScreens/UploadPhotosScreen';
 import FriendsScreen from './screens/FriendsScreen';
 import FriendProfileScreen from './screens/FriendProfileScreen';
+import UploadVideoScreen from './screens/authScreens/UploadVideoScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -50,18 +51,27 @@ function WellcomeWindow() {
   );
 }
 
+function AuthScreens() {
+  return ( 
+    <Stack.Navigator>
+      <Stack.Screen name="SingIn" component={SinginScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="SignUp" component={SignupScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="UploadPhotos" component={UploadPhotosScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="UploadVideo" component={UploadVideoScreen} options={{ headerShown: false }} />
+    </Stack.Navigator>
+  );
+}
+
 function App() {
 
   return (
     <NavigationContainer>
       <StatusBar style="dark" />
       <Stack.Navigator >
-        {false && <Stack.Screen name="SingIn" component={SinginScreen}  options={{ headerShown: false }}  />}
-        {false && <Stack.Screen name="SignUp" component={SignupScreen}  options={{ headerShown: false }}  />}
-        {false && <Stack.Screen name="UploadPhotos" component={UploadPhotosScreen}  options={{ headerShown: false }}  />}
-        {true && <Stack.Screen name="WellcomeWindow" component={WellcomeWindow} options={{ headerShown: false }} />}
-        {true && <Stack.Screen name="FriendsScreen" component={FriendsScreen} options={{ headerShown: false }} />}
-        {true && <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={{ headerShown: false }} />}
+        {true && <Stack.Screen name="AuthScreens" component={AuthScreens} options={{ headerShown: false }}/>} 
+        {false && <Stack.Screen name="WellcomeWindow" component={WellcomeWindow} options={{ headerShown: false }} />}
+        {false && <Stack.Screen name="FriendsScreen" component={FriendsScreen} options={{ headerShown: false }} />}
+        {false && <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={{ headerShown: false }} />}
       </Stack.Navigator>
     </NavigationContainer>
   );

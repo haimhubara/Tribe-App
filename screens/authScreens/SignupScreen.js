@@ -6,7 +6,7 @@ import HobbiesPicker from '../../components/HobbiesPicker';
 import { GlobalStyles } from '../../constants/styles';
 import Button from '../../components/Button';
 import DatePicker from '../../components/DatePicker';
-
+import SocialLinks from '../../components/SocialLinks';
 
 const SignupScreen = ({route,navigation}) => {
 
@@ -23,6 +23,7 @@ const SignupScreen = ({route,navigation}) => {
    const [selectedHobbies, setSelectedHobbies] = useState([]);
    const [languages, setLanguages] = useState([]);
    const [date,setDate] = useState(new Date());
+   const [selectedLinks, setSelectedLinks] = useState([]);
 
    
 
@@ -63,6 +64,7 @@ const SignupScreen = ({route,navigation}) => {
 
         <HobbiesPicker selectedHobbies={selectedHobbies} setSelectedHobbies={setSelectedHobbies} text="Select your hobbies:" array={['Reading', 'Traveling', 'Cooking', 'Sports', 'Music', 'Gaming', 'Photography', 'Art']}/>
         <HobbiesPicker text="Select Languages:" array={["Hebrew","Arabic","English","Russin"]} selectedHobbies={languages} setSelectedHobbies={setLanguages}/>
+        <SocialLinks selectedLinks={selectedLinks} setSelectedLinks={setSelectedLinks} availableLinks={ ["Facebook", "Instagram", "Twitter"]} />
         <Button text="Next"handleClick={handleNext}/>
       
         <Text style={styles.signupText}>

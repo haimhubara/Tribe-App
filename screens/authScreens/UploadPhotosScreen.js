@@ -2,14 +2,13 @@ import { View, StyleSheet, ScrollView, Text } from "react-native"
 import SelectImages from "../../components/SelectImages";
 import { useState } from "react";
 import Button from "../../components/Button";
-import Ionicons from '@expo/vector-icons/Ionicons';
 import Header from "../../components/Header";
 
 
 const UploadPhotosScreen = ({navigation,route}) => {
     
-    function handleSignup() {
-   
+    function handleNext() {
+      navigation.navigate("UploadVideo")
     }
 
    const [pickedImage1, setPickedImage1] = useState(null);
@@ -20,12 +19,12 @@ const UploadPhotosScreen = ({navigation,route}) => {
    const [pickedImage6, setPickedImage6] = useState(null);
 
    function backArrowHandle(){
-    navigation.navigate("SignUp");
+    navigation.goBack();
 
    }
 
   return (
-    <ScrollView>
+    <ScrollView >
          <View style={styles.root}>
           <Header title="Select images" onBackPress={backArrowHandle}/>
            <View style={styles.imageContainer}>
@@ -43,7 +42,7 @@ const UploadPhotosScreen = ({navigation,route}) => {
           </View>
 
         <View style={styles.button}>
-          <Button text="Sing Up" handleClick={handleSignup}/>
+          <Button text="Next" handleClick={handleNext}/>
         </View>
       
     </View>
@@ -55,15 +54,10 @@ const UploadPhotosScreen = ({navigation,route}) => {
 const styles = StyleSheet.create({
     root: {
         flex: 1,
-        marginTop:32
-      
-                  
+        marginTop:32,      
     },
     imageContainer: {
-        padding:20,
-        width: '100%',           
-       
-            
+      flex:1,     
     },
 });
 

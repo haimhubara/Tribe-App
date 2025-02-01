@@ -1,10 +1,10 @@
-import { Text, StyleSheet,View } from "react-native"
+import { View,Text,StyleSheet } from "react-native"
 
 const SearchScreen = () => {
   return (
-       <View style={styles.root}>
+     <View style={styles.root}>
             <Text>SearchScreen</Text>
-       </View>
+      </View>
   )
 }
 
@@ -17,4 +17,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default SearchScreen 
+export default SearchScreen

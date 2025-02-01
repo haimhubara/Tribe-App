@@ -36,7 +36,7 @@ const FriendProfileScreen = ({navigation, route}) => {
 
     }
     function backArrowHandle(){
-      navigation.navigate("FriendsScreen");
+      navigation.goBack();
     }
     
     return (

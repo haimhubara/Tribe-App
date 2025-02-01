@@ -1,11 +1,11 @@
 import { View, Pressable, Text, StyleSheet } from "react-native"
 import { GlobalStyles } from "../constants/styles";
 
-const Button = ({text,handleClick,buttonStyle}) => {
+const Button = ({text,handleClick,buttonStyle, textStyle}) => {
   return (
     <View>
         <Pressable style={({pressed}) =>[styles.button,buttonStyle,pressed? styles.clicked:null]} onPress={handleClick}>
-            <Text style={styles.buttonText}>{text}</Text>
+            <Text style={[styles.buttonText,textStyle]}>{text}</Text>
          </Pressable>
     </View>
    
