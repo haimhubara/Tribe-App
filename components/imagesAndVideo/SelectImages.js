@@ -1,6 +1,6 @@
 import { View ,StyleSheet,Text} from "react-native";
 import ImagePicker from "./ImagePicker";
-import { GlobalStyles } from "../constants/styles";
+import { GlobalStyles } from "../../constants/styles";
 
 const SelectImages = ({buttonSytle, pickedImage1, setPickedImage1,pickedImage2, setPickedImage2,pickedImage3, setPickedImage3,pickedImage4, setPickedImage4,pickedImage5, setPickedImage5, pickedImage6, setPickedImage6,}) => {
   return (

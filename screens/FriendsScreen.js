@@ -22,12 +22,17 @@ const FriendsScreen = ({navigation}) => {
     }
 
   return (
+    
     <View style={styles.root}>
-      <Header title="Friends" onBackPress={backArrowHandle}/>
+      <View>
+
+          <Header title="Friends" onBackPress={backArrowHandle}/>
+      </View>
       
-      <View style={[styles.searchContainer, Platform.OS === 'ios' && styles.inputIOS]}>
+      <View style={[styles.searchContainer, Platform.OS === 'ios' && styles.inputIOS,Platform.OS==='web' &&{padding:10}]}>
           <Ionicons name="search" size={16} color="grey" />
           <TextInput placeholder="Search"
+          style={{flex:1}}
           onChangeText={(data)=>{setSearch(data)}}
           value={search}
           autoCorrect={false}

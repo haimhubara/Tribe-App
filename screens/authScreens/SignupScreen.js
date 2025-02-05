@@ -37,7 +37,7 @@ const SignupScreen = ({route,navigation}) => {
   }
  
   return (
-  <ScrollView sytle = {styles.scroll}>
+  <ScrollView style={styles.scroll}>
      <View style={styles.root}>
       <Text  style={styles.text}>Sign up</Text>
       <Input setField={setEmail} field={email} LabelText="Email" placeholderText="Email" />

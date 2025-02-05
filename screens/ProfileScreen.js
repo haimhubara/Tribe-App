@@ -1,18 +1,17 @@
 import { Text, View, StyleSheet, ScrollView, Linking} from "react-native";
 import Input from "../components/Input";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { GlobalStyles } from "../constants/styles";
-import ImageToShow from "../components/ImageToShow";
 import ShowCoupleStuf from "../components/ShowCoupleStuf";
 import Button from "../components/Button";
 import HobbiesPicker from "../components/HobbiesPicker";
 import { useLayoutEffect } from 'react';
 import DatePicker from "../components/DatePicker";
-import ImagePicker from "../components/ImagePicker";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import SelectImages from "../components/SelectImages";
+import SelectImages from "../components/imagesAndVideo/SelectImages";
 import Header from "../components/Header";
 import Ionicons from '@expo/vector-icons/Ionicons';
+import SwapImages from "../components/swapImages/SwapImages";
 
 const ProfileScreen = ({navigation}) => {
     const [email,setEmail] = useState('');
@@ -35,13 +34,7 @@ const ProfileScreen = ({navigation}) => {
     const [pickedImage5, setPickedImage5] = useState(null);
     const [pickedImage6, setPickedImage6] = useState(null);
     const [imagesEditing, setImagesEditing] = useState(true);
-    let width = 0;
    
-    if(!imagesEditing){
-      width = null;
-    }else{
-      width = 0;
-    }
     
    
     
@@ -104,6 +97,9 @@ const ProfileScreen = ({navigation}) => {
       };
     }, [navigation, isEdit, imagesEditing]);
 
+
+    
+
     if(isWachingGallery){
       return(
         <ScrollView >
@@ -118,7 +114,7 @@ const ProfileScreen = ({navigation}) => {
            <View style={styles.imageContainer}>
           
            
-            <SelectImages buttonSytle={{width:width}}
+            <SelectImages buttonSytle={!imagesEditing?{}:{ display: 'none' }}
             pickedImage1={pickedImage1} setPickedImage1={setPickedImage1}
             pickedImage2={pickedImage2} setPickedImage2={setPickedImage2}
             pickedImage3={pickedImage3} setPickedImage3={setPickedImage3}
@@ -138,13 +134,13 @@ const ProfileScreen = ({navigation}) => {
     <ScrollView>
       {isEdit ?(<View style={styles.root}>
          <Text  style={styles.text}>Profile</Text>
-         <ImagePicker   pickedImage={pickedImage} setPickedImage={setPickedImage} imageSytle={[imageStyle,{margin:0}]} imageRootStyle={imageRootStyle}/>
-         {/* <ImageToShow imageUrl={null} imageStyle={imageStyle} rootStyle={imageRootStyle}/> */}
+         {/* <ImagePicker   pickedImage={pickedImage} setPickedImage={setPickedImage} imageSytle={[imageStyle,{margin:0}]} imageRootStyle={imageRootStyle}/> */}
+         <SwapImages/>
          <View style={styles.buttons}>
             <Button text="Save" handleClick={saveClickHandle} />
          </View>
-         <Input setField={setEmail} field={email} LabelText="Email" placeholderText={email} inputStyle={inputStyle} editable={isEdit} />
-         <Input setField={setUsername} field={username} LabelText="Username" placeholderText={username} inputStyle={inputStyle} editable={isEdit}/>
+         <Input setField={setEmail} field={email} LabelText="Email" placeholderText={email} inputStyle={inputStyle} editable={false} />
+         <Input setField={setUsername} field={username} LabelText="Username" placeholderText={username} inputStyle={inputStyle} editable={false}/>
           <Input setField={setFirstName} field={FirstName} LabelText="First name" placeholderText={FirstName}  inputStyle={inputStyle} editable={isEdit}/>
           <Input setField={setLastName} field={LastName} LabelText="Last name" placeholderText={LastName}  inputStyle={inputStyle} editable={isEdit}/>
           <Input setField={setPhoneNumber} field={phoneNumber} LabelText="Phone number" placeholderText={phoneNumber}  inputStyle={inputStyle} editable={isEdit}/>
@@ -170,11 +166,11 @@ const ProfileScreen = ({navigation}) => {
       
       :(<View style={styles.root}>
         <Text  style={styles.text}>Profile</Text>
-        <ImageToShow imageUrl={pickedImage} imageStyle={imageStyle} rootStyle={imageRootStyle}/>
+        {/* <ImageToShow imageUrl={pickedImage} imageStyle={imageStyle} rootStyle={imageRootStyle}/> */}
+        <SwapImages editStyle={{display:'none'}}/>
         <View style={styles.buttons}>
-           <Button  buttonStyle={{marginHorizontal:1}} text="Edit profile" handleClick={handleEditProfileClick} />
-           <Button  buttonStyle={{marginHorizontal:1}} text="Friends" handleClick={handleFriendsClick}/>
-           <Button buttonStyle={{marginHorizontal:1}} text="Watch gallery" handleClick={watchGalleryHandle}/>
+           <Button  buttonStyle={{marginHorizontal:10}} text="Edit profile" handleClick={handleEditProfileClick} />
+           <Button  buttonStyle={{marginHorizontal:10}} text="Friends" handleClick={handleFriendsClick}/>
         </View>
         <Input setField={setEmail} field={email} LabelText="Email" placeholderText="" inputStyle={inputStyle} editable={isEdit} />
         <Input setField={setUsername} field={username} LabelText="Username" placeholderText="" inputStyle={inputStyle} editable={isEdit}/>
@@ -233,7 +229,7 @@ const styles = StyleSheet.create({
   },
   buttons:{
     flexDirection:"row",
-    justifyContent:'center'
+    justifyContent:'center',
   },
   inputRoot: {
     padding: 10,
@@ -258,6 +254,7 @@ const styles = StyleSheet.create({
     justifyContent:'center'
   },
   headerContainer: {
+    width:'90%',
     flexDirection: 'row',
     alignItems: 'center', 
     justifyContent: 'space-between', 
@@ -269,7 +266,6 @@ const styles = StyleSheet.create({
     fontSize:32,
     fontWeight: "bold",
     padding: 10,
-    marginLeft:28
   },
  
 });

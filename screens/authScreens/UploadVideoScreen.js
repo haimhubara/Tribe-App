@@ -1,5 +1,5 @@
 import { Text, StyleSheet, View } from "react-native";
-import TakeVideo from "../../components/TakeVideo";
+import TakeVideo from "../../components/imagesAndVideo/TakeVideo";
 import { useState } from "react";
 import Button from "../../components/Button";
 import React from "react";

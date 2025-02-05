@@ -53,7 +53,12 @@ function WellcomeWindow() {
 
 function AuthScreens() {
   return ( 
-    <Stack.Navigator>
+    <Stack.Navigator
+    screenOptions={{
+      cardStyle: {
+        flex: 1
+      }
+    }}>
       <Stack.Screen name="SingIn" component={SinginScreen} options={{ headerShown: false }} />
       <Stack.Screen name="SignUp" component={SignupScreen} options={{ headerShown: false }} />
       <Stack.Screen name="UploadPhotos" component={UploadPhotosScreen} options={{ headerShown: false }} />
@@ -67,11 +72,16 @@ function App() {
   return (
     <NavigationContainer>
       <StatusBar style="dark" />
-      <Stack.Navigator >
-        {true && <Stack.Screen name="AuthScreens" component={AuthScreens} options={{ headerShown: false }}/>} 
-        {false && <Stack.Screen name="WellcomeWindow" component={WellcomeWindow} options={{ headerShown: false }} />}
-        {false && <Stack.Screen name="FriendsScreen" component={FriendsScreen} options={{ headerShown: false }} />}
-        {false && <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={{ headerShown: false }} />}
+      <Stack.Navigator 
+       screenOptions={{
+        cardStyle: {
+          flex: 1
+        }
+      }}>
+        {false && <Stack.Screen name="AuthScreens" component={AuthScreens} options={{ headerShown: false }}/>} 
+        {true && <Stack.Screen name="WellcomeWindow" component={WellcomeWindow} options={{ headerShown: false }} />}
+        {true && <Stack.Screen name="FriendsScreen" component={FriendsScreen} options={{ headerShown: false }} />}
+        {true && <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={{ headerShown: false }} />}
       </Stack.Navigator>
     </NavigationContainer>
   );

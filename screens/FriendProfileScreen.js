@@ -3,11 +3,10 @@ import Input from "../components/Input";
 import { GlobalStyles } from "../constants/styles";
 import { useState, useEffect } from "react";
 import Ionicons from '@expo/vector-icons/Ionicons';
-import ImageToShow from "../components/ImageToShow";
 import ShowCoupleStuf from "../components/ShowCoupleStuf";
 import Button from "../components/Button";
 import Header from "../components/Header";
-import SelectImages from "../components/SelectImages";
+import SwapImages from "../components/swapImages/SwapImages";
 
    
 
@@ -34,20 +33,11 @@ const FriendProfileScreen = ({navigation, route}) => {
     const [username, setUsername] = useState('');
     const [selectedHobbies, setSelectedHobbies] = useState(['Reading', 'Traveling', 'Cooking']);
     const [languages, setLanguages] = useState(["Hebrew","English"]);
-    const [isWachingGallery,setIsWsachingGallery] =  useState(false);
+    
 
-    const [pickedImage1, setPickedImage1] = useState(null);
-    const [pickedImage2, setPickedImage2] = useState(null);
-    const [pickedImage3, setPickedImage3] = useState(null);
-    const [pickedImage4, setPickedImage4] = useState(null);
-    const [pickedImage5, setPickedImage5] = useState(null);
-    const [pickedImage6, setPickedImage6] = useState(null);
-    const [imagesEditing, setImagesEditing] = useState(false);
     
 
     const inputStyle = {backgroundColor:GlobalStyles.colors.nearWhite}
-    const imageStyle = {marginTop:32,width:150,height:150,borderRadius:75,alignItems: 'center',  justifyContent:'center' ,backgroundColor:GlobalStyles.colors.nearWhite,overflow: 'hidden'}
-    const imageRootStyle = { justifyContent:'center',alignItems:'center'}
     const [links, setLinks] = useState({
       "Facebook": "https://www.facebook.com",
       "Instagram": "https://www.instagram.com",
@@ -69,41 +59,18 @@ const FriendProfileScreen = ({navigation, route}) => {
       navigation.goBack();
     }
 
-    if(isWachingGallery){
-      return(
-        <ScrollView>
-          <View style={styles.root}>
-            <View style={styles.headerContainer}>
-              <Header title="Firend Gallery" onBackPress={()=>(setIsWsachingGallery(!isWachingGallery))} />
-            </View>
-    
-            <View style={styles.imageContainer}>
-              <SelectImages 
-                buttonSytle={{width: 0}}
-                pickedImage1={pickedImage1} setPickedImage1={setPickedImage1}
-                pickedImage2={pickedImage2} setPickedImage2={setPickedImage2}
-                pickedImage3={pickedImage3} setPickedImage3={setPickedImage3}
-                pickedImage4={pickedImage4} setPickedImage4={setPickedImage4}
-                pickedImage5={pickedImage5} setPickedImage5={setPickedImage5}
-                pickedImage6={pickedImage6} setPickedImage6={setPickedImage6}
-              />
-            </View>
-          </View>
-        </ScrollView>
-      )
-    }
-    
     return (
         <ScrollView>
          <View style={styles.root}>
-          <Header title="Profile" onBackPress={backArrowHandle}/>
-            
-            <ImageToShow imageUrl={null} imageStyle={imageStyle} rootStyle={imageRootStyle}/>
-            <View style={styles.buttons}>
-                {isFriend && <Button buttonStyle={{marginHorizontal:1}}  text={<Ionicons name="person-remove-outline" size={24} color="black" />} handleClick={AddFreindHandle} />}
-                {!isFriend && <Button buttonStyle={{marginHorizontal:1}}  text={<Ionicons name="person-add-outline" size={24} color="black" />} handleClick={AddFreindHandle} />}
-               <Button text={<Ionicons buttonStyle={{marginHorizontal:1}}  name="chatbox-ellipses-outline" size={24} color="black" />} handleClick={startChatHandle}/>
-               <Button buttonStyle={{marginHorizontal:1}}  textStyle={{color:"black"}} text="Watch Gallery" handleClick={()=>{setIsWsachingGallery(!isWachingGallery)}}/>
+            <View style={{justifyContent:'center',alignItems:'center'}}>
+              <Header title="Profile" onBackPress={backArrowHandle}/>
+              <SwapImages editStyle={{display:'none'}}/>
+                <View style={styles.buttons}>
+                    {isFriend && <Button buttonStyle={{marginHorizontal:1}}  text={<Ionicons name="person-remove-outline" size={24} color="black" />} handleClick={AddFreindHandle} />}
+                    {!isFriend && <Button buttonStyle={{marginHorizontal:1}}  text={<Ionicons name="person-add-outline" size={24} color="black" />} handleClick={AddFreindHandle} />}
+                  <Button text={<Ionicons buttonStyle={{marginHorizontal:1}}  name="chatbox-ellipses-outline" size={24} color="black" />} handleClick={startChatHandle}/>
+                </View>
+
             </View>
             <Input setField={setEmail} field={email} LabelText="Email" placeholderText="" inputStyle={inputStyle} editable={false} />
             <Input setField={setUsername} field={username} LabelText="Username" placeholderText="" inputStyle={inputStyle} editable={false}/>
@@ -174,8 +141,8 @@ const FriendProfileScreen = ({navigation, route}) => {
         borderRadius: 8, 
         paddingHorizontal: 10, 
         height: 50,
-        textAlignVertical: 'center', // למרכז אנכית
-        textAlign: 'left', // כדי שיראה כמו טקסט רגיל ב-Input
+        textAlignVertical: 'center', 
+        textAlign: 'left', 
       }
     
      

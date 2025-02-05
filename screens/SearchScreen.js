@@ -1,10 +1,11 @@
 import { View,Text,StyleSheet } from "react-native"
 
+
 const SearchScreen = () => {
   return (
-     <View style={styles.root}>
-            <Text>SearchScreen</Text>
-      </View>
+    <View style={styles.root}>
+        <Text>SearchScreen</Text>
+    </View>
   )
 }
 
@@ -13,8 +14,8 @@ const styles = StyleSheet.create({
     flex:1,
     alignItems:'center',
     justifyContent:'center'
-    
-  }
+  },
+
 });
 
 export default SearchScreen

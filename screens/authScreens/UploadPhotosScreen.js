@@ -1,5 +1,5 @@
 import { View, StyleSheet, ScrollView, Text } from "react-native"
-import SelectImages from "../../components/SelectImages";
+import SelectImages from "../../components/imagesAndVideo/SelectImages";
 import { useState } from "react";
 import Button from "../../components/Button";
 import Header from "../../components/Header";

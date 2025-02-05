@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView ,Platform} from 'react-native';
 import { GlobalStyles } from '../constants/styles';
 
 const ShowCoupleStuf = ({ text, array }) => {
@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   scrollView: {
+    flex:1,
     flexDirection: 'row', // Items will be placed horizontally
     flexWrap: 'wrap', // Allow items to wrap to the next line when necessary
     width: '100%',
@@ -42,7 +43,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     margin: 5,
     alignItems: 'center',
-    width: '30%', // Adjust the width to fit multiple items in one row
+    width: Platform.OS === 'web' ? '40%' : '30%'
   },
   hobbyText: {
     fontSize: 16,
