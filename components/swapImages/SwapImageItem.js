@@ -3,13 +3,12 @@ import { View, Image, StyleSheet, useWindowDimensions, Text, Pressable, Modal } 
 import Icon from "react-native-vector-icons/FontAwesome";
 import { GlobalStyles } from "../../constants/styles";
 import { launchCameraAsync, launchImageLibraryAsync, useCameraPermissions, PermissionStatus } from 'expo-image-picker';
-import Button from "../Button";
 
 
 
 const SwapImageItem = ({ imageUri , setImageUri, editStyle }) => {
      const [cameraPermissionInformation, requestPermission] = useCameraPermissions();
-     const { width } = useWindowDimensions();
+     const { width, height } = useWindowDimensions();
      const [modalVisible, setModalVisible] = useState(false);
 
       async function verifyPermissions() {
@@ -38,6 +37,8 @@ const SwapImageItem = ({ imageUri , setImageUri, editStyle }) => {
         const result = await launchCameraAsync({
             allowsEditing: true,
             quality: 0.5,
+            aspect: [1, 1]
+
         });
     
         if (result.canceled) {
@@ -59,6 +60,7 @@ const SwapImageItem = ({ imageUri , setImageUri, editStyle }) => {
         const result = await launchImageLibraryAsync({
             allowsEditing: true,
             quality: 0.5,
+            aspect: [1, 1]
         });
     
         if (result.canceled) {
@@ -83,7 +85,7 @@ const SwapImageItem = ({ imageUri , setImageUri, editStyle }) => {
            
             <Image 
                 source={{ uri: imageUri }}  
-                style={[styles.image, { width, height: width * 0.8 }]} 
+                style={[styles.image, { width, height }]} 
             />
             <Pressable 
             style={({ pressed }) => [styles.iconContainer, editStyle,pressed?{backgroundColor:GlobalStyles.colors.mainColor}:{}]} 
