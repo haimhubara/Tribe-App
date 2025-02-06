@@ -85,7 +85,7 @@ const SwapImageItem = ({ imageUri , setImageUri, editStyle }) => {
            
             <Image 
                 source={{ uri: imageUri }}  
-                style={[styles.image, { width, height }]} 
+                style={[styles.image, { width, height:width }]} 
             />
             <Pressable 
             style={({ pressed }) => [styles.iconContainer, editStyle,pressed?{backgroundColor:GlobalStyles.colors.mainColor}:{}]} 
