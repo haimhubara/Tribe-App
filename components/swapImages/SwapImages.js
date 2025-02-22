@@ -45,8 +45,7 @@ const SwapImages = ({editStyle}) => {
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
           { useNativeDriver: false }
         )}
-         nestedScrollEnabled={true}
-        useNativeDrive ={false}  
+        nestedScrollEnabled={true}
         scrollEventThrottle={32}
         viewabilityConfig={viewConfig}
         onViewableItemsChanged={viewableItemsChanged}
