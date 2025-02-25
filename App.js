@@ -11,6 +11,7 @@ import UploadPhotosScreen from './screens/authScreens/UploadPhotosScreen';
 import FriendsScreen from './screens/FriendsScreen';
 import FriendProfileScreen from './screens/FriendProfileScreen';
 import UploadVideoScreen from './screens/authScreens/UploadVideoScreen';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -70,20 +71,25 @@ function AuthScreens() {
 function App() {
 
   return (
-    <NavigationContainer>
-      <StatusBar style="dark" />
-      <Stack.Navigator 
-       screenOptions={{
-        cardStyle: {
-          flex: 1
-        }
-      }}>
-        {false && <Stack.Screen name="AuthScreens" component={AuthScreens} options={{ headerShown: false }}/>} 
-        {true && <Stack.Screen name="WellcomeWindow" component={WellcomeWindow} options={{ headerShown: false }} />}
-        {true && <Stack.Screen name="FriendsScreen" component={FriendsScreen} options={{ headerShown: false }} />}
-        {true && <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={{ headerShown: false }} />}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <SafeAreaView style={{flex:1,backgroundColor:"#fff"}}>
+
+          <StatusBar style="dark" />
+          <Stack.Navigator 
+          screenOptions={{
+            cardStyle: {
+              flex: 1
+            }
+         }}>
+            {true && <Stack.Screen name="AuthScreens" component={AuthScreens} options={{ headerShown: false }}/>} 
+            {false && <Stack.Screen name="WellcomeWindow" component={WellcomeWindow} options={{ headerShown: false }} />}
+            {false && <Stack.Screen name="FriendsScreen" component={FriendsScreen} options={{ headerShown: false }} />}
+            {false && <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={{ headerShown: false }} />}
+          </Stack.Navigator>
+        </SafeAreaView>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
 

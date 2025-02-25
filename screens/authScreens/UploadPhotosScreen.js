@@ -54,7 +54,7 @@ const UploadPhotosScreen = ({navigation,route}) => {
 const styles = StyleSheet.create({
     root: {
         flex: 1,
-        marginTop:32,      
+        marginTop:10,      
     },
     imageContainer: {
       flex:1,     

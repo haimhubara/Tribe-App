@@ -205,7 +205,7 @@ const ProfileScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    marginTop:32,
+    marginTop:10
   },
   text:{
     textAlign:'center',

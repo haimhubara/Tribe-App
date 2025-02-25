@@ -19,7 +19,7 @@ const UploadVideoScreen = ({navigation}) => {
     if (videoUri && takeVideo) {
       return (
         <>
-        <View style={{marginTop:32,justifyContent:'center',alignItems:'center'}}>
+        <View style={{marginTop:10,justifyContent:'center',alignItems:'center'}}>
              <Header title="Video Preview" onBackPress={()=>{navigation.goBack();}}/>
         </View>
         
@@ -46,7 +46,7 @@ const UploadVideoScreen = ({navigation}) => {
         {
             takeVideo ? (
                <>
-                <View style={{marginTop:32}}>
+                <View style={{marginTop:10}}>
                      <Header title="Record a video" onBackPress={()=>{navigation.goBack();}}/>
                 </View> 
              
