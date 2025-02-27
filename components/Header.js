@@ -1,6 +1,5 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const Header = ({ title, onBackPress }) => {
   return (
@@ -25,7 +24,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical:10,
     paddingHorizontal: 15,
     width: "100%",
     

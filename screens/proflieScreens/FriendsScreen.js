@@ -1,8 +1,10 @@
-import { View,Text,StyleSheet, TextInput, FlatList, Platform ,ScrollView } from "react-native"
+import { View,Text,StyleSheet, TextInput, FlatList, Platform } from "react-native"
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from "react";
-import FriendComponent from "../components/FriendComponent";
-import Header from "../components/Header";
+import FriendComponent from "../../components/FriendComponent";
+import Header from "../../components/Header";
+import { useLayoutEffect } from "react";
+
 
 const FriendsScreen = ({navigation}) => {
     const [search, setSearch] = useState('');
@@ -15,16 +17,31 @@ const FriendsScreen = ({navigation}) => {
       {id:4,firstName:'guy',lastName:'avramov',imageSouce:null},
       {id:5,firstName:'naor',lastName:'zecharia',imageSouce:null},
       {id:6,firstName:'dani',lastName:'reznik',imageSouce:null}
+      
     ]);
 
     function backArrowHandle(){
       navigation.goBack();
     }
 
+     useLayoutEffect(() => {
+            const parentNav = navigation.getParent();
+            if (parentNav) {
+              parentNav.setOptions({ tabBarStyle: { display: 'none' } });
+            }
+          
+            return () => {
+              if (parentNav) {
+                parentNav.setOptions({ tabBarStyle: { display: 'flex', backgroundColor: '#fff' } });
+              }
+            };
+          }, [navigation]);
+
   return (
+
     
-    <View style={styles.root}>
-      <View>
+    <View style={{flex:1}}>
+      <View style={styles.root}>
 
           <Header title="Friends" onBackPress={backArrowHandle}/>
       </View>
@@ -57,12 +74,12 @@ const FriendsScreen = ({navigation}) => {
         )
       }
     </View>
+
   )
 }
 const styles = StyleSheet.create({
     root: {
-        flex: 1,
-        marginTop:10
+       marginTop:32
       },
       searchContainer:{
         flexDirection:'row',

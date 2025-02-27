@@ -5,13 +5,10 @@ import { GlobalStyles } from "../constants/styles";
 import ShowCoupleStuf from "../components/ShowCoupleStuf";
 import Button from "../components/Button";
 import HobbiesPicker from "../components/HobbiesPicker";
-import { useLayoutEffect } from 'react';
 import DatePicker from "../components/DatePicker";
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import SelectImages from "../components/imagesAndVideo/SelectImages";
-import Header from "../components/Header";
-import Ionicons from '@expo/vector-icons/Ionicons';
 import SwapImages from "../components/swapImages/SwapImages";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 
 const ProfileScreen = ({navigation}) => {
     const [email,setEmail] = useState('');
@@ -24,23 +21,16 @@ const ProfileScreen = ({navigation}) => {
     const [selectedHobbies, setSelectedHobbies] = useState(['Reading', 'Traveling', 'Cooking']);
     const [languages, setLanguages] = useState(["Hebrew","English"]);
     const [date,setDate] = useState(new Date());
-    const [pickedImage,setPickedImage] = useState(null);
-    const [isWachingGallery,setIWsachingGallery] =  useState(false);
+   
 
-    const [pickedImage1, setPickedImage1] = useState(null);
-    const [pickedImage2, setPickedImage2] = useState(null);
-    const [pickedImage3, setPickedImage3] = useState(null);
-    const [pickedImage4, setPickedImage4] = useState(null);
-    const [pickedImage5, setPickedImage5] = useState(null);
-    const [pickedImage6, setPickedImage6] = useState(null);
+    
     const [imagesEditing, setImagesEditing] = useState(true);
    
     
    
     
     const inputStyle = {backgroundColor:GlobalStyles.colors.nearWhite}
-    const imageStyle = {marginTop:32,width:150,height:150,borderRadius:75,alignItems: 'center',  justifyContent:'center' ,backgroundColor:GlobalStyles.colors.nearWhite, overflow: 'hidden'}
-    const imageRootStyle = { justifyContent:'center',alignItems:'center'}
+    
 
     const [links, setLinks] = useState({
       "Facebook": "https://www.facebook.com",
@@ -56,9 +46,7 @@ const ProfileScreen = ({navigation}) => {
     function handleLogout(){
 
     }
-    function watchGalleryHandle(){
-      setIWsachingGallery(!isWachingGallery);
-    }
+   
     
     const handleLinkChange = (linkName, value) => {
       setLinks(prevLinks => ({
@@ -79,60 +67,16 @@ const ProfileScreen = ({navigation}) => {
       setImagesEditing(!imagesEditing)
     }
 
-    useLayoutEffect(() => {
-      if (isEdit || !imagesEditing) {
-        navigation.setOptions({
-          tabBarStyle: { display: 'none' }, 
-        });
-      } else {
-        navigation.setOptions({
-          tabBarStyle: { display: 'flex' }, 
-        });
-      }
     
-      return () => {
-        navigation.setOptions({
-          tabBarStyle: { display: 'flex' }, 
-        });
-      };
-    }, [navigation, isEdit, imagesEditing]);
 
 
     
 
-    if(isWachingGallery){
-      return(
-        <ScrollView >
-         <View style={styles.root}>
-          <View style={styles.headerContainer}>
-            {imagesEditing?<Header title="My Gallery" onBackPress={watchGalleryHandle}/> :<Text style={styles.title}>My Gallery</Text>}
-            <View style={styles.iconContainer}>
-                { imagesEditing &&<MaterialIcons name="edit" size={32} color="black" onPress={()=>{setImagesEditing(!imagesEditing)}} />}
-                { !imagesEditing &&<Ionicons name="save" size={32} color="black"  onPress={()=>saveImagesHandle()}/>}
-            </View>
-          </View>
-           <View style={styles.imageContainer}>
-          
-           
-            <SelectImages buttonSytle={!imagesEditing?{}:{ display: 'none' }}
-            pickedImage1={pickedImage1} setPickedImage1={setPickedImage1}
-            pickedImage2={pickedImage2} setPickedImage2={setPickedImage2}
-            pickedImage3={pickedImage3} setPickedImage3={setPickedImage3}
-            pickedImage4={pickedImage4} setPickedImage4={setPickedImage4}
-            pickedImage5={pickedImage5} setPickedImage5={setPickedImage5}
-            pickedImage6={pickedImage6} setPickedImage6={setPickedImage6}
-            />
-
-          </View>
-    </View>
-
-    </ScrollView>
-      )
-    }
 
   return (
-    <ScrollView>
-      {isEdit ?(<View style={styles.root}>
+    <SafeAreaView >
+    <ScrollView >
+      {isEdit === true &&(<View style={styles.root}>
          <Text  style={styles.text}>Profile</Text>
          {/* <ImagePicker   pickedImage={pickedImage} setPickedImage={setPickedImage} imageSytle={[imageStyle,{margin:0}]} imageRootStyle={imageRootStyle}/> */}
          <SwapImages/>
@@ -163,8 +107,9 @@ const ProfileScreen = ({navigation}) => {
           <HobbiesPicker selectedHobbies={languages} setSelectedHobbies={setLanguages} text="Select Languages:" array={["Hebrew","Arabic","English","Russin"]}/>
          
       </View>) 
+    }
       
-      :(<View style={styles.root}>
+      { isEdit!== true && <View style={styles.root}>
         <Text  style={styles.text}>Profile</Text>
         {/* <ImageToShow imageUrl={pickedImage} imageStyle={imageStyle} rootStyle={imageRootStyle}/> */}
         <SwapImages editStyle={{display:'none'}}/>
@@ -194,18 +139,19 @@ const ProfileScreen = ({navigation}) => {
          <ShowCoupleStuf text="My Hobbies:" array={selectedHobbies}/>
          <ShowCoupleStuf text="My languages:" array={languages}/>
          <Button text="Logout" handleClick={handleLogout} />
-     </View>)
-       }
+     </View>
+      }
       
      
   </ScrollView>
+ </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    marginTop:10
+   
   },
   text:{
     textAlign:'center',

@@ -83,7 +83,7 @@ const SignupScreen = ({route,navigation}) => {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    marginTop:10
+    marginTop:32
   },
   text:{
     textAlign:'center',

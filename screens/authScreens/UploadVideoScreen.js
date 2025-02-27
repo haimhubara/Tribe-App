@@ -46,7 +46,7 @@ const UploadVideoScreen = ({navigation}) => {
         {
             takeVideo ? (
                <>
-                <View style={{marginTop:10}}>
+                <View style={{marginTop:32}}>
                      <Header title="Record a video" onBackPress={()=>{navigation.goBack();}}/>
                 </View> 
              

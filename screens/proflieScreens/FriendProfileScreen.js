@@ -1,12 +1,12 @@
 import { Text, View, StyleSheet, ScrollView, Linking } from "react-native";
-import Input from "../components/Input";
-import { GlobalStyles } from "../constants/styles";
+import Input from "../../components/Input";
+import { GlobalStyles } from "../../constants/styles";
 import { useState, useEffect } from "react";
 import Ionicons from '@expo/vector-icons/Ionicons';
-import ShowCoupleStuf from "../components/ShowCoupleStuf";
-import Button from "../components/Button";
-import Header from "../components/Header";
-import SwapImages from "../components/swapImages/SwapImages";
+import ShowCoupleStuf from "../../components/ShowCoupleStuf";
+import Button from "../../components/Button";
+import Header from "../../components/Header";
+import SwapImages from "../../components/swapImages/SwapImages";
 
    
 
@@ -95,13 +95,14 @@ const FriendProfileScreen = ({navigation, route}) => {
              <ShowCoupleStuf text="My languages:" array={languages}/>
          </View>
       </ScrollView>
+
       );
     }
     
     const styles = StyleSheet.create({
       root: {
         flex: 1,
-        marginTop:10,
+        marginTop:32,
       },
       inputRoot: {
         padding: 10,

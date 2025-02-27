@@ -19,7 +19,7 @@ const Input = ({field,setField,LabelText,placeholderText, inputStyle,editable })
 
 const styles = StyleSheet.create({
   root: {
-    backgroundColor: '#f5f5f5', 
+    // backgroundColor: '#f5f5f5', 
     padding: 10,
   },
   label: {
