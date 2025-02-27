@@ -8,6 +8,7 @@ import HobbiesPicker from "../components/HobbiesPicker";
 import DatePicker from "../components/DatePicker";
 import SwapImages from "../components/swapImages/SwapImages";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { BottomTabBar } from "@react-navigation/bottom-tabs";
 
 
 const ProfileScreen = ({navigation}) => {
@@ -25,6 +26,7 @@ const ProfileScreen = ({navigation}) => {
 
     
     const [imagesEditing, setImagesEditing] = useState(true);
+
    
     
    
@@ -56,23 +58,30 @@ const ProfileScreen = ({navigation}) => {
     };
     function handleEditProfileClick(){
         setIsEdit(!isEdit);
+        const parentNav = navigation.getParent();
+        if (parentNav) {
+          parentNav.setOptions({ tabBarStyle: { display: 'none' } });
+        }
+      
+       
     }
     function handleFriendsClick(){
       navigation.navigate("FriendsScreen");
     }
-    function saveClickHandle(){
+    function saveClickHandle() {
       setIsEdit(!isEdit);
+      const parentNav = navigation.getParent();
+        if (parentNav) {
+          parentNav.setOptions({ tabBarStyle: { display:'flex' } });
+        }
+      
     }
+    
     function saveImagesHandle(){
       setImagesEditing(!imagesEditing)
     }
 
-    
-
-
-    
-
-
+  
   return (
     <SafeAreaView >
     <ScrollView >
