@@ -24,7 +24,7 @@ const reducer = (state,action) => {
   }
 
   let updateFormState = true;
-  for(let key in updatevalues ){
+  for(const key in updatevalues ){
     if(updatevalues[key] !== undefined){
       updateFormState=false;
       break;
@@ -65,9 +65,10 @@ const SignInForm = () => {
   
  
  const inputChangeHandler =  useCallback((inputId,inputValue) =>{
-    const result = validateInput(inputId,inputValue)
-    dispachFormValues({stateOfValue:result, inputId, inputValue})
+  const result = validateInput(inputId,inputValue)
+  dispachFormValues({stateOfValue:result, inputId, inputValue})
   },[dispachFormValues])
+
   return (
     <>
         <Text  style={styles.Header}>Sign In</Text>

@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, TextInput } from 'react-native'
 import { GlobalStyles } from '../constants/styles'
 
 
-const Input = ({label,iconName,IconPack,iconSize,error,id,onInuptChange,inputOption}) => {
+const Input = ({label,iconName,IconPack,iconSize,error,id,onInuptChange,inputOption,value}) => {
 
     const onChangeText = text => {
         {onInuptChange && onInuptChange(id,text)}
@@ -14,7 +14,7 @@ const Input = ({label,iconName,IconPack,iconSize,error,id,onInuptChange,inputOpt
         <Text style={styles.label}>{label}</Text>
         <View style={styles.inputContainer}>
            {IconPack && <IconPack style={styles.icon} name={iconName} size={iconSize || 24} />}
-            <TextInput style={styles.input} onChangeText={onChangeText} {...inputOption} />
+            <TextInput style={styles.input} onChangeText={onChangeText} {...inputOption} value={value} />
         </View>
        { error && <View style={styles.errorContainer}>
             <Text style={styles.errorText}>{error}</Text>

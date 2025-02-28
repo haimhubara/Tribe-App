@@ -1,5 +1,6 @@
-export const  signUp = (firstName,lastName,email,password) => {
-    console.log(firstName +" "+lastName+" "+ email+ " " +password);
+export const  signUp = (firstName,lastName,email,password,confirmPassword,userName,phoneNumber,gender,religion,date) => {
+    console.log(firstName +" "+lastName+" "+ email+ " " +password+ " "+confirmPassword+ " "+userName + " "+phoneNumber+ " "+gender+ " "+religion+ " "+date );
+ 
 }
 
 export const  signin = (email,password) => {

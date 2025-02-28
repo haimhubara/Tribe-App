@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useReducer, useState } from 'react'
 import Input from '../../components/Input'
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Feather from '@expo/vector-icons/Feather';
@@ -11,6 +11,68 @@ import DatePicker from '../DatePicker';
 import { StyleSheet, Text } from 'react-native';
 import HobbiesPicker from '../HobbiesPicker';
 import SocialLinks from '../SocialLinks';
+import { validateInput } from '../../util/actions/FormActions';
+import { signUp } from '../../util/actions/AuthAction';
+
+const reducer = (state, action) => {
+  const { inputStatus, inputId, inputValue } = action;
+
+  const updatedValues = {
+    ...state.values,
+    [inputId]: inputStatus
+  };
+
+  const uptatedActualValue = {
+    ...state.actualValues,
+    [inputId]:inputValue
+  }
+
+  let updatedFormStatus = true;
+
+  for (const key in updatedValues) {
+    if (updatedValues[key] !== undefined) {
+      updatedFormStatus = false;
+      break;
+    }
+  }
+
+
+  return {
+    actualValues:uptatedActualValue,
+    values: updatedValues,
+    formStatus: updatedFormStatus
+  };
+};
+
+
+const initialState = {
+  actualValues:{
+    firstName:"",
+    lastName:"",
+    email:"",
+    password:"",
+    confirmPassword:"",
+    userName:"",
+    phoneNumber:"",
+    gender: "",
+    religion: "",
+    date: ""
+  },
+  values:{
+    firstName:false,
+    lastName:false,
+    email:false,
+    password:false,
+    confirmPassword:false,
+    userName:false,
+    phoneNumber:false,
+    gender: false,
+    religion: false,
+    date: false
+  },
+  formStatus:false
+  
+}
 
 
 
@@ -19,36 +81,169 @@ const SignUpForm = ({next, setNext}) => {
   const [selectedHobbies, setSelectedHobbies] = useState([]);
   const [languages, setLanguages] = useState([]);
   const [linkValues, setLinkValues] = useState({})
+  
+  const[formValues, dispachFormValues] = useReducer(reducer,initialState);
+
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+
+
+  const authNextHandle = () =>{
+    setNext(prevState =>!prevState)
+    signUp(
+      formValues.actualValues.firstName,
+      formValues.actualValues.lastName,
+      formValues.actualValues.email,
+      formValues.actualValues.password,
+      formValues.actualValues.confirmPassword,
+      formValues.actualValues.userName,
+      formValues.actualValues.phoneNumber,
+      formValues.actualValues.gender,
+      formValues.actualValues.religion,
+      formValues.actualValues.date
+    );
+  }
+
+
+ 
+ 
+
+
+  
+
+  const inputChangeHandler = useCallback((inputId, inputValue) => {
+    if (inputId === "password") {
+      setPassword(inputValue);
+      const confirmResult = validateInput("confirmPassword", confirmPassword, inputValue);
+      dispachFormValues({ inputStatus: confirmResult, inputId: "confirmPassword" });
+    }
+    
+    if (inputId === "confirmPassword") {
+      setConfirmPassword(inputValue);
+    }
+  
+    const result = validateInput(inputId, inputValue, password);
+    dispachFormValues({ inputStatus: result, inputId,inputValue });
+  }, [dispachFormValues, password, confirmPassword]);
+  
+  
+
+  
+  
 
   return (
     <>
          <Text  style={styles.Header}>Sign up</Text>
-        <Input label="First Name" iconName="user-o" IconPack={FontAwesome}/>
-        <Input label="Last Name" iconName="user-o" IconPack={FontAwesome}/>
-        <Input label="Email" iconName="mail" IconPack={Feather}/>
-        <Input label="Password" iconName="lock" IconPack={Feather}/>
-        <Input label="Confirm Password" iconName="lock" IconPack={Feather}/>
-        <Input label="Username" iconName="user-o" IconPack={FontAwesome}/>
+        <Input 
+           inputOption={{autoCapitalize:'none'}}
+           label="First Name"
+           iconName="user-o"
+           IconPack={FontAwesome}
+           onInuptChange={inputChangeHandler}
+           id="firstName"
+           error={formValues.values['firstName']}
+        />
+
+        <Input 
+          inputOption={{autoCapitalize:'none'}}
+          label="Last Name"
+          iconName="user-o" 
+          IconPack={FontAwesome}
+          onInuptChange={inputChangeHandler}
+          id="lastName"
+          error={formValues.values['lastName']}
+         />
+
+        <Input 
+          inputOption={{keyboardType:'email-address',autoCapitalize:'none'}}
+          label="Email"
+          iconName="mail"
+          IconPack={Feather}
+          onInuptChange={inputChangeHandler}
+          id="email"
+          error={formValues.values['email']}
+        />
+        
+        <Input 
+          inputOption={{autoCapitalize:'none',secureTextEntry:true}}
+          label="Password"
+          iconName="lock" 
+          IconPack={Feather}
+          onInuptChange={inputChangeHandler}
+          id="password"
+          error={formValues.values['password']}
+        />
+
+        <Input
+            inputOption={{autoCapitalize:'none',secureTextEntry:true}} 
+            label="Confirm Password"
+            iconName="lock"
+            IconPack={Feather}
+            onInuptChange={inputChangeHandler}
+            id="confirmPassword"
+            error={formValues.values['confirmPassword']}
+        />
+        <Input
+          inputOption={{autoCapitalize:'none'}}
+          label="Username" 
+          iconName="user-o"
+          IconPack={FontAwesome}
+          onInuptChange={inputChangeHandler}
+          id='userName'
+          error={formValues.values['userName']}
+        />
+
+        <Input 
+         inputOption={{ keyboardType:"numeric"}}
+         label="Phone Number"
+         iconName="phone" 
+         IconPack={Feather}
+         onInuptChange={inputChangeHandler}
+         id="phoneNumber"
+         error={formValues.values['phoneNumber']}
+        />
+
         <InputPicker label="Gender" iconName="human-male-female" IconPack={MaterialCommunityIcons}
           options={[
             { label: 'Male', value: 'Male' },
             { label: 'Female', value: 'Female' },
           ]}
+          onInuptChange={inputChangeHandler}
+          id="gender"
+          error={formValues.values['gender']}
+          selectedValue={formValues.actualValues.gender}
         />
-         <InputPicker label="Religion" iconName="globe" IconPack={FontAwesome}
+       <InputPicker label="Religion" iconName="globe" IconPack={FontAwesome}
          options={[
           { label: 'Christianity', value: 'Christianity' },
           { label: 'Islam', value: 'Islam' },
           { label: 'Judaism', value: 'Judaism' },
-        ]}
+          ]}
+          onInuptChange={inputChangeHandler}
+          id="religion"
+          error={formValues.values['religion']}
+          selectedValue={formValues.actualValues.religion}
         />
-         <Input label="Phone number" iconName="phone" IconPack={Feather}/>
-         <DatePicker label='Day of birth' iconName='date' IconPack={Fontisto}   date={date} setDate={setDate}/>
+
+        <DatePicker 
+          label='Day of birth'
+          iconName='date' 
+          IconPack={Fontisto}   
+          date={date} 
+          setDate={setDate}
+          id='date'
+          onInuptChange={inputChangeHandler}
+          error={formValues.values['date']}
+          selectedValue={formValues.actualValues.date}
+        />
+
+      
          
         <HobbiesPicker selectedHobbies={selectedHobbies} setSelectedHobbies={setSelectedHobbies} text="Select your hobbies" array={['Reading', 'Traveling', 'Cooking', 'Sports', 'Music', 'Gaming', 'Photography', 'Art']}/>
         <HobbiesPicker text="Select Languages" array={["Hebrew","Arabic","English","Russin"]} selectedHobbies={languages} setSelectedHobbies={setLanguages}/>
         <SocialLinks setLinkValues={setLinkValues} linkValues={linkValues}  availableLinks={ ["Facebook", "Instagram", "Twitter"]} />
-        <SubmitButton style={{marginTop:20}} onPress={()=>{setNext(prevState =>!prevState)}} title="Next" color={GlobalStyles.colors.mainColor}/>
+        <SubmitButton disabeld={!formValues.formStatus} style={{marginTop:20}} onPress={authNextHandle} title="Next" color={GlobalStyles.colors.mainColor}/>
        
   </>
        
