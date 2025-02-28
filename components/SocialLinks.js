@@ -55,21 +55,27 @@ const SocialLinks = ({  availableLinks, linkValues, setLinkValues }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    flex:1
   },
   title: {
-    fontSize: 18,
-    fontWeight: "bold",
+    marginVertical:8,
+    fontFamily:'bold',
+    letterSpacing:0.3,
+    color:GlobalStyles.colors.textColor,
   },
   linkButton: {
     backgroundColor: "white",
     padding: 10,
     marginVertical: 5,
     borderRadius: 5,
+    alignItems:'center',
+    justifyContent:'center'
   },
   linkText: {
-    color: "black",
-    textAlign: "center",
+    color:GlobalStyles.colors.textColor,
+    fontFamily:"regular",
+    letterSpacing:0.3,
+    
   },
   inputContainer: {
     marginTop: 10,

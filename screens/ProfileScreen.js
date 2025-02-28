@@ -1,9 +1,9 @@
 import { Text, View, StyleSheet, ScrollView, Linking} from "react-native";
-import Input from "../components/Input";
+import InputProfile from "../components/InputProfile";
 import { useState } from "react";
 import { GlobalStyles } from "../constants/styles";
 import ShowCoupleStuf from "../components/ShowCoupleStuf";
-import Button from "../components/Button";
+import Button from "../components/buttons/Button";
 import HobbiesPicker from "../components/HobbiesPicker";
 import DatePicker from "../components/DatePicker";
 import SwapImages from "../components/swapImages/SwapImages";
@@ -92,16 +92,16 @@ const ProfileScreen = ({navigation}) => {
          <View style={styles.buttons}>
             <Button text="Save" handleClick={saveClickHandle} />
          </View>
-         <Input setField={setEmail} field={email} LabelText="Email" placeholderText={email} inputStyle={inputStyle} editable={false} />
-         <Input setField={setUsername} field={username} LabelText="Username" placeholderText={username} inputStyle={inputStyle} editable={false}/>
-          <Input setField={setFirstName} field={FirstName} LabelText="First name" placeholderText={FirstName}  inputStyle={inputStyle} editable={isEdit}/>
-          <Input setField={setLastName} field={LastName} LabelText="Last name" placeholderText={LastName}  inputStyle={inputStyle} editable={isEdit}/>
-          <Input setField={setPhoneNumber} field={phoneNumber} LabelText="Phone number" placeholderText={phoneNumber}  inputStyle={inputStyle} editable={isEdit}/>
+         <InputProfile setField={setEmail} field={email} LabelText="Email" placeholderText={email} inputStyle={inputStyle} editable={false} />
+         <InputProfile setField={setUsername} field={username} LabelText="Username" placeholderText={username} inputStyle={inputStyle} editable={false}/>
+          <InputProfile setField={setFirstName} field={FirstName} LabelText="First name" placeholderText={FirstName}  inputStyle={inputStyle} editable={isEdit}/>
+          <InputProfile setField={setLastName} field={LastName} LabelText="Last name" placeholderText={LastName}  inputStyle={inputStyle} editable={isEdit}/>
+          <InputProfile setField={setPhoneNumber} field={phoneNumber} LabelText="Phone number" placeholderText={phoneNumber}  inputStyle={inputStyle} editable={isEdit}/>
           <DatePicker date={date} setDate={setDate} title="Select day of birth"/>
           <>
           {Object.entries(links).map(([linkName, linkValue], index) => (
             <View key={index}>
-              <Input
+              <InputProfile
                 setField={(value) => handleLinkChange(linkName, value)} 
                 field={linkValue}
                 LabelText={linkName} 
@@ -126,12 +126,12 @@ const ProfileScreen = ({navigation}) => {
            <Button  buttonStyle={{marginHorizontal:10}} text="Edit profile" handleClick={handleEditProfileClick} />
            <Button  buttonStyle={{marginHorizontal:10}} text="Friends" handleClick={handleFriendsClick}/>
         </View>
-        <Input setField={setEmail} field={email} LabelText="Email" placeholderText="" inputStyle={inputStyle} editable={isEdit} />
-        <Input setField={setUsername} field={username} LabelText="Username" placeholderText="" inputStyle={inputStyle} editable={isEdit}/>
-         <Input setField={setFirstName} field={FirstName} LabelText="First name" placeholderText=""  inputStyle={inputStyle} editable={isEdit}/>
-         <Input setField={setLastName} field={LastName} LabelText="Last name" placeholderText=""  inputStyle={inputStyle} editable={isEdit}/>
-         <Input setField={setPhoneNumber} field={phoneNumber} LabelText="Phone number" placeholderText=""  inputStyle={inputStyle} editable={isEdit}/>
-         <Input setField={setAge} field={age} LabelText="Age" placeholderText=""  inputStyle={inputStyle} editable={isEdit}/>
+        <InputProfile setField={setEmail} field={email} LabelText="Email" placeholderText="" inputStyle={inputStyle} editable={isEdit} />
+        <InputProfile setField={setUsername} field={username} LabelText="Username" placeholderText="" inputStyle={inputStyle} editable={isEdit}/>
+         <InputProfile setField={setFirstName} field={FirstName} LabelText="First name" placeholderText=""  inputStyle={inputStyle} editable={isEdit}/>
+         <InputProfile setField={setLastName} field={LastName} LabelText="Last name" placeholderText=""  inputStyle={inputStyle} editable={isEdit}/>
+         <InputProfile setField={setPhoneNumber} field={phoneNumber} LabelText="Phone number" placeholderText=""  inputStyle={inputStyle} editable={isEdit}/>
+         <InputProfile setField={setAge} field={age} LabelText="Age" placeholderText=""  inputStyle={inputStyle} editable={isEdit}/>
           <>
            {Object.entries(links).map(([linkName, linkValue], index) => (
              <View key={index}  style={styles.inputRoot}>

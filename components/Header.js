@@ -1,9 +1,10 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { GlobalStyles } from "../constants/styles";
 
-const Header = ({ title, onBackPress }) => {
+const Header = ({ title, onBackPress,style }) => {
   return (
-      <View style={styles.headerContainer}>
+      <View style={[styles.headerContainer,style]}>
       
         <Pressable onPress={onBackPress} style={styles.iconContainer}>
           <Ionicons name="arrow-back" size={32} color="black" />
@@ -37,9 +38,11 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    fontWeight: "bold",
     textAlign: "center",
     justifyContent:'center',
+    fontFamily:'bold',
+    letterSpacing:0.3,
+    color:GlobalStyles.colors.textColor,
     flex: 1, 
   },
 });

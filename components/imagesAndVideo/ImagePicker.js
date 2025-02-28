@@ -118,8 +118,8 @@ const styles = StyleSheet.create({
     root: {},
     imagePreview: {
         borderWidth: 0.1,
-        width: 180,
-        height: 200,
+        width: 170,
+        height: 180,
         marginVertical: 8,
         backgroundColor: 'white',
         borderRadius: 4,

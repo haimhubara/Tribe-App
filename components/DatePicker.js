@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import dayjs from "dayjs";
+import { GlobalStyles } from "../constants/styles";
 
-const DatePicker = ({ date, setDate, title }) => {
+const DatePicker = ({ label,iconName,IconPack,iconSize,error,date,setDate }) => {
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
 
   const handleDateChange = (event, selectedDate) => {
@@ -15,47 +16,74 @@ const DatePicker = ({ date, setDate, title }) => {
 
   return (
     <View style={styles.root}>
-      <Text style={styles.label}>{title}:</Text>
-      <Pressable style={styles.input} onPress={() => setDatePickerVisible(true)}>
-        <Text style={styles.inputText}>{dayjs(date).format("YYYY-MM-DD")}</Text>
-      </Pressable>
+           <Text style={styles.label}>{label}</Text>
+           <View style={styles.inputContainer}>
+              {IconPack && <IconPack style={styles.icon} name={iconName} size={iconSize || 24} />}
+              <Pressable style={styles.input} onPress={() => setDatePickerVisible(true)}>
+                 <Text style={styles.inputText}>{dayjs(date).format("YYYY-MM-DD")}</Text>
+              </Pressable>
 
-      {isDatePickerVisible && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          display="default"
-          onChange={handleDateChange}
-        />
-      )}
-    </View>
+              {isDatePickerVisible && (
+              <DateTimePicker
+                value={date}
+                mode="date"
+                display="default"
+                onChange={handleDateChange}
+              />
+              )}
+           </View>
+          { error && <View style={styles.errorContainer}>
+               <Text style={styles.errorText}>{error}</Text>
+   
+           </View>
+          }
+       </View>
   );
 };
 
+
+
+
 const styles = StyleSheet.create({
-  root: {
-    backgroundColor: "#f5f5f5",
-    padding: 10,
-  },
-  label: {
-    fontSize: 16,
-    color: "#333",
-    fontWeight: "bold",
-  },
-  input: {
-    width: "100%",
-    height: 50,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    backgroundColor: "#fff",
-    justifyContent: "center",
-  },
-  inputText: {
-    fontSize: 16,
-    color: "#333",
-  },
+    root:{
+        width:'100%'
+    },
+    inputContainer:{
+        width:'100%',
+        backgroundColor:'white',
+        paddingHorizontal:10,
+        paddingVertical:18,
+        borderRadius:15,
+        flexDirection:'row',
+        alignItems:'center'
+    },
+    icon:{
+        marginRight:10,
+        color:GlobalStyles.colors.textColor
+    },
+    label:{
+        marginVertical:8,
+        fontFamily:'bold',
+        letterSpacing:0.3,
+        color:GlobalStyles.colors.textColor,
+    },
+    input:{
+        color:GlobalStyles.colors.textColor,
+        flex:1,
+        fontFamily:"regular",
+        letterSpacing:0.3,
+        
+    },
+    errorContainer:{
+        marginVertical:5
+    },
+    errorText:{
+        color:'red',
+        fontSize:13,
+        fontFamily:'regular',
+        letterSpacing:0.3,
+    }
 });
+
 
 export default DatePicker;

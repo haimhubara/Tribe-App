@@ -1,15 +1,14 @@
 import { View, StyleSheet, ScrollView, Text } from "react-native"
 import SelectImages from "../../components/imagesAndVideo/SelectImages";
 import { useState } from "react";
-import Button from "../../components/Button";
+import SubmitButton from "../buttons/SubmitButton";
 import Header from "../../components/Header";
+import { GlobalStyles } from "../../constants/styles";
 
 
-const UploadPhotosScreen = ({navigation,route}) => {
+const UploadPhotosForm = ({onBackPress, secondNext, setSecondNext}) => {
     
-    function handleNext() {
-      navigation.navigate("UploadVideo")
-    }
+  
 
    const [pickedImage1, setPickedImage1] = useState(null);
    const [pickedImage2, setPickedImage2] = useState(null);
@@ -18,15 +17,12 @@ const UploadPhotosScreen = ({navigation,route}) => {
    const [pickedImage5, setPickedImage5] = useState(null);
    const [pickedImage6, setPickedImage6] = useState(null);
 
-   function backArrowHandle(){
-    navigation.goBack();
-
-   }
+  
 
   return (
     <ScrollView >
          <View style={styles.root}>
-          <Header title="Select images" onBackPress={backArrowHandle}/>
+          <Header style={{paddingHorizontal:0}} title="Select images" onBackPress={onBackPress}/>
            <View style={styles.imageContainer}>
           
         
@@ -42,7 +38,7 @@ const UploadPhotosScreen = ({navigation,route}) => {
           </View>
 
         <View style={styles.button}>
-          <Button text="Next" handleClick={handleNext}/>
+            <SubmitButton onPress={()=>{setSecondNext(prevState =>!prevState)}} title="Next" color={GlobalStyles.colors.mainColor}/>
         </View>
       
     </View>
@@ -54,11 +50,14 @@ const UploadPhotosScreen = ({navigation,route}) => {
 const styles = StyleSheet.create({
     root: {
         flex: 1,
-        marginTop:32,      
+            
     },
     imageContainer: {
       flex:1,     
     },
+    button:{
+        marginBottom:10
+    }
 });
 
-export default UploadPhotosScreen
+export default UploadPhotosForm

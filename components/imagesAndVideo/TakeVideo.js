@@ -1,7 +1,7 @@
 import { Camera, CameraView } from 'expo-camera';
 import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
 import { useState, useEffect, useRef } from 'react';
-import Button from "../Button";
+import Button from '../buttons/Button';
 import { GlobalStyles } from "../../constants/styles";
 import * as MediaLibrary from 'expo-media-library';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';

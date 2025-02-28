@@ -21,13 +21,13 @@ const styles = StyleSheet.create({
   root: {
     flex:1,
     marginVertical: 16,
-    justifyContent:'center',
-    alignItems:'center'
+    //justifyContent:'center',
+    //alignItems:'center'
 
   },
   container: {
-    justifyContent:'center',
-    alignItems:'center',
+   // justifyContent:'center',
+   // alignItems:'center',
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 10, 

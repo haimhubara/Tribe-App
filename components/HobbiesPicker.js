@@ -35,14 +35,12 @@ const HobbiesPicker = ({ selectedHobbies, setSelectedHobbies,array,text }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 10,
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
+    marginVertical:8,
+    fontFamily:'bold',
+    letterSpacing:0.3,
+    color:GlobalStyles.colors.textColor,
   },
   scrollView: {
     flexDirection: 'row',  // Items will be placed horizontally
@@ -54,15 +52,18 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: 'white',
     borderRadius: 5,
-    margin: 5,             // Reduced margin to fit more items per row
+    margin: 5,
     alignItems: 'center',
-    width: '30%',          // Adjust the width to fit multiple items in one row
+    minWidth: 100,
+    flexShrink: 1, 
   },
   selectedHobby: {
     backgroundColor: GlobalStyles.colors.mainColor,  // Highlight selected hobbies
   },
   hobbyText: {
-    fontSize: 16,
+    color:GlobalStyles.colors.textColor,
+    fontFamily:"regular",
+    letterSpacing:0.3,
   },
   selectedText: {
     marginTop: 20,

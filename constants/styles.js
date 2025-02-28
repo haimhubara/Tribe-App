@@ -20,6 +20,13 @@ export const GlobalStyles = {
       errorColor: '#D32F2F', 
       errorColorLight: '#FF6659',
       errorColorDark: '#9A0007', 
-      nearWhite:'#F0F0F0'
+      nearWhite:'#F0F0F0',
+
+      blue:'#3498db',
+    nearlyWhite:'#F4F8F7',
+    lightGrey:'#bdc3c7',
+    gery:'#7f8c8d',
+    textColor:'#1c1e21',
+    primary:'#32d48e'
     },
   };

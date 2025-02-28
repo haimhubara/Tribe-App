@@ -5,14 +5,18 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { createStackNavigator } from '@react-navigation/stack';
 import { HomeScreen, ProfileScreen, ChatListScreen, SearchScreen, AddNewEventScreen } from './screens';
-import SignupScreen from './screens/authScreens/SignupScreen';
-import SinginScreen from './screens/authScreens/SinginScreen';
-import UploadPhotosScreen from './screens/authScreens/UploadPhotosScreen';
+import { useState, useCallback, useEffect } from 'react';
+
+
+
 import FriendsScreen from './screens/proflieScreens/FriendsScreen';
 import FriendProfileScreen from './screens/proflieScreens/FriendProfileScreen';
-import UploadVideoScreen from './screens/authScreens/UploadVideoScreen';
 import { SafeAreaProvider,  } from 'react-native-safe-area-context';
 import ChatScreen from './screens/chatScreens/ChatScreen';
+import AuthScreen from './screens/AuthScreen';
+import * as SplashScreen from "expo-splash-screen";
+import * as Font from 'expo-font';
+
 
 
 const Tab = createBottomTabNavigator();
@@ -113,26 +117,54 @@ function WellcomeWindow() {
   );
 }
 
-function AuthScreens() {
-  return ( 
-    <Stack.Navigator
-    screenOptions={{
-      cardStyle: {
-        flex: 1
-      }
-    }}>
-      <Stack.Screen name="SingIn" component={SinginScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="SignUp" component={SignupScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="UploadPhotos" component={UploadPhotosScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="UploadVideo" component={UploadVideoScreen} options={{ headerShown: false }} />
-    </Stack.Navigator>
-  );
-}
+
 
 function App() {
 
+  const [appIsLoaded, setAppIsLoaded] = useState(false);
+
+  const onLayout = useCallback(async () => {
+    if (appIsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [appIsLoaded]);
+  
+ 
+
+  useEffect(() => {
+    const prepare = async () => {
+      try {
+        await Font.loadAsync({
+          "black": require("./assets/fonts/Roboto-Black.ttf"),
+          "blackItalic": require("./assets/fonts/Roboto-BlackItalic.ttf"),
+          "bold": require("./assets/fonts/Roboto-Bold.ttf"),
+          "boldItalic": require("./assets/fonts/Roboto-BoldItalic.ttf"),
+          "italic": require("./assets/fonts/Roboto-Italic.ttf"),
+          "light": require("./assets/fonts/Roboto-Light.ttf"),
+          "lightItalic": require("./assets/fonts/Roboto-LightItalic.ttf"),
+          "medium": require("./assets/fonts/Roboto-Medium.ttf"),
+          "mediumItalic": require("./assets/fonts/Roboto-MediumItalic.ttf"),
+          "regular": require("./assets/fonts/Roboto-Regular.ttf"),
+          "thin": require("./assets/fonts/Roboto-Thin.ttf"),
+          "thinItalic": require("./assets/fonts/Roboto-ThinItalic.ttf"),
+        });
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setAppIsLoaded(true);
+      }
+    };
+
+    prepare();
+  }, []);
+
+  if (!appIsLoaded) {
+    return null; // Show nothing while loading
+  }
+
   return (
-    <SafeAreaProvider>
+    // this line inside SafeAreaProvider onLayout={onLayout}
+    <SafeAreaProvider onLayout={onLayout}>
       <NavigationContainer>
           <StatusBar style="light" />
           <Stack.Navigator 
@@ -141,8 +173,8 @@ function App() {
               flex: 1
             }
          }}>
-            {false && <Stack.Screen name="AuthScreens" component={AuthScreens} options={{ headerShown: false }}/>} 
-            {true && <Stack.Screen name="WellcomeWindow" component={WellcomeWindow} options={{ headerShown: false }} />}
+            {true && <Stack.Screen name="AuthScreen" component={AuthScreen} options={{ headerShown: false }}/>} 
+            {false && <Stack.Screen name="WellcomeWindow" component={WellcomeWindow} options={{ headerShown: false }} />}
           </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
