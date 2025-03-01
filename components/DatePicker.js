@@ -21,7 +21,13 @@ const DatePicker = ({ label, iconName, IconPack, iconSize, error, date, setDate,
       <View style={styles.inputContainer}>
         {IconPack && <IconPack style={styles.icon} name={iconName} size={iconSize || 24} />}
         <Pressable style={styles.input} onPress={() => setDatePickerVisible(true)}>
-          <Text style={styles.inputText}>{dayjs(date).format("YYYY-MM-DD")}</Text>
+        {dayjs(date).format("YYYY-MM-DD") === dayjs(new Date()).format("YYYY-MM-DD") ? (
+        <Text style={styles.inputText}>Select Date</Text>
+      ) : (
+        <Text style={styles.inputText}>{dayjs(date).format("YYYY-MM-DD")}</Text>
+      )}
+
+
         </Pressable>
 
         {isDatePickerVisible && (
