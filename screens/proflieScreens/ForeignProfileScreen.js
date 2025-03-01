@@ -14,12 +14,27 @@ const ForeignProfileScreen = ({navigation, route}) => {
       navigation.goBack();
     }
 
+    function facebookHandle(){
+
+    }
+
+    function tikTokHandle(){
+
+    }
+
+    function InstagramHandle(){
+      
+    }
+
     return (
         <ScrollView>
           <ForeignProfile
            AddFreindHandle={AddFreindHandle}
            startChatHandle={startChatHandle}
            backArrowHandle={backArrowHandle}
+           facebookHandle={facebookHandle}
+           tikTokHandle={tikTokHandle}
+           InstagramHandle={InstagramHandle}
            isFriend={isFriend}
          />   
       </ScrollView>

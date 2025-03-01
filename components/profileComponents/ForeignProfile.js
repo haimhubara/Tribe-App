@@ -1,4 +1,4 @@
-import { View, StyleSheet} from "react-native";
+import { View, StyleSheet, Text} from "react-native";
 import Button from "../buttons/Button";
 import SwapImages from "../swapImages/SwapImages";
 import Output from "../Output";
@@ -9,10 +9,12 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Feather from '@expo/vector-icons/Feather';
 import Header from "../Header";
+import IconButton from "../buttons/IconButton";
+import { GlobalStyles } from "../../constants/styles";
 
 
 
-const ForeignProfile = ({AddFreindHandle,startChatHandle,backArrowHandle,isFriend}) => {
+const ForeignProfile = ({AddFreindHandle,startChatHandle,backArrowHandle,isFriend,facebookHandle,tikTokHandle,InstagramHandle}) => {
 
 
   const [selectedHobbies, setSelectedHobbies] = useState(['Reading', 'Traveling', 'Cooking']);
@@ -21,7 +23,7 @@ const ForeignProfile = ({AddFreindHandle,startChatHandle,backArrowHandle,isFrien
 
   return (
     <View style={styles.root}>
-          <Header title="Profile" onBackPress={backArrowHandle}/>
+          <Header title="Foreign Profile" onBackPress={backArrowHandle}/>
           <SwapImages editStyle={{display:'none'}}/>
          <View style={styles.buttons}>
             <Button text="Send Message" handleClick={startChatHandle} />
@@ -66,7 +68,7 @@ const ForeignProfile = ({AddFreindHandle,startChatHandle,backArrowHandle,isFrien
                inputOption={{editable:false}} 
             />
 
-           <Output
+           {/* <Output
             label="Facebook"
             iconName="facebook"
             IconPack={Feather}
@@ -84,9 +86,15 @@ const ForeignProfile = ({AddFreindHandle,startChatHandle,backArrowHandle,isFrien
             IconPack={FontAwesome}
             inputOption={{editable:false}} 
             
-          />
-         <ShowCoupleStuf text="My Hobbies" array={selectedHobbies}/>
+          /> */}
+        <ShowCoupleStuf text="My Hobbies" array={selectedHobbies}/>
         <ShowCoupleStuf text="My languages" array={languages}/>
+        <Text style={styles.label}>Social Links</Text>
+        <View style={styles.iconButtons}>
+              <IconButton  iconName="facebook" IconPack={Feather} onPress={facebookHandle}/>
+              <IconButton  iconName="logo-tiktok" IconPack={Ionicons} onPress={tikTokHandle}/>
+              <IconButton  iconName="instagram" IconPack={FontAwesome} onPress={InstagramHandle}/>
+        </View>
         </PageContainer>
          
       </View>
@@ -106,6 +114,19 @@ const styles = StyleSheet.create({
       marginVertical:20
   
     },
+    iconButtons:{
+      flexDirection:"row",
+      justifyContent:'flex-start',
+      marginHorizontal:30,
+      gap:15,
+  
+    },
+     label:{
+         marginVertical:8,
+        fontFamily:'bold',
+        letterSpacing:0.3,
+        color:GlobalStyles.colors.textColor,
+   },
 })
 
 export default ForeignProfile

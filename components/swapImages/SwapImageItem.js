@@ -3,6 +3,7 @@ import { View, Image, StyleSheet, useWindowDimensions, Text, Pressable, Modal } 
 import Icon from "react-native-vector-icons/FontAwesome";
 import { GlobalStyles } from "../../constants/styles";
 import { launchCameraAsync, launchImageLibraryAsync, useCameraPermissions, PermissionStatus } from 'expo-image-picker';
+import IconButton from "../buttons/IconButton";
 
 
 
@@ -81,20 +82,22 @@ const SwapImageItem = ({ imageUri , setImageUri, editStyle }) => {
   
     return (
         <View style={[styles.container, { width }]}>
-           
-           
+    
            <Image 
                 source={{ uri: imageUri }}  
                 style={[styles.image, { width:width*0.9, height:width*0.9}]} 
                 resizeMode="cover"
             />
-            <Pressable 
-            style={({ pressed }) => [styles.iconContainer, editStyle,pressed?{backgroundColor:GlobalStyles.colors.mainColor}:{}]} 
-            onPress={editPressHandle}
-            >
-            <Icon name="pencil" size={20} color="white" />
-            <Text style={styles.iconText}>Edit</Text>
-            </Pressable>
+
+            <IconButton 
+                iconName="pencil"
+                IconPack={Icon}
+                containerStyle={styles.containerStyle}
+                rootStyle={[styles.rootContainer,editStyle]}
+                onPress={editPressHandle}
+                iconColor='white'
+                iconSize={22}
+          />
 
          
            
@@ -147,18 +150,20 @@ const styles = StyleSheet.create({
         shadowRadius: 6,
         elevation: 4,  
     },
-    iconContainer: {
+    rootContainer: {
         position: 'absolute',
-        bottom: 10,
-        left: 25,  
-        backgroundColor: GlobalStyles.colors.mainColorLight,
-        borderRadius: 20,
-        paddingHorizontal: 12,
-        paddingVertical: 6,
+        bottom: 3,
+        left: 23,  
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        zIndex: 10,  
+        zIndex: 10, 
+    },
+    containerStyle:{
+        backgroundColor:'#6D7B8D80',
+        paddingVertical:8,
+        paddingHorizontal:8,
+  
     },
     iconText: {
         color: "white",

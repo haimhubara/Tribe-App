@@ -18,6 +18,8 @@ const ProfileScreen = ({navigation}) => {
     function handleLogout(){
 
     }
+
+   
    
     
   
