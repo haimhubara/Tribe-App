@@ -72,9 +72,33 @@ const SignInForm = () => {
   return (
     <>
         <Text  style={styles.Header}>Sign In</Text>
-        <Input inputOption={{keyboardType:'email-address',autoCapitalize:'none'}} error={formValues.values["email"]} onInuptChange={inputChangeHandler} id="email" label="Email" iconName="mail" IconPack={Feather}/>
-        <Input  inputOption={{autoCapitalize:'none',secureTextEntry:true}} error={formValues.values["password"]} onInuptChange={inputChangeHandler} id="password" label="Password" iconName="lock" IconPack={Feather}/>
-        <SubmitButton disabeld={!formValues.formState} style={{marginTop:20}} onPress={SingInHandle} title="Sign In" color={GlobalStyles.colors.mainColor}/>
+        <Input 
+         inputOption={{keyboardType:'email-address',autoCapitalize:'none'}}
+         error={formValues.values["email"]} 
+         onInuptChange={inputChangeHandler} 
+         id="email" 
+         label="Email"
+         iconName="mail" 
+         IconPack={Feather}
+       />
+
+        <Input
+          inputOption={{autoCapitalize:'none',secureTextEntry:true}}
+          error={formValues.values["password"]}
+          onInuptChange={inputChangeHandler}
+          id="password"
+          label="Password"
+          iconName="lock" 
+          IconPack={Feather}
+        />
+
+        <SubmitButton 
+          disabeld={!formValues.formState}
+          style={{marginTop:20}} 
+          onPress={SingInHandle}
+          title="Sign In" 
+          color={GlobalStyles.colors.mainColor}
+        />
   </>
        
   )
