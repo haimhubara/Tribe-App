@@ -2,8 +2,12 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { GlobalStyles } from '../constants/styles';
 
-const HobbiesPicker = ({ selectedHobbies, setSelectedHobbies,array,text }) => {
+const HobbiesPicker = ({ selectedHobbies, setSelectedHobbies,array,text,id,onInuptChange,value,error }) => {
+ 
   const handleHobbyChange = (hobby) => {
+    if(!selectedHobbies || !setSelectedHobbies){
+      return;
+    }
     if (selectedHobbies.includes(hobby)) {
       setSelectedHobbies(selectedHobbies.filter(item => item !== hobby));
     } else {
@@ -11,11 +15,22 @@ const HobbiesPicker = ({ selectedHobbies, setSelectedHobbies,array,text }) => {
     }
   };
 
+  const reducerHobbyChange = (hobby) => {
+    if (value.includes(hobby)) {
+      onInuptChange(id, [...new Set(value.filter(item => item !== hobby))]);
+    }
+    else{
+
+      onInuptChange(id, [...new Set([...value, hobby])])
+    }
+
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{text}</Text>
       <ScrollView contentContainerStyle={styles.scrollView}>
-        {array.map(hobby => (
+        {selectedHobbies && array.map(hobby => (
           <TouchableOpacity
             key={hobby}
             style={[
@@ -27,7 +42,24 @@ const HobbiesPicker = ({ selectedHobbies, setSelectedHobbies,array,text }) => {
             <Text style={styles.hobbyText}>{hobby}</Text>
           </TouchableOpacity>
         ))}
+        {value && !selectedHobbies && array.map(hobby => (
+          <TouchableOpacity
+            key={hobby}
+            style={[
+              styles.hobbyButton,
+              value.includes(hobby) && styles.selectedHobby,
+            ]}
+            onPress={() => reducerHobbyChange(hobby)}
+          >
+            <Text style={styles.hobbyText}>{hobby}</Text>
+          </TouchableOpacity>
+        ))}
       </ScrollView>
+      { error && 
+        <View style={styles.errorContainer}>
+             <Text style={styles.errorText}>{error}</Text>
+        </View>
+      }
     </View>
   );
 };
@@ -70,6 +102,15 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontStyle: 'italic',
   },
+    errorContainer:{
+        marginVertical:5
+    },
+    errorText:{
+        color:'red',
+        fontSize:13,
+        fontFamily:'regular',
+        letterSpacing:0.3,
+    }
 });
 
 export default HobbiesPicker;

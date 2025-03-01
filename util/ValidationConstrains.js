@@ -123,3 +123,45 @@ export const validateDate = (inputId, inputValue) => {
 
   return result ? result[inputId]?.[0] : undefined;
 };
+
+
+export const validateHobbies = (inputId, inputValue) => {
+  if (inputValue.length >= 3) {
+    return undefined;
+  } else {
+    return "Please select at least 3 hobbies"; 
+  }
+};
+
+export const validateLanguages = (inputId, inputValue) => {
+  if (inputValue.length >= 1) {
+    return undefined;
+  } else {
+    return "Please select at least 1 languages"; 
+  }
+};
+
+
+export const validateGenderAndReligion = (inputId, inputValue) => {
+  if (inputValue !== "Select "+inputValue) {
+    return undefined;
+  } else {
+    return "Please select "+inputValue; 
+  }
+};
+
+
+
+export const validateLink = (inputId, inputValue) => {
+  const socialPattern = /^(https?:\/\/)?(www\.)?(instagram\.com|facebook\.com|tiktok\.com)\/[A-Za-z0-9_.]+\/?$/;
+  
+  if (inputValue === "") {
+    return undefined;
+  }
+  
+  if (!socialPattern.test(inputValue)) {
+    return "Please enter a valid link";
+  }
+
+  return undefined;
+};

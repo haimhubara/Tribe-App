@@ -3,6 +3,7 @@ import Input from '../../components/Input'
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Feather from '@expo/vector-icons/Feather';
 import Fontisto from '@expo/vector-icons/Fontisto';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import SubmitButton from '../../components/buttons/SubmitButton'
 import { GlobalStyles } from '../../constants/styles';
@@ -10,7 +11,6 @@ import InputPicker from '../InputPicker';
 import DatePicker from '../DatePicker';
 import { StyleSheet, Text } from 'react-native';
 import HobbiesPicker from '../HobbiesPicker';
-import SocialLinks from '../SocialLinks';
 import { validateInput } from '../../util/actions/FormActions';
 import { signUp } from '../../util/actions/AuthAction';
 
@@ -25,7 +25,7 @@ const reducer = (state, action) => {
   const uptatedActualValue = {
     ...state.actualValues,
     [inputId]:inputValue
-  }
+  };
 
   let updatedFormStatus = true;
 
@@ -56,7 +56,12 @@ const initialState = {
     phoneNumber:"",
     gender: "",
     religion: "",
-    date: ""
+    date: "",
+    hobbies:[],
+    languages:[],
+    facebook:"",
+    tiktok:"",
+    instagram:""
   },
   values:{
     firstName:false,
@@ -68,24 +73,30 @@ const initialState = {
     phoneNumber:false,
     gender: false,
     religion: false,
-    date: false
+    date: false,
+    hobbies:false,
+    languages:false,
+    facebook:undefined,
+    tiktok:undefined,
+    instagram:undefined
+    
   },
   formStatus:false
+  
   
 }
 
 
 
 const SignUpForm = ({next, setNext}) => {
-  const [date,setDate] = useState(new Date());
-  const [selectedHobbies, setSelectedHobbies] = useState([]);
-  const [languages, setLanguages] = useState([]);
-  const [linkValues, setLinkValues] = useState({})
-  
-  const[formValues, dispachFormValues] = useReducer(reducer,initialState);
 
+
+  const [date,setDate] = useState(new Date());
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
+
+  const[formValues, dispachFormValues] = useReducer(reducer,initialState);
 
 
 
@@ -101,7 +112,16 @@ const SignUpForm = ({next, setNext}) => {
       formValues.actualValues.phoneNumber,
       formValues.actualValues.gender,
       formValues.actualValues.religion,
-      formValues.actualValues.date
+      formValues.actualValues.date,
+      formValues.actualValues.hobbies,
+      formValues.actualValues.languages,
+      formValues.actualValues.facebook,
+      formValues.actualValues.tiktok,
+      formValues.actualValues.instagram
+
+      
+        
+        
     );
   }
 
@@ -122,8 +142,8 @@ const SignUpForm = ({next, setNext}) => {
     if (inputId === "confirmPassword") {
       setConfirmPassword(inputValue);
     }
-  
     const result = validateInput(inputId, inputValue, password);
+    //console.log(result);
     dispachFormValues({ inputStatus: result, inputId,inputValue });
   }, [dispachFormValues, password, confirmPassword]);
   
@@ -134,7 +154,7 @@ const SignUpForm = ({next, setNext}) => {
 
   return (
     <>
-         <Text  style={styles.Header}>Sign up</Text>
+        <Text  style={styles.Header}>Sign up</Text>
         <Input 
            inputOption={{autoCapitalize:'none'}}
            label="First Name"
@@ -238,12 +258,68 @@ const SignUpForm = ({next, setNext}) => {
           selectedValue={formValues.actualValues.date}
         />
 
-      
-         
-        <HobbiesPicker selectedHobbies={selectedHobbies} setSelectedHobbies={setSelectedHobbies} text="Select your hobbies" array={['Reading', 'Traveling', 'Cooking', 'Sports', 'Music', 'Gaming', 'Photography', 'Art']}/>
-        <HobbiesPicker text="Select Languages" array={["Hebrew","Arabic","English","Russin"]} selectedHobbies={languages} setSelectedHobbies={setLanguages}/>
-        <SocialLinks setLinkValues={setLinkValues} linkValues={linkValues}  availableLinks={ ["Facebook", "Instagram", "Twitter"]} />
-        <SubmitButton disabeld={!formValues.formStatus} style={{marginTop:20}} onPress={authNextHandle} title="Next" color={GlobalStyles.colors.mainColor}/>
+        <Input 
+           inputOption={{autoCapitalize:'none'}}
+           label="Facebook (optional)"
+           iconName="facebook"
+           IconPack={Feather}
+           onInuptChange={inputChangeHandler}
+           id="facebook"
+           error={formValues.values['facebook']}
+        />
+         <Input 
+           inputOption={{autoCapitalize:'none'}}
+           label="TikTok (optional)"
+           iconName="logo-tiktok"
+           IconPack={Ionicons}
+           onInuptChange={inputChangeHandler}
+           id="tiktok"
+           error={formValues.values['tiktok']}
+        />
+        
+        <Input 
+           inputOption={{autoCapitalize:'none'}}
+           label="Instagram (optional)"
+           iconName="instagram"
+           IconPack={FontAwesome}
+           onInuptChange={inputChangeHandler}
+           id="instagram"
+           error={formValues.values['instagram']}
+        />
+
+        <HobbiesPicker
+          //  selectedHobbies={selectedHobbies} 
+          //  setSelectedHobbies={setSelectedHobbies}
+           text="Select your hobbies"
+           array={['Reading', 'Traveling', 'Cooking', 'Sports', 'Music', 'Gaming', 'Photography', 'Art']}
+           id='hobbies'
+           onInuptChange={inputChangeHandler}
+           value={formValues.actualValues['hobbies']}
+           error={formValues.values['hobbies']}
+        />
+        <HobbiesPicker
+         text="Select Languages"
+         array={["Hebrew","Arabic","English","Russin"]} 
+        //  selectedHobbies={languages}
+        //  setSelectedHobbies={setLanguages}
+         id='languages'
+         onInuptChange={inputChangeHandler}
+         value={formValues.actualValues['languages']}
+         error={formValues.values['languages']}
+        />
+        {/* <SocialLinks 
+         setLinkValues={setLinkValues}
+         linkValues={linkValues} 
+         availableLinks={ ["Facebook", "Instagram", "Twitter"]}
+        /> */}
+
+        <SubmitButton 
+          disabeld={!formValues.formStatus}
+          style={{marginTop:20}}
+          onPress={authNextHandle}
+          title="Next" 
+          color={GlobalStyles.colors.mainColor}
+        />
        
   </>
        
