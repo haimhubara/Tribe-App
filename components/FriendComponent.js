@@ -65,7 +65,9 @@ const styles = StyleSheet.create({
     text:{
         fontSize:16,
         margin:2,
-        fontWeight:'bold'
+        fontFamily:'bold',
+        letterSpacing:0.3,
+        color:GlobalStyles.colors.textColor,
     },
     clicked:{
          backgroundColor: '#d1d1d1'
