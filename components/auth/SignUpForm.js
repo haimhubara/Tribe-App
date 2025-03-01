@@ -47,38 +47,38 @@ const reducer = (state, action) => {
 
 const initialState = {
   actualValues:{
-    // firstName:"",
-    // lastName:"",
-    // email:"",
-    // password:"",
-    // confirmPassword:"",
-    // userName:"",
-    // phoneNumber:"",
-    // gender: "",
-    // religion: "",
+    firstName:"",
+    lastName:"",
+    email:"",
+    password:"",
+    confirmPassword:"",
+    userName:"",
+    phoneNumber:"",
+    gender: "",
+    religion: "",
     date: "",
-    // hobbies:[],
-    // languages:[],
-    // facebook:"",
-    // tiktok:"",
-    // instagram:""
+    hobbies:[],
+    languages:[],
+    facebook:"",
+    tiktok:"",
+    instagram:""
   },
   values:{
-    // firstName:false,
-    // lastName:false,
-    // email:false,
-    // password:false,
-    // confirmPassword:false,
-    // userName:false,
-    // phoneNumber:false,
-    // gender: false,
-    // religion: false,
+    firstName:false,
+    lastName:false,
+    email:false,
+    password:false,
+    confirmPassword:false,
+    userName:false,
+    phoneNumber:false,
+    gender: false,
+    religion: false,
     date: false,
-    // hobbies:false,
-    // languages:false,
-    // facebook:undefined,
-    // tiktok:undefined,
-    // instagram:undefined
+    hobbies:false,
+    languages:false,
+    facebook:undefined,
+    tiktok:undefined,
+    instagram:undefined
     
   },
   formStatus:false
@@ -103,21 +103,21 @@ const SignUpForm = ({next, setNext}) => {
   const authNextHandle = () =>{
     setNext(prevState =>!prevState)
     signUp(
-      // formValues.actualValues.firstName,
-      // formValues.actualValues.lastName,
-      // formValues.actualValues.email,
-      // formValues.actualValues.password,
-      // formValues.actualValues.confirmPassword,
-      // formValues.actualValues.userName,
-      // formValues.actualValues.phoneNumber,
-      // formValues.actualValues.gender,
-      // formValues.actualValues.religion,
+      formValues.actualValues.firstName,
+      formValues.actualValues.lastName,
+      formValues.actualValues.email,
+      formValues.actualValues.password,
+      formValues.actualValues.confirmPassword,
+      formValues.actualValues.userName,
+      formValues.actualValues.phoneNumber,
+      formValues.actualValues.gender,
+      formValues.actualValues.religion,
       formValues.actualValues.date,
-      // formValues.actualValues.hobbies,
-      // formValues.actualValues.languages,
-      // formValues.actualValues.facebook,
-      // formValues.actualValues.tiktok,
-      // formValues.actualValues.instagram
+      formValues.actualValues.hobbies,
+      formValues.actualValues.languages,
+      formValues.actualValues.facebook,
+      formValues.actualValues.tiktok,
+      formValues.actualValues.instagram
 
       
         
