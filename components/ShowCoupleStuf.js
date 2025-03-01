@@ -7,7 +7,7 @@ const ShowCoupleStuf = ({ text, array }) => {
       <Text style={styles.title}>{text}</Text>
       <ScrollView contentContainerStyle={styles.scrollView}>
         {array.map((hobby, index) => (
-          <View key={index} style={styles.hobbyBox}>
+          <View key={index} style={styles.hobbyButton}>
             <Text style={styles.hobbyText}>{hobby}</Text>
           </View>
         ))}
@@ -19,37 +19,50 @@ const ShowCoupleStuf = ({ text, array }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 10,
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
+    marginVertical:8,
+    fontFamily:'bold',
+    letterSpacing:0.3,
+    color:GlobalStyles.colors.textColor,
   },
   scrollView: {
-    flex:1,
-    flexDirection: 'row', // Items will be placed horizontally
-    flexWrap: 'wrap', // Allow items to wrap to the next line when necessary
+    flexDirection: 'row',  // Items will be placed horizontally
+    flexWrap: 'wrap',      // Allow items to wrap to the next line when necessary
     width: '100%',
-    alignItems:'flex-start'
+    justifyContent: 'center',
   },
-  hobbyBox: {
+  hobbyButton: {
     padding: 10,
-    backgroundColor: GlobalStyles.colors.nearWhite,
-    borderWidth: 1,
-    borderColor: 'grey',
+    backgroundColor: "#FAFAFA",
     borderRadius: 5,
     margin: 5,
     alignItems: 'center',
-    width: Platform.OS === 'web' ? '40%' : '30%'
+    minWidth: 100,
+    flexShrink: 1, 
+  },
+  selectedHobby: {
+    backgroundColor: GlobalStyles.colors.mainColor,  // Highlight selected hobbies
   },
   hobbyText: {
-    fontSize: 16,
-    textAlign: 'center',
-    color: 'black',
+    color:GlobalStyles.colors.textColor,
+    fontFamily:"regular",
+    letterSpacing:0.3,
   },
+  selectedText: {
+    marginTop: 20,
+    fontSize: 18,
+    fontStyle: 'italic',
+  },
+    errorContainer:{
+        marginVertical:5
+    },
+    errorText:{
+        color:'red',
+        fontSize:13,
+        fontFamily:'regular',
+        letterSpacing:0.3,
+    }
 });
 
 export default ShowCoupleStuf;

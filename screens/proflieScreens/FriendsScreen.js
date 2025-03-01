@@ -1,13 +1,14 @@
-import { View,Text,StyleSheet, TextInput, FlatList, Platform } from "react-native"
+import { View,Text,StyleSheet, FlatList } from "react-native"
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from "react";
 import FriendComponent from "../../components/FriendComponent";
 import Header from "../../components/Header";
 import { useLayoutEffect } from "react";
-
+import Search from "../../components/Search";
 
 const FriendsScreen = ({navigation}) => {
-    const [search, setSearch] = useState('');
+
+  const [search, setSearch] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [noResultsFound, setNoResultsFound] = useState(false);
     const [friendsList,setfriendsList] = useState([
@@ -42,21 +43,13 @@ const FriendsScreen = ({navigation}) => {
     
     <View style={{flex:1}}>
       <View style={styles.root}>
-
           <Header title="Friends" onBackPress={backArrowHandle}/>
       </View>
       
-      <View style={[styles.searchContainer, Platform.OS === 'ios' && styles.inputIOS,Platform.OS==='web' &&{padding:10}]}>
-          <Ionicons name="search" size={16} color="grey" />
-          <TextInput placeholder="Search"
-          style={{flex:1}}
-          onChangeText={(data)=>{setSearch(data)}}
-          value={search}
-          autoCorrect={false}
-          autoCapitalize="none"
-          autoComplete="off" 
-          />
-      </View>
+      <Search 
+        search={search}
+        setSearch={setSearch}
+       />
       {
         <FlatList 
         data={friendsList}
@@ -81,22 +74,6 @@ const styles = StyleSheet.create({
     root: {
        marginTop:32
       },
-      searchContainer:{
-        flexDirection:'row',
-        alignItems:'center',
-        backgroundColor:'#ededed',
-        padding:2,
-        margin:16,
-        borderRadius: 8,
-        borderWidth:0.1,
-         // Shadow for iOS
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 5,
-        // Shadow for Android
-        elevation: 5, 
-      },
       notFound:{
         flex: 1,
         justifyContent: 'center',
@@ -112,9 +89,6 @@ const styles = StyleSheet.create({
       inputIOS:{
         paddingVertical:13
       }
-
-     
 });
-
 
 export default FriendsScreen

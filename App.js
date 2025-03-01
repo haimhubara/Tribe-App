@@ -10,7 +10,7 @@ import { useState, useCallback, useEffect } from 'react';
 
 
 import FriendsScreen from './screens/proflieScreens/FriendsScreen';
-import FriendProfileScreen from './screens/proflieScreens/FriendProfileScreen';
+import FriendProfileScreen from './screens/proflieScreens/ForeignProfileScreen';
 import { SafeAreaProvider,  } from 'react-native-safe-area-context';
 import ChatScreen from './screens/chatScreens/ChatScreen';
 import AuthScreen from './screens/AuthScreen';
@@ -173,8 +173,8 @@ function App() {
               flex: 1
             }
          }}>
-            {true && <Stack.Screen name="AuthScreen" component={AuthScreen} options={{ headerShown: false }}/>} 
-            {false && <Stack.Screen name="WellcomeWindow" component={WellcomeWindow} options={{ headerShown: false }} />}
+            {false && <Stack.Screen name="AuthScreen" component={AuthScreen} options={{ headerShown: false }}/>} 
+            {true && <Stack.Screen name="WellcomeWindow" component={WellcomeWindow} options={{ headerShown: false }} />}
           </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
