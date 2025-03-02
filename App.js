@@ -4,11 +4,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { createStackNavigator } from '@react-navigation/stack';
-import { HomeScreen, ProfileScreen, ChatListScreen, SearchScreen, AddNewEventScreen } from './screens';
+import { HomeScreen, ProfileScreen, ChatListScreen, SearchScreen, AddNewEventScreen,PersonalActivityProfileScreen } from './screens';
 import { useState, useCallback, useEffect } from 'react';
-
-
-
 import FriendsScreen from './screens/proflieScreens/FriendsScreen';
 import FriendProfileScreen from './screens/proflieScreens/ForeignProfileScreen';
 import { SafeAreaProvider,  } from 'react-native-safe-area-context';
@@ -108,7 +105,7 @@ function WellcomeWindow() {
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Search" component={SearchScreen} />
+      <Tab.Screen name="Search" component={PersonalActivityProfileScreen} initialParams={{ myPage: 1 }}/>
       <Tab.Screen name="Chats Screen" component={ChatStack} options={{tabBarLabel:"Chats"}}/>
       <Tab.Screen name="New" component={AddNewEventScreen} />
       <Tab.Screen name="Profile Screen" component={ProfileStack} options={{tabBarLabel:"Profile"}}/>
@@ -166,7 +163,7 @@ function App() {
     // this line inside SafeAreaProvider onLayout={onLayout}
     <SafeAreaProvider onLayout={onLayout}>
       <NavigationContainer>
-          <StatusBar style="light" />
+          <StatusBar style="dark" />
           <Stack.Navigator 
           screenOptions={{
             cardStyle: {
