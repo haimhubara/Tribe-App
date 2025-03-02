@@ -23,7 +23,7 @@ const InputPicker = ({ label, iconName, IconPack, iconSize, error, options, onIn
           <TouchableOpacity onPress={() => setIsPickerVisible(true)} style={styles.inputContainer}>
             {IconPack && <IconPack style={styles.icon} name={iconName} size={iconSize || 24} />}
             <Text style={styles.inputText}>
-              {options.find(option => option.value === selectedValue)?.label || 'בחר אפשרות'}
+              {options.find(option => option.value === selectedValue)?.label || `Select ${label}`}
             </Text>
           </TouchableOpacity>
 
@@ -37,7 +37,7 @@ const InputPicker = ({ label, iconName, IconPack, iconSize, error, options, onIn
                   ))}
                 </Picker>
                 <TouchableOpacity onPress={() => setIsPickerVisible(false)} style={styles.closeButton}>
-                  <Text style={styles.closeButtonText}>סגור</Text>
+                  <Text style={styles.closeButtonText}>Close</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -46,13 +46,18 @@ const InputPicker = ({ label, iconName, IconPack, iconSize, error, options, onIn
       ) : (
         <View style={styles.inputContainer}>
           {IconPack && <IconPack style={styles.icon} name={iconName} size={iconSize || 24} />}
-          <Picker selectedValue={selectedValue} onValueChange={onChangeText} style={styles.picker}>
+          <Picker
+            selectedValue={selectedValue}
+            onValueChange={onChangeText}
+            style={styles.picker}
+          >
+            <Picker.Item label="Select" value="" enabled={false} />
             {options.map((option, index) => (
               <Picker.Item key={index} label={option.label} value={option.value} />
             ))}
           </Picker>
-        </View>
-      )}
+      </View>
+            )}
 
       {error && (
         <View style={styles.errorContainer}>
@@ -71,13 +76,12 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: 'white',
     paddingHorizontal: 10,
-    paddingVertical: 10,
+    paddingVertical: Platform.OS === 'ios' ? 10 : 4,
     borderRadius: 15,
     flexDirection: 'row',
     alignItems: 'center',
   },
   icon: {
-    marginRight: 10,
     color: GlobalStyles.colors.textColor,
   },
   label: {
@@ -91,24 +95,25 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: 'regular',
     letterSpacing: 0.3,
+    marginLeft: Platform.OS === 'ios'? 10 : 0
   },
   picker: {
     width: '100%',
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'center', // ממרכז את ה-Picker אנכית
-    alignItems: 'center', // ממרכז את ה-Picker אופקית
-    backgroundColor: 'rgba(0,0,0,0.5)', // רקע כהה שקוף
+    justifyContent: 'center',
+    alignItems: 'center', 
+    backgroundColor: 'rgba(0,0,0,0.5)', 
   },
   pickerBox: {
     backgroundColor: 'white',
-    width: '80%', // רוחב של 80% מהמסך
+    width: '80%', 
     borderRadius: 20,
     padding: 20,
     alignItems: 'center',
-    elevation: 5, // צל ל-Android
-    shadowColor: '#000', // צל ל-iOS
+    elevation: 5,
+    shadowColor: '#000', 
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
