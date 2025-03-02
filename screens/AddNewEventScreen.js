@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { GlobalStyles } from "../constants/styles";
 import {
   Text,
   StyleSheet,
@@ -12,14 +13,19 @@ import {
   Modal,
   Button,
 } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import dayjs from "dayjs";
 import { Picker } from "@react-native-picker/picker";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import { SafeAreaView } from "react-native-safe-area-context";
 import HobbiesPicker from "../components/HobbiesPicker";
+import Header from "../components/Header";
+import GalInput from "../components/GalInput";
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import PageContainer from "../components/PageContainer";
+import DatePicker from "../components/DatePicker";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
-const AddNewEventScreen = () => {
+const AddNewEventScreen = ({navigation,route}) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(new Date());
@@ -31,12 +37,17 @@ const AddNewEventScreen = () => {
   const [ages, setAges] = useState({ values: [18, 35] });
   const [language, setLanguage]=useState("");
 
+  const ifGoBack = route.params?.ifGoBack;
+
   const handleDateChange = (event, selectedDate) => {
     setDatePickerVisible(false);
     if (selectedDate) {
       setDate(selectedDate);
     }
   };
+  const onInuptChange = (id,text) => {
+      
+  }
 
   const handlePartitionsItemChange = (itemValue) => {
     setSelectedNumPartitions(itemValue);
@@ -66,49 +77,48 @@ const AddNewEventScreen = () => {
   };
 
   return (
+    
     <KeyboardAvoidingView style={styles.flexContainer} behavior="padding">
+      <SafeAreaView
+      edges={['left','right']}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.container}>
-            <Text style={styles.title}>Create New Event</Text>
-
-            <Text style={styles.label}>Name Of The Event:</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter Name"
-              value={name}
-              onChangeText={setName}
-            />
-
-            <Text style={styles.label}>Event Description:</Text>
-            <TextInput
-              editable
-              multiline
-              numberOfLines={10}
-              maxLength={200}
-              onChangeText={setDescription}
-              style={styles.inputMultiline}
-              placeholder="Enter Event Description"
-              value={description}
-            />
-
-            <Text style={styles.label}>Date:</Text>
-            <TouchableOpacity
-              style={styles.input}
-              onPress={() => setDatePickerVisible(true)}
-            >
-              <Text>{dayjs(date).format("YYYY-MM-DD")}</Text>
-            </TouchableOpacity>
-
-            {isDatePickerVisible && (
-              <DateTimePicker
-                value={date}
-                mode="date"
-                display="default"
-                onChange={handleDateChange}
+            {ifGoBack && <Header title={"Create New Event"} onBackPress={()=>{navigation.navigate('Search')}}></Header>}
+            {!ifGoBack && <Text style={styles.title}>Create New Event</Text>}
+            <PageContainer>
+              <GalInput
+                label="Name Of The Event:"
+                IconPack={MaterialCommunityIcons}
+                iconName="party-popper"
+                onInuptChange={onInuptChange}            
               />
-            )}
+    
+              <GalInput
+                label="Event Description:"
+                IconPack={MaterialIcons}
+                iconName="description"
+                onInuptChange={onInuptChange} 
+                styleInputContainer={styles.styleInputContainer}   
+                inputOption={{
+                  multiline:true,
+                  numberOfLines:10,
+                  maxLength:200
+                }}   
+              />
+               <DatePicker 
+             date={date} 
+             setDate={setDate}
+             label="Date:"
+             iconName='calendar' 
+             IconPack={FontAwesome} 
+             onInuptChange={onInuptChange}  
+          />
 
+
+      </PageContainer>
+
+            
             <Text style={styles.label}>Number Of Partitions:</Text>
             <TouchableOpacity
               style={styles.input}
@@ -196,14 +206,16 @@ const AddNewEventScreen = () => {
           </View>
         </ScrollView>
       </TouchableWithoutFeedback>
+      </SafeAreaView>
     </KeyboardAvoidingView>
+    
   );
 };
 
 const styles = StyleSheet.create({
   flexContainer: { flex: 1, marginTop:16},
   scrollContainer: { flexGrow: 1, justifyContent: "center", padding: 20 },
-  container: { flex: 1, justifyContent: "center", backgroundColor: "#f5f5f5" },
+  container: { flex: 1, justifyContent: "center" },
   title: { fontSize: 24, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
   label: { fontSize: 16, marginBottom: 5, color: "#333", textAlign: "left" },
   input: {
@@ -253,6 +265,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
+  title: {
+      fontSize: 32,
+      textAlign: "center",
+      justifyContent:'center',
+      fontFamily:'bold',
+      marginBottom:20,
+      letterSpacing:0.3,
+      color:GlobalStyles.colors.textColor,
+      flex: 1, 
+    },
+    styleInputContainer:{
+        paddingBottom:60,
+        alignItems:'flex-start'
+    }
 });
 
 export default AddNewEventScreen;

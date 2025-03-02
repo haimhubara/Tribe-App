@@ -1,10 +1,13 @@
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, Platform } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { GlobalStyles } from '../constants/styles';
 
 const InputPicker = ({ label, iconName, IconPack, iconSize, error, options, onInuptChange, id, selectedValue }) => {
-  
+  const [isPickerVisible, setIsPickerVisible] = useState(false);
+
   const onChangeText = (itemValue) => {
+    setIsPickerVisible(false); // סוגר את ה-Picker אחרי בחירה
     if (onInuptChange) {
       onInuptChange(id, itemValue);
     }
@@ -13,19 +16,44 @@ const InputPicker = ({ label, iconName, IconPack, iconSize, error, options, onIn
   return (
     <View style={styles.root}>
       <Text style={styles.label}>{label}</Text>
-      <View style={styles.inputContainer}>
-        {IconPack && <IconPack style={styles.icon} name={iconName} size={iconSize || 24} />}
-        <Picker
-          selectedValue={selectedValue} 
-          onValueChange={onChangeText} 
-          style={styles.input}
-        >
-          <Picker.Item label={'Select '+label} enabled={false} />
-          {options.map((option, index) => (
-            <Picker.Item key={index} label={option.label} value={option.value} />
-          ))}
-        </Picker>
-      </View>
+
+      {/* iOS: TouchableOpacity פותח את ה-Picker */}
+      {Platform.OS === 'ios' ? (
+        <>
+          <TouchableOpacity onPress={() => setIsPickerVisible(true)} style={styles.inputContainer}>
+            {IconPack && <IconPack style={styles.icon} name={iconName} size={iconSize || 24} />}
+            <Text style={styles.inputText}>
+              {options.find(option => option.value === selectedValue)?.label || 'בחר אפשרות'}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Modal במרכז המסך */}
+          <Modal visible={isPickerVisible} transparent animationType="fade">
+            <View style={styles.modalContainer}>
+              <View style={styles.pickerBox}>
+                <Picker selectedValue={selectedValue} onValueChange={onChangeText} style={styles.picker}>
+                  {options.map((option, index) => (
+                    <Picker.Item key={index} label={option.label} value={option.value} />
+                  ))}
+                </Picker>
+                <TouchableOpacity onPress={() => setIsPickerVisible(false)} style={styles.closeButton}>
+                  <Text style={styles.closeButtonText}>סגור</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        </>
+      ) : (
+        <View style={styles.inputContainer}>
+          {IconPack && <IconPack style={styles.icon} name={iconName} size={iconSize || 24} />}
+          <Picker selectedValue={selectedValue} onValueChange={onChangeText} style={styles.picker}>
+            {options.map((option, index) => (
+              <Picker.Item key={index} label={option.label} value={option.value} />
+            ))}
+          </Picker>
+        </View>
+      )}
+
       {error && (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>{error}</Text>
@@ -43,7 +71,7 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: 'white',
     paddingHorizontal: 10,
-    paddingVertical: 3,
+    paddingVertical: 10,
     borderRadius: 15,
     flexDirection: 'row',
     alignItems: 'center',
@@ -58,12 +86,44 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
     color: GlobalStyles.colors.textColor,
   },
-  input: {
+  inputText: {
     color: GlobalStyles.colors.textColor,
     flex: 1,
     fontFamily: 'regular',
     letterSpacing: 0.3,
-    paddingTop: 0,
+  },
+  picker: {
+    width: '100%',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center', // ממרכז את ה-Picker אנכית
+    alignItems: 'center', // ממרכז את ה-Picker אופקית
+    backgroundColor: 'rgba(0,0,0,0.5)', // רקע כהה שקוף
+  },
+  pickerBox: {
+    backgroundColor: 'white',
+    width: '80%', // רוחב של 80% מהמסך
+    borderRadius: 20,
+    padding: 20,
+    alignItems: 'center',
+    elevation: 5, // צל ל-Android
+    shadowColor: '#000', // צל ל-iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  closeButton: {
+    marginTop: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: 'blue',
+    borderRadius: 10,
+  },
+  closeButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   errorContainer: {
     marginVertical: 5,

@@ -1,9 +1,10 @@
 import { Text, View, StyleSheet, ScrollView, Image } from "react-native";
 import { useState } from "react";
-
+import { GlobalStyles } from "../constants/styles";
 import Button from "../components/buttons/Button";
 import AddNewEventScreen from "./AddNewEventScreen";
 import Header from "../components/Header";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const PersonalActivityProfileScreen = ({ navigation, route }) => {
     const [activityName, setActivityName] = useState("Morning Run");
@@ -24,7 +25,22 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
 
     function handleEditClick() {
         setIsEditing(true);
+        navigation.navigate('New', {
+            ifGoBack:true,
+            activityName: activityName,
+            time: time,
+            location: location,
+            description: description,
+            date: date,
+            ages: ages,
+            gender: gender,
+            languages: languages,
+            categories: categories,
+            maxPartitions: maxPartitions,
+            activityImage: activityImage,
+        });
     }
+    
 
     function handleBackClick() {
         setIsEditing(false);
@@ -40,26 +56,28 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
         return ages[0]+'-'+ages[1];
     }
 
-    if (isEditing) {
-        return (
-            <AddNewEventScreen
-                activityName={activityName}
-                time={time}
-                location={location}
-                description={description}
-                date={date}
-                ages={ages}
-                gender={gender}
-                languages={languages}
-                categories={categories}
-                maxPartitions={maxPartitions}
-                activityImage={activityImage}
-                onClose={handleBackClick}
-            />
-        );
-    }
+    // if (isEditing) {
+    //     return (
+    //         <AddNewEventScreen
+                // activityName={activityName}
+                // time={time}
+                // location={location}
+                // description={description}
+                // date={date}
+                // ages={ages}
+                // gender={gender}
+                // languages={languages}
+                // categories={categories}
+                // maxPartitions={maxPartitions}
+                // activityImage={activityImage}
+                // onClose={handleBackClick}
+    //         />
+    //     );
+    // }
 
     return (
+        <SafeAreaView
+        edges={['top','left','right']}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
             <View style={styles.root}>
                 <Header title="Activity-Name #temporery" onBackPress={backArrowHandle} />
@@ -118,6 +136,7 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
                 </View>
             </View>
         </ScrollView>
+        </SafeAreaView>
     );
 };
 

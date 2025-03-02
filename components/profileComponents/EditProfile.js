@@ -19,6 +19,10 @@ const EditProfile = ({saveClickHandle,isEdit}) => {
   const [selectedHobbies, setSelectedHobbies] = useState(['Reading', 'Traveling', 'Cooking']);
   const [languages, setLanguages] = useState(["Hebrew","English"]);
 
+  const onInuptChange = (id,text) => {
+      
+  }
+
 
   return (
     <View style={styles.root}>
@@ -84,7 +88,8 @@ const EditProfile = ({saveClickHandle,isEdit}) => {
              setDate={setDate}
              label="Select day of birth"
              iconName='date' 
-             IconPack={Fontisto}   
+             IconPack={Fontisto}
+             onInuptChange={onInuptChange}     
           />
           <HobbiesPicker 
             selectedHobbies={selectedHobbies}

@@ -5,9 +5,6 @@ import { GlobalStyles } from '../constants/styles';
 const HobbiesPicker = ({ selectedHobbies, setSelectedHobbies,array,text,id,onInuptChange,value,error }) => {
  
   const handleHobbyChange = (hobby) => {
-    if(!selectedHobbies || !setSelectedHobbies){
-      return;
-    }
     if (selectedHobbies.includes(hobby)) {
       setSelectedHobbies(selectedHobbies.filter(item => item !== hobby));
     } else {
@@ -30,7 +27,7 @@ const HobbiesPicker = ({ selectedHobbies, setSelectedHobbies,array,text,id,onInu
     <View style={styles.container}>
       <Text style={styles.title}>{text}</Text>
       <ScrollView contentContainerStyle={styles.scrollView}>
-        {selectedHobbies && array.map(hobby => (
+        {!value && array.map(hobby => (
           <TouchableOpacity
             key={hobby}
             style={[
