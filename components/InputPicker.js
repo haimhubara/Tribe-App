@@ -51,7 +51,7 @@ const InputPicker = ({ label, iconName, IconPack, iconSize, error, options, onIn
             onValueChange={onChangeText}
             style={styles.picker}
           >
-            <Picker.Item label="Select" value="" enabled={false} />
+            <Picker.Item label={`Select ${label}`}  value="" enabled={false} />
             {options.map((option, index) => (
               <Picker.Item key={index} label={option.label} value={option.value} />
             ))}
