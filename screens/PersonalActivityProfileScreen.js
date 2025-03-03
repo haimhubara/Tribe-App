@@ -1,10 +1,10 @@
 import { Text, View, StyleSheet, ScrollView, Image } from "react-native";
 import { useState } from "react";
-import { GlobalStyles } from "../constants/styles";
-import Button from "../components/buttons/Button";
-import AddNewEventScreen from "./AddNewEventScreen";
-import Header from "../components/Header";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from '@expo/vector-icons';
+import Button from "../components/buttons/Button";
+import Header from "../components/Header";
+import { GlobalStyles } from "../constants/styles";
 
 const PersonalActivityProfileScreen = ({ navigation, route }) => {
     const [activityName, setActivityName] = useState("Morning Run");
@@ -13,182 +13,88 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
     const [description, setDescription] = useState("A great way to start the day!");
     const [date, setDate] = useState(new Date());
     const [activityImage, setActivityImage] = useState(require("../assets/icon.png"));
-    const [isEditing, setIsEditing] = useState(false);
-    const [ages, setAges]=useState([18,22]);
-    const [gender, setGender]=useState('Any');
-    const [languages, setLanguage]=useState("Hebrew, English");
-    const [categories, setCategories]=useState("Sport, Music");
-    const [maxPartitions, setMaxPartitions]=useState(5);
-
-    const { myPage } = route.params || { myPage: 1 }; 
-
+    const [ages, setAges] = useState([18, 22]);
+    const [gender, setGender] = useState('Any');
+    const [languages, setLanguage] = useState("Hebrew, English");
+    const [categories, setCategories] = useState("Sport, Music");
+    const [maxPartitions, setMaxPartitions] = useState(5);
+    const myPage = route.params?.myPage ?? 1;
 
     function handleEditClick() {
-        setIsEditing(true);
         navigation.navigate('New', {
-            ifGoBack:true,
-            activityName: activityName,
-            time: time,
-            location: location,
-            description: description,
-            date: date,
-            ages: ages,
-            gender: gender,
-            languages: languages,
-            categories: categories,
-            maxPartitions: maxPartitions,
-            activityImage: activityImage,
+            ifGoBack: true,
+            activityName, time, location, description, date,
+            ages, gender, languages, categories, maxPartitions, activityImage,
         });
     }
-    
 
-    function handleBackClick() {
-        setIsEditing(false);
+    function getAges() {
+        return ages[0] === ages[1] ? ages[0] : `${ages[0]}-${ages[1]}`;
     }
-
-    function backArrowHandle() {
-        navigation.goBack();
-    }
-    function getAges(){
-        if(ages[0]==ages[1]){
-            return ages[0];
-        }
-        return ages[0]+'-'+ages[1];
-    }
-
-    // if (isEditing) {
-    //     return (
-    //         <AddNewEventScreen
-                // activityName={activityName}
-                // time={time}
-                // location={location}
-                // description={description}
-                // date={date}
-                // ages={ages}
-                // gender={gender}
-                // languages={languages}
-                // categories={categories}
-                // maxPartitions={maxPartitions}
-                // activityImage={activityImage}
-                // onClose={handleBackClick}
-    //         />
-    //     );
-    // }
 
     return (
-        <SafeAreaView
-        edges={['top','left','right']}>
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-            <View style={styles.root}>
-                <Header title="Activity-Name #temporery" onBackPress={backArrowHandle} />
+        <SafeAreaView edges={['top', 'left', 'right']} style={styles.container}>
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <Header title={activityName} onBackPress={() => navigation.goBack()} />
                 <Image source={activityImage} style={styles.image} />
-                
-                {myPage && ( 
-                    <View style={styles.buttons}>
-                        <Button text="Edit Activity" handleClick={handleEditClick} />
+                <View style={styles.invitationContainer}>
+                    <Text style={styles.subtitle}>{description}</Text>
+                    <View style={styles.infoContainer}>
+                        {[
+                            { icon: "calendar", text: date.toDateString() },
+                            { icon: "time", text: time.toLocaleTimeString() },
+                            { icon: "location", text: location },
+                            { icon: "people", text: `Ages: ${getAges()}` },
+                            { icon: "man", text: `Gender: ${gender}` },
+                            { icon: "chatbubbles", text: `Languages: ${languages}` },
+                            { icon: "musical-notes", text: `Categories: ${categories}` },
+                            { icon: "person-add", text: `Max Participants: ${maxPartitions}` }
+                        ].map(({ icon, text }, index) => (
+                            <View key={index} style={styles.infoRow}>
+                                <Ionicons name={icon} style={styles.icon} />
+                                <Text style={styles.infoText}>{text}</Text>
+                            </View>
+                        ))}
                     </View>
-                )}
-
-
-                <View style={styles.card}>
-                    <Text style={styles.label}>Activity Name:</Text>
-                    <Text style={styles.value}>{activityName}</Text>
+                    {myPage !== 0 && (
+                        <Button text="Edit Event" handleClick={handleEditClick} style={styles.editButton} />
+                    )}
                 </View>
-
-                <View style={styles.card}>
-                    <Text style={styles.label}>Date:</Text>
-                    <Text style={styles.value}>{date.toDateString()}</Text>
-                </View>
-
-                <View style={styles.card}>
-                    <Text style={styles.label}>Time:</Text>
-                    <Text style={styles.value}>{time.toLocaleTimeString()}</Text>
-                </View>
-
-                <View style={styles.card}>
-                    <Text style={styles.label}>Location:</Text>
-                    <Text style={styles.value}>{location}</Text>
-                </View>
-
-                <View style={styles.card}>
-                    <Text style={styles.label}>Description:</Text>
-                    <Text style={styles.value}>{description}</Text>
-                </View>
-                <View style={styles.card}>
-                    <Text style={styles.label}>Ages:</Text>
-                    <Text style={styles.value}>{getAges()}</Text>
-                </View>
-                <View style={styles.card}>
-                    <Text style={styles.label}>Gender:</Text>
-                    <Text style={styles.value}>{gender}</Text>
-                </View>
-                <View style={styles.card}>
-                    <Text style={styles.label}>Languages:</Text>
-                    <Text style={styles.value}>{languages}</Text>
-                </View>
-                <View style={styles.card}>
-                    <Text style={styles.label}>Categories:</Text>
-                    <Text style={styles.value}>{categories}</Text>
-                </View>
-                <View style={styles.card}>
-                    <Text style={styles.label}>Max Partitions:</Text>
-                    <Text style={styles.value}>{maxPartitions}</Text>
-                </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
         </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
-    scrollContainer: {
-        flexGrow: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        paddingVertical: 20,
-    },
-    root: {
+    container: { flex: 1, backgroundColor: "#f7f7f7" },
+    scrollContainer: { flexGrow: 1, alignItems: "center", paddingVertical: 20 },
+    image: { width: "90%", height: 250, borderRadius: 15, marginVertical: 15 },
+    invitationContainer: {
         width: "90%",
-        alignItems: "center",
-    },
-    image: {
-        width: "100%",
-        height: 250,
-        borderRadius: 15,
-        marginVertical: 20,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 5,
-        elevation: 5,
-    },
-    buttons: {
-        width: "100%",
-        alignItems: "center",
-        marginBottom: 20,
-    },
-    card: {
-        width: "100%",
         backgroundColor: "#fff",
-        padding: 15,
-        borderRadius: 10,
+        padding: 20,
+        borderRadius: 15,
+        alignItems: "center",
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 3,
-        marginBottom: 15,
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        elevation: 3
     },
-    label: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: "#555",
-    },
-    value: {
-        fontSize: 18,
+    title: { fontSize: 24, fontWeight: "bold", color: "#333", marginBottom: 10 },
+    subtitle: { fontSize: 16, color: "#555", marginBottom: 20, textAlign: "center" },
+    infoContainer: { width: "100%", alignItems: "flex-start" },
+    infoRow: { flexDirection: "row", alignItems: "center", marginVertical: 5 },
+    infoText: {
+        fontFamily: 'bold',
+        letterSpacing: 0.6,
         color: "#333",
-        paddingVertical: 5,
+        fontSize: 16,
+        marginLeft: 15,
+        transform: [{ translateY: -2 }, { translateX: -3 }]
     },
+    editButton: { marginTop: 20 },
+    icon: { fontSize: 30, color: "#4A90E2" }
 });
 
 export default PersonalActivityProfileScreen;
