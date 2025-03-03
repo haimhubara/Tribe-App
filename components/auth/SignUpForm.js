@@ -13,51 +13,6 @@ import { StyleSheet, Text } from 'react-native';
 import HobbiesPicker from '../HobbiesPicker';
 import { validateInput } from '../../util/actions/FormActions';
 import { signUp } from '../../util/actions/AuthAction';
-// import { signUpreducer } from '../../util/reducers/AuthReducer';
-
-
-
-// const initialState = {
-//   actualValues:{
-//     firstName:"",
-//     lastName:"",
-//     email:"",
-//     password:"",
-//     confirmPassword:"",
-//     userName:"",
-//     phoneNumber:"",
-//     gender: "",
-//     religion: "",
-//     date: "",
-//     hobbies:[],
-//     languages:[],
-//     facebook:"",
-//     tiktok:"",
-//     instagram:""
-//   },
-//   values:{
-//     firstName:false,
-//     lastName:false,
-//     email:false,
-//     password:false,
-//     confirmPassword:false,
-//     userName:false,
-//     phoneNumber:false,
-//     gender: false,
-//     religion: false,
-//     date: false,
-//     hobbies:false,
-//     languages:false,
-//     facebook:undefined,
-//     tiktok:undefined,
-//     instagram:undefined
-    
-//   },
-//   formStatus:false
-  
-  
-// }
-
 
 
 const SignUpForm = ({next, setNext,initialState,signUpreducer}) => {
