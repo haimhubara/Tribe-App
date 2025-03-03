@@ -104,8 +104,8 @@ function WellcomeWindow() {
         headerShown: false,
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Search" component={SearchScreen}/>
+      <Tab.Screen name="Home" component={AuthScreen} />
+      <Tab.Screen name="Search" component={PersonalActivityProfileScreen}/>
       <Tab.Screen name="Chats Screen" component={ChatStack} options={{tabBarLabel:"Chats"}}/>
       <Tab.Screen name="New" component={AddNewEventScreen} />
       <Tab.Screen name="Profile Screen" component={ProfileStack} options={{tabBarLabel:"Profile"}}/>
