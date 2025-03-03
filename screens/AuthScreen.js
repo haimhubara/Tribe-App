@@ -10,47 +10,8 @@ import UploadPhotosForm from '../components/auth/UploadPhotosForm'
 import VideoForm from '../components/auth/VideoForm'
 import { signUpreducer } from '../util/reducers/AuthReducer'
 import { signUp } from '../util/actions/AuthAction'
+import { initialState } from '../util/models/AuthModels'
 
-const initialState = {
-  actualValues:{
-    firstName:"",
-    lastName:"",
-    email:"",
-    password:"",
-    confirmPassword:"",
-    userName:"",
-    phoneNumber:"",
-    gender: "",
-    religion: "",
-    date: "",
-    hobbies:[],
-    languages:[],
-    facebook:"",
-    tiktok:"",
-    instagram:""
-  },
-  values:{
-    firstName:false,
-    lastName:false,
-    email:false,
-    password:false,
-    confirmPassword:false,
-    userName:false,
-    phoneNumber:false,
-    gender: false,
-    religion: false,
-    date: false,
-    hobbies:false,
-    languages:false,
-    facebook:undefined,
-    tiktok:undefined,
-    instagram:undefined
-    
-  },
-  formStatus:false
-  
-  
-}
 
 const AuthScreen = () => {
   const [isSignUp, setIsSignUp] = useState(false)
