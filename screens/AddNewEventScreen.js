@@ -24,6 +24,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import PageContainer from "../components/PageContainer";
 import DatePicker from "../components/DatePicker";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import InputPicker from "../components/InputPicker";
 
 const AddNewEventScreen = ({navigation,route}) => {
   const [name, setName] = useState("");
@@ -36,28 +37,28 @@ const AddNewEventScreen = ({navigation,route}) => {
   const [isGenderVisible, setGenderVisible] = useState(false);
   const [ages, setAges] = useState({ values: [18, 35] });
   const [language, setLanguage]=useState("");
+  const [x ,setX] = useState('');
 
   const ifGoBack = route.params?.ifGoBack;
 
-  const handleDateChange = (event, selectedDate) => {
-    setDatePickerVisible(false);
-    if (selectedDate) {
-      setDate(selectedDate);
-    }
-  };
+  // const handleDateChange = (event, selectedDate) => {
+  //   setDatePickerVisible(false);
+  //   if (selectedDate) {
+  //     setDate(selectedDate);
+  //   }
+  // };
+
   const onInuptChange = (id,text) => {
-      
+    if(id==='name'){
+
+    }
+    else if(id === 'number_of_partitions'){
+      setSelectedNumPartitions(text);
+    }else if(id ==='description'){
+      setDescription(text);
+    }
   }
 
-  const handlePartitionsItemChange = (itemValue) => {
-    setSelectedNumPartitions(itemValue);
-    setPartitionsVisible(false);
-  };
-
-  const handleGenderItemChange = (itemValue) => {
-    setSelectedGender(itemValue);
-    setGenderVisible(false);
-  };
 
   const multiSliderValuesChange = (values) => {
     setAges({ values });
@@ -91,7 +92,8 @@ const AddNewEventScreen = ({navigation,route}) => {
                 label="Name Of The Event:"
                 IconPack={MaterialCommunityIcons}
                 iconName="party-popper"
-                onInuptChange={onInuptChange}            
+                onInuptChange={onInuptChange} 
+                id='name'           
               />
     
               <GalInput
@@ -104,9 +106,10 @@ const AddNewEventScreen = ({navigation,route}) => {
                   multiline:true,
                   numberOfLines:10,
                   maxLength:200
-                }}   
-              />
-               <DatePicker 
+                }}
+                id='description'   
+               />
+           <DatePicker 
              date={date} 
              setDate={setDate}
              label="Date:"
@@ -116,87 +119,50 @@ const AddNewEventScreen = ({navigation,route}) => {
           />
 
 
-      </PageContainer>
+            <InputPicker 
+              label="Number Of Partitions:" 
+              iconName="numeric" 
+              IconPack={MaterialCommunityIcons}
+              options={Array.from({ length: 100 }, (_, i) => ({
+                label: `${i + 1}`,
+                value: i + 1
+              }))}
+              onInuptChange={onInuptChange}
+              id="number_of_partitions"
+              selectedValue={selectedNumPartitions}
+            />
 
-            
-            <Text style={styles.label}>Number Of Partitions:</Text>
-            <TouchableOpacity
-              style={styles.input}
-              onPress={() => setPartitionsVisible(true)}
-            >
-              <Text>
-                {selectedNumPartitions ? selectedNumPartitions : "Select Number"}
-              </Text>
-            </TouchableOpacity>
 
             {isPartitionsVisible && (
-              <Modal
-                transparent={true}
-                animationType="slide"
-                onRequestClose={() => setPartitionsVisible(false)}
-              >
-                <View style={styles.modalContainer}>
-                  <View style={styles.pickerContainer}>
-                    <Picker
-                      selectedValue={selectedNumPartitions}
-                      onValueChange={handlePartitionsItemChange}
-                    >
-                      <Picker.Item label="Any" value="any" />
-                      {Array.from({ length: 100 }, (_, i) => (
-                        <Picker.Item key={i + 1} label={`${i + 1}`} value={`${i + 1}`} />
-                      ))}
-                    </Picker>
-                    <Button title="Close" onPress={() => setPartitionsVisible(false)} />
-                  </View>
-                </View>
-              </Modal>
-            )}
+            <InputPicker label="Gender" iconName="human-male-female" IconPack={MaterialCommunityIcons}
+            options={[
+              { label: 'Male', value: 'Male' },
+              { label: 'Female', value: 'Female' },
+              {label: 'Any', value: 'Any'}
+            ]}
+            onInuptChange={onInuptChange}
+            id="gender"
+          />
+             )}
 
-            <Text style={styles.label}>Select Gender:</Text>
-            <TouchableOpacity
-              style={styles.input}
-              onPress={() => setGenderVisible(true)}
-            >
-              <Text>{selectedGender ? selectedGender : "Select Gender"}</Text>
-            </TouchableOpacity>
-
-            {isGenderVisible && (
-              <Modal
-                transparent={true}
-                animationType="slide"
-                onRequestClose={() => setGenderVisible(false)}
-              >
-                <View style={styles.modalContainer}>
-                  <View style={styles.pickerContainer}>
-                    <Picker
-                      selectedValue={selectedGender}
-                      onValueChange={handleGenderItemChange}
-                    >
-                      <Picker.Item label="Any" value="Any" />
-                      <Picker.Item label="Male" value="Male" />
-                      <Picker.Item label="Female" value="Female" />
-                    </Picker>
-                    <Button title="Close" onPress={() => setGenderVisible(false)} />
-                  </View>
-                </View>
-              </Modal>
-            )}
-
+           
+        
             <Text style={styles.label}>Age Range:</Text>
             <View style={styles.sliderContainer}>
               <MultiSlider
                 values={[ages.values[0], ages.values[1]]}
                 sliderLength={280}
-                selectedStyle={{ backgroundColor: "#4285F4" }}
+                selectedStyle={{ backgroundColor: "#FFCA28" }}
                 onValuesChange={multiSliderValuesChange}
                 min={0}
-                max={100}
+                max={65}
                 step={1}
               />
               <Text style={styles.ageText}>
                 {`From ${ages.values[0]} to ${ages.values[1]} years`}
               </Text>
             </View>
+            </PageContainer>
             <HobbiesPicker text="Pick Language Of The Partition:" array={["Hebrew","Arabic","English","Russin"]} selectedHobbies={language} setSelectedHobbies={setLanguage}/>
 
             <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
@@ -217,7 +183,10 @@ const styles = StyleSheet.create({
   scrollContainer: { flexGrow: 1, justifyContent: "center", padding: 20 },
   container: { flex: 1, justifyContent: "center" },
   title: { fontSize: 24, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
-  label: { fontSize: 16, marginBottom: 5, color: "#333", textAlign: "left" },
+  label: { marginVertical: 8,
+    fontFamily: 'bold',
+    letterSpacing: 0.3,
+    color: GlobalStyles.colors.textColor},
   input: {
     height: 40,
     borderColor: "gray",
@@ -271,6 +240,7 @@ const styles = StyleSheet.create({
       justifyContent:'center',
       fontFamily:'bold',
       marginBottom:20,
+      marginTop:20,
       letterSpacing:0.3,
       color:GlobalStyles.colors.textColor,
       flex: 1, 

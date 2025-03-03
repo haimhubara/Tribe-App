@@ -35,7 +35,11 @@ const DatePicker = ({ label, iconName, IconPack, iconSize, error, date, setDate,
             value={date}
             mode="date"
             display="default"
-            onChange={handleDateChange}
+            onChange={onInuptChange? handleDateChange :
+               ()=> {
+                setDatePickerVisible(false); 
+                setDate(date);
+              }}
           />
         )}
       </View>

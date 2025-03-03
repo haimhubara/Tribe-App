@@ -22,8 +22,8 @@ const InputPicker = ({ label, iconName, IconPack, iconSize, error, options, onIn
         <>
           <TouchableOpacity onPress={() => setIsPickerVisible(true)} style={styles.inputContainer}>
             {IconPack && <IconPack style={styles.icon} name={iconName} size={iconSize || 24} />}
-            <Text style={styles.inputText}>
-              {options.find(option => option.value === selectedValue)?.label || `Select ${label}`}
+            <Text style={styles.inputText}> 
+              {selectedValue || options.find(option => option.value === selectedValue)?.label || `Select ${label}`}
             </Text>
           </TouchableOpacity>
 
