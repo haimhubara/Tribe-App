@@ -90,9 +90,7 @@ const AuthScreen = () => {
             <SignUpForm
                formValues={formValues}
                dispachFormValues={dispachFormValues}
-               formUseStateValue={formUseStateValue}
                setFormUseStateValue={setFormUseStateValue}
-               next={next}
               setNext={setNext} 
               />
             }
