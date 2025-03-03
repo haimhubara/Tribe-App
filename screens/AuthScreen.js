@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect,useReducer } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import PageContainer from '../components/PageContainer'
 import SignUpForm from '../components/auth/SignUpForm'
@@ -9,6 +9,7 @@ import { View } from 'react-native'
 import UploadPhotosForm from '../components/auth/UploadPhotosForm'
 import VideoForm from '../components/auth/VideoForm'
 import { signUpreducer } from '../util/reducers/AuthReducer'
+import { signUp } from '../util/actions/AuthAction'
 
 const initialState = {
   actualValues:{
@@ -57,6 +58,21 @@ const AuthScreen = () => {
   const [secondNext, setSecondNext] = useState(false)
   const scrollViewRef = useRef()
 
+  const [formUseStateValue, setFormUseStateValue] = useState(initialState);
+
+  const[formValues, dispachFormValues] = useReducer(signUpreducer,initialState);
+
+  const backToSignUpFormHandle = () => {
+    setNext(prevState => !prevState);
+     dispachFormValues({
+      type: "UPDATE INPUT",
+      payload: { formState: true, stateValues: formUseStateValue }
+    });
+    signUp(formUseStateValue.actualValues);
+    setFormUseStateValue(initialState);
+    
+  }
+
   useEffect(() => {
     // Scroll to top whenever the next step changes
     scrollViewRef.current?.scrollTo({ y: 0, animated: true })
@@ -70,7 +86,16 @@ const AuthScreen = () => {
             behavior={Platform.OS === 'ios' ? 'height' : undefined}
             keyboardVerticalOffset={100}
             style={styles.KeyboardAvoidingView}>
-            {!next && isSignUp && <SignUpForm signUpreducer={signUpreducer} initialState={initialState} next={next} setNext={setNext} />}
+            {!next && isSignUp && 
+            <SignUpForm
+               formValues={formValues}
+               dispachFormValues={dispachFormValues}
+               formUseStateValue={formUseStateValue}
+               setFormUseStateValue={setFormUseStateValue}
+               next={next}
+              setNext={setNext} 
+              />
+            }
             {!isSignUp && <SignInForm />}
 
             {!next &&
@@ -83,7 +108,7 @@ const AuthScreen = () => {
               </View>
             }
 
-            {!secondNext && next && isSignUp && <UploadPhotosForm secondNext={secondNext} setSecondNext={setSecondNext} onBackPress={() => { setNext(prevState => !prevState) }} />}
+            {!secondNext && next && isSignUp && <UploadPhotosForm secondNext={secondNext} setSecondNext={setSecondNext} onBackPress={backToSignUpFormHandle} />}
             {secondNext && <VideoForm setSecondNext={setSecondNext} />}
           </KeyboardAvoidingView>
         </PageContainer>

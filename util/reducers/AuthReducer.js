@@ -1,31 +1,46 @@
 export const  signUpreducer = (state, action) => {
-    const { inputStatus, inputId, inputValue } = action;
+    switch(action.type){
+      case "IS VALID FORM":
+      const { inputStatus, inputId, inputValue } = action.payload;
   
-    const updatedValues = {
-      ...state.values,
-      [inputId]: inputStatus
-    };
-  
-    const uptatedActualValue = {
-      ...state.actualValues,
-      [inputId]:inputValue
-    };
-  
-    let updatedFormStatus = true;
-  
-    for (const key in updatedValues) {
-      if (updatedValues[key] !== undefined) {
-        updatedFormStatus = false;
-        break;
+      const updatedValues = {
+        ...state.values,
+        [inputId]: inputStatus
+      };
+    
+      const uptatedActualValue = {
+        ...state.actualValues,
+        [inputId]:inputValue
+      };
+    
+      let updatedFormStatus = true;
+    
+      for (const key in updatedValues) {
+        if (updatedValues[key] !== undefined) {
+          updatedFormStatus = false;
+          break;
+        }
       }
-    }
-  
-  
-    return {
-      actualValues:uptatedActualValue,
-      values: updatedValues,
-      formStatus: updatedFormStatus
-    };
+    
+    
+      return {
+        actualValues:uptatedActualValue,
+        values: updatedValues,
+        formStatus: updatedFormStatus
+      };
+
+      case 'UPDATE INPUT':
+        const { formState, stateValues } = action.payload;
+        return {
+          actualValues: { ...stateValues.actualValues },
+          values: Object.keys(stateValues || {}).reduce((acc, key) => {
+            acc[key] = undefined;
+            return acc;
+          }, {}),
+          formStatus: formState
+        };
+   }
+
   };
 
 
