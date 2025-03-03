@@ -30,23 +30,15 @@ const AddNewEventScreen = ({navigation,route}) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState(new Date());
-  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
   const [selectedNumPartitions, setSelectedNumPartitions] = useState();
   const [isPartitionsVisible, setPartitionsVisible] = useState(false);
   const [selectedGender, setSelectedGender] = useState();
-  const [isGenderVisible, setGenderVisible] = useState(false);
   const [ages, setAges] = useState({ values: [18, 35] });
   const [language, setLanguage]=useState("");
-  const [x ,setX] = useState('');
+  const [selectedHobbies,setSelectedHobbies]=useState("");
+
 
   const ifGoBack = route.params?.ifGoBack;
-
-  // const handleDateChange = (event, selectedDate) => {
-  //   setDatePickerVisible(false);
-  //   if (selectedDate) {
-  //     setDate(selectedDate);
-  //   }
-  // };
 
   const onInuptChange = (id,text) => {
     if(id==='name'){
@@ -164,6 +156,13 @@ const AddNewEventScreen = ({navigation,route}) => {
             </View>
             </PageContainer>
             <HobbiesPicker text="Pick Language Of The Partition:" array={["Hebrew","Arabic","English","Russin"]} selectedHobbies={language} setSelectedHobbies={setLanguage}/>
+            
+            <HobbiesPicker 
+            selectedHobbies={selectedHobbies}
+            setSelectedHobbies={setSelectedHobbies}
+            text="Select your hobbies" 
+            array={['Reading', 'Traveling', 'Cooking', 'Sports', 'Music', 'Gaming', 'Photography', 'Art']}
+          />
 
             <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
               <Text style={styles.submitButtonText}>Submit</Text>
@@ -252,3 +251,4 @@ const styles = StyleSheet.create({
 });
 
 export default AddNewEventScreen;
+
