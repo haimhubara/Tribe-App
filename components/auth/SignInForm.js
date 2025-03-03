@@ -7,39 +7,8 @@ import { StyleSheet, Text } from 'react-native';
 import { validateInput } from '../../util/actions/FormActions';
 import { useReducer } from 'react';
 import { signin } from '../../util/actions/AuthAction';
+import { signInReducer } from '../../util/reducers/AuthReducer';
 
-const reducer = (state,action) => {
-  const stateOfValue = action.stateOfValue
-  const inputId = action.inputId;
-  const inputValue = action.inputValue;
-
-  const updatevalues = {
-    ...state.values,
-    [inputId]:stateOfValue
-  };
-
-  const updateActualValues = {
-    ...state.actualValues,
-    [inputId]:inputValue
-  }
-
-  let updateFormState = true;
-  for(const key in updatevalues ){
-    if(updatevalues[key] !== undefined){
-      updateFormState=false;
-      break;
-    }
-  }
-
-
-  return{
-    actualValues:updateActualValues,
-    values:updatevalues,
-    formState:updateFormState
-
-  }
-  
-}
 
 const initialState = {
     values:{
@@ -57,7 +26,7 @@ const initialState = {
 
 
 const SignInForm = () => {
- const [formValues, dispachFormValues] = useReducer(reducer,initialState);
+ const [formValues, dispachFormValues] = useReducer(signInReducer,initialState);
 
  const SingInHandle = ()=>{
     signin(formValues.actualValues.email,formValues.actualValues.password);

@@ -170,8 +170,8 @@ function App() {
               flex: 1
             }
          }}>
-            {false && <Stack.Screen name="AuthScreen" component={AuthScreen} options={{ headerShown: false }}/>} 
-            {true && <Stack.Screen name="WellcomeWindow" component={WellcomeWindow} options={{ headerShown: false }} />}
+            {true && <Stack.Screen name="AuthScreen" component={AuthScreen} options={{ headerShown: false }}/>} 
+            {false && <Stack.Screen name="WellcomeWindow" component={WellcomeWindow} options={{ headerShown: false }} />}
           </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

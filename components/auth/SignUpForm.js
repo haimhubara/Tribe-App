@@ -13,82 +13,54 @@ import { StyleSheet, Text } from 'react-native';
 import HobbiesPicker from '../HobbiesPicker';
 import { validateInput } from '../../util/actions/FormActions';
 import { signUp } from '../../util/actions/AuthAction';
-
-const reducer = (state, action) => {
-  const { inputStatus, inputId, inputValue } = action;
-
-  const updatedValues = {
-    ...state.values,
-    [inputId]: inputStatus
-  };
-
-  const uptatedActualValue = {
-    ...state.actualValues,
-    [inputId]:inputValue
-  };
-
-  let updatedFormStatus = true;
-
-  for (const key in updatedValues) {
-    if (updatedValues[key] !== undefined) {
-      updatedFormStatus = false;
-      break;
-    }
-  }
+// import { signUpreducer } from '../../util/reducers/AuthReducer';
 
 
-  return {
-    actualValues:uptatedActualValue,
-    values: updatedValues,
-    formStatus: updatedFormStatus
-  };
-};
 
-
-const initialState = {
-  actualValues:{
-    firstName:"",
-    lastName:"",
-    email:"",
-    password:"",
-    confirmPassword:"",
-    userName:"",
-    phoneNumber:"",
-    gender: "",
-    religion: "",
-    date: "",
-    hobbies:[],
-    languages:[],
-    facebook:"",
-    tiktok:"",
-    instagram:""
-  },
-  values:{
-    firstName:false,
-    lastName:false,
-    email:false,
-    password:false,
-    confirmPassword:false,
-    userName:false,
-    phoneNumber:false,
-    gender: false,
-    religion: false,
-    date: false,
-    hobbies:false,
-    languages:false,
-    facebook:undefined,
-    tiktok:undefined,
-    instagram:undefined
+// const initialState = {
+//   actualValues:{
+//     firstName:"",
+//     lastName:"",
+//     email:"",
+//     password:"",
+//     confirmPassword:"",
+//     userName:"",
+//     phoneNumber:"",
+//     gender: "",
+//     religion: "",
+//     date: "",
+//     hobbies:[],
+//     languages:[],
+//     facebook:"",
+//     tiktok:"",
+//     instagram:""
+//   },
+//   values:{
+//     firstName:false,
+//     lastName:false,
+//     email:false,
+//     password:false,
+//     confirmPassword:false,
+//     userName:false,
+//     phoneNumber:false,
+//     gender: false,
+//     religion: false,
+//     date: false,
+//     hobbies:false,
+//     languages:false,
+//     facebook:undefined,
+//     tiktok:undefined,
+//     instagram:undefined
     
-  },
-  formStatus:false
+//   },
+//   formStatus:false
   
   
-}
+// }
 
 
 
-const SignUpForm = ({next, setNext}) => {
+const SignUpForm = ({next, setNext,initialState,signUpreducer}) => {
 
 
   const [date,setDate] = useState(new Date());
@@ -96,12 +68,13 @@ const SignUpForm = ({next, setNext}) => {
   const [confirmPassword, setConfirmPassword] = useState('');
 
 
-  const[formValues, dispachFormValues] = useReducer(reducer,initialState);
+  const[formValues, dispachFormValues] = useReducer(signUpreducer,initialState);
 
 
 
   const authNextHandle = () =>{
     setNext(prevState =>!prevState)
+   
     signUp(
       formValues.actualValues.firstName,
       formValues.actualValues.lastName,
@@ -118,10 +91,6 @@ const SignUpForm = ({next, setNext}) => {
       formValues.actualValues.facebook,
       formValues.actualValues.tiktok,
       formValues.actualValues.instagram
-
-      
-        
-        
     );
   }
 
@@ -163,6 +132,7 @@ const SignUpForm = ({next, setNext}) => {
            onInuptChange={inputChangeHandler}
            id="firstName"
            error={formValues.values['firstName']}
+           value={formValues.actualValues['firstName']}
         />
 
         <Input 
