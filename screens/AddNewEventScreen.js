@@ -128,7 +128,7 @@ const AddNewEventScreen = ({ navigation, route }) => {
                   label="Date:"
                   iconName="calendar"
                   IconPack={FontAwesome}
-                  onInuptChange={onInuptChange}
+                  onInputChange={onInuptChange}
                 />
                 
                 <TimePicker
