@@ -25,11 +25,9 @@ import InputPicker from "../components/InputPicker";
 import TimePicker from "../components/TimePicker";
 
 const AddNewEventScreen = ({ navigation, route }) => {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState(
-    route.params?.date ? new Date(route.params.date) : new Date()
-  );
+  const [name, setName] = useState(route.params?.name || console.log(route.params?.name ));
+  const [description, setDescription] = useState(route.params?.description || "");
+  const [date, setDate] = useState(route.params?.date ? new Date(route.params.date) : new Date());
   const [selectedNumPartitions, setSelectedNumPartitions] = useState();
   const [isPartitionsVisible, setPartitionsVisible] = useState(false);
   const [selectedGender, setSelectedGender] = useState();
