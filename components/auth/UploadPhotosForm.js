@@ -1,44 +1,58 @@
 import { View, StyleSheet, ScrollView, Text } from "react-native"
-import SelectImages from "../../components/imagesAndVideo/SelectImages";
-import { useState } from "react";
+import { useCallback} from "react";
 import SubmitButton from "../buttons/SubmitButton";
 import Header from "../../components/Header";
 import { GlobalStyles } from "../../constants/styles";
+import ImagePicker from "../imagesAndVideo/ImagePicker";
+import { validateInput } from "../../util/actions/FormActions";
 
 
-const UploadPhotosForm = ({onBackPress, secondNext, setSecondNext}) => {
-    
+
+const UploadPhotosForm = ({secondNextHandle ,onBackPress ,dispachPhotosReducer,photosReducer}) => {
+
+
   
 
-   const [pickedImage1, setPickedImage1] = useState(null);
-   const [pickedImage2, setPickedImage2] = useState(null);
-   const [pickedImage3, setPickedImage3] = useState(null);
-   const [pickedImage4, setPickedImage4] = useState(null);
-   const [pickedImage5, setPickedImage5] = useState(null);
-   const [pickedImage6, setPickedImage6] = useState(null);
-
   
+
+  const takePhotoHandle = useCallback((inputId, inputValue) => {
+
+     const result = validateInput(inputId,inputValue)
+      dispachPhotosReducer({type:'INSERT IMAGES',payload:{stateOfValue:result,inputId,inputValue}}); 
+
+  },[dispachPhotosReducer])
+
+ 
 
   return (
     <ScrollView >
          <View style={styles.root}>
           <Header style={{paddingHorizontal:0}} title="Select images" onBackPress={onBackPress}/>
            <View style={styles.imageContainer}>
-          
-        
-            <SelectImages
-            pickedImage1={pickedImage1} setPickedImage1={setPickedImage1}
-            pickedImage2={pickedImage2} setPickedImage2={setPickedImage2}
-            pickedImage3={pickedImage3} setPickedImage3={setPickedImage3}
-            pickedImage4={pickedImage4} setPickedImage4={setPickedImage4}
-            pickedImage5={pickedImage5} setPickedImage5={setPickedImage5}
-            pickedImage6={pickedImage6} setPickedImage6={setPickedImage6}
-            />
+
+
+           {  !photosReducer.formState && photosReducer.actualValues['imagesContainer'].length >= 1  &&
+              <View style={styles.errorContainer}>
+                   <Text style={styles.errorText}>Select at least 3 images</Text>
+             </View>
+          }
+           
+              <View style={styles.container}>
+                <ImagePicker id='firstImage' takePhotoHandle={takePhotoHandle} pickedImage={photosReducer.actualValues['firstImage']}  />
+                <ImagePicker id='secondImage' takePhotoHandle={takePhotoHandle} pickedImage={photosReducer.actualValues['secondImage']}  />
+                <ImagePicker id='thirdImage' takePhotoHandle={takePhotoHandle} pickedImage={photosReducer.actualValues['thirdImage']}  />
+                <ImagePicker id='fourthImage' takePhotoHandle={takePhotoHandle} pickedImage={photosReducer.actualValues['fourthImage']} />
+                <ImagePicker id='fiveImage' takePhotoHandle={takePhotoHandle}  pickedImage={photosReducer.actualValues['fiveImage']}/>
+                <ImagePicker id='sixImage' takePhotoHandle={takePhotoHandle}  pickedImage={photosReducer.actualValues['sixImage']}/> 
+            </View>
 
           </View>
+          
+
+           
 
         <View style={styles.button}>
-            <SubmitButton onPress={()=>{setSecondNext(prevState =>!prevState)}} title="Next" color={GlobalStyles.colors.mainColor}/>
+            <SubmitButton disabeld={!photosReducer.formState} onPress={secondNextHandle} title="Next" color={GlobalStyles.colors.mainColor}/>
         </View>
       
     </View>
@@ -50,14 +64,30 @@ const UploadPhotosForm = ({onBackPress, secondNext, setSecondNext}) => {
 const styles = StyleSheet.create({
     root: {
         flex: 1,
+        
             
     },
     imageContainer: {
-      flex:1,     
+      flex:1, 
+      marginVertical: 16,    
     },
     button:{
         marginBottom:10
-    }
+    },
+    container: {
+       flexDirection: 'row',
+       flexWrap: 'wrap',
+       gap: 10, 
+     },
+     errorContainer:{
+      marginVertical:5
+  },
+  errorText:{
+      color:'red',
+      fontSize:13,
+      fontFamily:'regular',
+      letterSpacing:0.3,
+  }
 });
 
 export default UploadPhotosForm

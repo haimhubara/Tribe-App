@@ -12,68 +12,40 @@ import DatePicker from '../DatePicker';
 import { StyleSheet, Text } from 'react-native';
 import HobbiesPicker from '../HobbiesPicker';
 import { validateInput } from '../../util/actions/FormActions';
-import { signUp } from '../../util/actions/AuthAction';
 
 
-const SignUpForm = ({next, setNext,initialState,signUpreducer}) => {
-
+const SignUpForm = ({setNext,formValues,dispachFormValues, setFormUseStateValue}) => {
 
   const [date,setDate] = useState(new Date());
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-
-  const[formValues, dispachFormValues] = useReducer(signUpreducer,initialState);
-
-
-
   const authNextHandle = () =>{
-    setNext(prevState =>!prevState)
+    setNext(prevState =>!prevState);
+    setFormUseStateValue(formValues);
    
-    signUp(
-      formValues.actualValues.firstName,
-      formValues.actualValues.lastName,
-      formValues.actualValues.email,
-      formValues.actualValues.password,
-      formValues.actualValues.confirmPassword,
-      formValues.actualValues.userName,
-      formValues.actualValues.phoneNumber,
-      formValues.actualValues.gender,
-      formValues.actualValues.religion,
-      formValues.actualValues.date,
-      formValues.actualValues.hobbies,
-      formValues.actualValues.languages,
-      formValues.actualValues.facebook,
-      formValues.actualValues.tiktok,
-      formValues.actualValues.instagram
-    );
   }
-
-
- 
- 
-
-
-  
 
   const inputChangeHandler = useCallback((inputId, inputValue) => {
     if (inputId === "password") {
       setPassword(inputValue);
       const confirmResult = validateInput("confirmPassword", confirmPassword, inputValue);
-      dispachFormValues({ inputStatus: confirmResult, inputId: "confirmPassword" });
+      dispachFormValues({
+        type: 'IS VALID FORM',
+        payload: { inputStatus: confirmResult, inputId: "confirmPassword", inputValue: confirmPassword }
+      });
     }
-    
+  
     if (inputId === "confirmPassword") {
       setConfirmPassword(inputValue);
     }
+  
     const result = validateInput(inputId, inputValue, password);
-    //console.log(result);
-    dispachFormValues({ inputStatus: result, inputId,inputValue });
+    dispachFormValues({
+      type: 'IS VALID FORM',
+      payload: { inputStatus: result, inputId, inputValue }
+    });
   }, [dispachFormValues, password, confirmPassword]);
-  
-  
-
-  
   
 
   return (
@@ -98,6 +70,7 @@ const SignUpForm = ({next, setNext,initialState,signUpreducer}) => {
           onInuptChange={inputChangeHandler}
           id="lastName"
           error={formValues.values['lastName']}
+          value={formValues.actualValues['lastName']}
          />
 
         <Input 
@@ -108,6 +81,7 @@ const SignUpForm = ({next, setNext,initialState,signUpreducer}) => {
           onInuptChange={inputChangeHandler}
           id="email"
           error={formValues.values['email']}
+          value={formValues.actualValues['email']}
         />
         
         <Input 
@@ -118,6 +92,7 @@ const SignUpForm = ({next, setNext,initialState,signUpreducer}) => {
           onInuptChange={inputChangeHandler}
           id="password"
           error={formValues.values['password']}
+          value={formValues.actualValues['password']}
         />
 
         <Input
@@ -128,6 +103,8 @@ const SignUpForm = ({next, setNext,initialState,signUpreducer}) => {
             onInuptChange={inputChangeHandler}
             id="confirmPassword"
             error={formValues.values['confirmPassword']}
+            value={formValues.actualValues['confirmPassword']}
+           
         />
         <Input
           inputOption={{autoCapitalize:'none'}}
@@ -137,6 +114,7 @@ const SignUpForm = ({next, setNext,initialState,signUpreducer}) => {
           onInuptChange={inputChangeHandler}
           id='userName'
           error={formValues.values['userName']}
+          value={formValues.actualValues['userName']}
         />
 
         <Input 
@@ -147,6 +125,7 @@ const SignUpForm = ({next, setNext,initialState,signUpreducer}) => {
          onInuptChange={inputChangeHandler}
          id="phoneNumber"
          error={formValues.values['phoneNumber']}
+         value={formValues.actualValues['phoneNumber']}
         />
 
         <InputPicker label="Gender" iconName="human-male-female" IconPack={MaterialCommunityIcons}
@@ -157,7 +136,7 @@ const SignUpForm = ({next, setNext,initialState,signUpreducer}) => {
           onInuptChange={inputChangeHandler}
           id="gender"
           error={formValues.values['gender']}
-          selectedValue={formValues.actualValues.gender}
+          selectedValue={formValues.actualValues['gender']}
         />
        <InputPicker label="Religion" iconName="globe" IconPack={FontAwesome}
          options={[
@@ -168,19 +147,19 @@ const SignUpForm = ({next, setNext,initialState,signUpreducer}) => {
           onInuptChange={inputChangeHandler}
           id="religion"
           error={formValues.values['religion']}
-          selectedValue={formValues.actualValues.religion}
+          selectedValue={formValues.actualValues['religion']}
         />
 
         <DatePicker 
           label='Day of birth'
           iconName='date' 
           IconPack={Fontisto}   
-          date={date} 
+          date={new Date(formValues.actualValues['date']) || date } 
           setDate={setDate}
           id='date'
           onInuptChange={inputChangeHandler}
           error={formValues.values['date']}
-          selectedValue={formValues.actualValues.date}
+         // selectedValue={formValues.actualValues['date']}
         />
 
         <Input 
@@ -212,9 +191,8 @@ const SignUpForm = ({next, setNext,initialState,signUpreducer}) => {
            error={formValues.values['instagram']}
         />
 
-        <HobbiesPicker
-          //  selectedHobbies={selectedHobbies} 
-          //  setSelectedHobbies={setSelectedHobbies}
+         <HobbiesPicker
+          
            text="Select your hobbies"
            array={['Reading', 'Traveling', 'Cooking', 'Sports', 'Music', 'Gaming', 'Photography', 'Art']}
            id='hobbies'
@@ -225,18 +203,13 @@ const SignUpForm = ({next, setNext,initialState,signUpreducer}) => {
         <HobbiesPicker
          text="Select Languages"
          array={["Hebrew","Arabic","English","Russin"]} 
-        //  selectedHobbies={languages}
-        //  setSelectedHobbies={setLanguages}
+       
          id='languages'
          onInuptChange={inputChangeHandler}
          value={formValues.actualValues['languages']}
          error={formValues.values['languages']}
-        />
-        {/* <SocialLinks 
-         setLinkValues={setLinkValues}
-         linkValues={linkValues} 
-         availableLinks={ ["Facebook", "Instagram", "Twitter"]}
-        /> */}
+        /> 
+       
 
         <SubmitButton 
           disabeld={!formValues.formStatus}

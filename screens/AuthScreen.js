@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect,useReducer } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import PageContainer from '../components/PageContainer'
 import SignUpForm from '../components/auth/SignUpForm'
@@ -9,53 +9,45 @@ import { View } from 'react-native'
 import UploadPhotosForm from '../components/auth/UploadPhotosForm'
 import VideoForm from '../components/auth/VideoForm'
 import { signUpreducer } from '../util/reducers/AuthReducer'
+import { signUp } from '../util/actions/AuthAction'
+import { initialState } from '../util/models/AuthModels'
+import { imagesInitialState } from '../util/models/AuthModels'
+import { uploadImagesReducer } from '../util/reducers/AuthReducer'
 
-const initialState = {
-  actualValues:{
-    firstName:"",
-    lastName:"",
-    email:"",
-    password:"",
-    confirmPassword:"",
-    userName:"",
-    phoneNumber:"",
-    gender: "",
-    religion: "",
-    date: "",
-    hobbies:[],
-    languages:[],
-    facebook:"",
-    tiktok:"",
-    instagram:""
-  },
-  values:{
-    firstName:false,
-    lastName:false,
-    email:false,
-    password:false,
-    confirmPassword:false,
-    userName:false,
-    phoneNumber:false,
-    gender: false,
-    religion: false,
-    date: false,
-    hobbies:false,
-    languages:false,
-    facebook:undefined,
-    tiktok:undefined,
-    instagram:undefined
-    
-  },
-  formStatus:false
-  
-  
-}
 
 const AuthScreen = () => {
-  const [isSignUp, setIsSignUp] = useState(false)
-  const [next, setNext] = useState(false)
-  const [secondNext, setSecondNext] = useState(false)
-  const scrollViewRef = useRef()
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [next, setNext] = useState(false);
+  const [secondNext, setSecondNext] = useState(false);
+  const scrollViewRef = useRef();
+   const [videoUri, setVideoUri] = React.useState(null);
+
+  const [formUseStateValue, setFormUseStateValue] = useState(initialState);
+
+  // const [photosReducerUseStateValue, setPhotosReducerUseStateValue] = useState(imagesInitialState);
+
+  const [photosReducer,dispachPhotosReducer] = useReducer(uploadImagesReducer, imagesInitialState);
+
+  const[formValues, dispachFormValues] = useReducer(signUpreducer,initialState);
+
+  const backToSignUpFormHandle = () => {
+    setNext(prevState => !prevState);
+     dispachFormValues({
+      type: "UPDATE INPUT",
+      payload: { formState: true, stateValues: formUseStateValue }
+    });
+    setFormUseStateValue(initialState); 
+  }
+
+  const secondNextHandle = () => {
+    setSecondNext(prevState =>!prevState);
+  }
+
+  const signUpHandle = () => {
+      signUp(formUseStateValue.actualValues,photosReducer.actualValues,videoUri);
+  }
+
+
 
   useEffect(() => {
     // Scroll to top whenever the next step changes
@@ -70,10 +62,17 @@ const AuthScreen = () => {
             behavior={Platform.OS === 'ios' ? 'height' : undefined}
             keyboardVerticalOffset={100}
             style={styles.KeyboardAvoidingView}>
-            {!next && isSignUp && <SignUpForm signUpreducer={signUpreducer} initialState={initialState} next={next} setNext={setNext} />}
+            {!next && isSignUp && 
+            <SignUpForm
+               formValues={formValues}
+               dispachFormValues={dispachFormValues}
+               setFormUseStateValue={setFormUseStateValue}
+              setNext={setNext} 
+              />
+            }
             {!isSignUp && <SignInForm />}
 
-            {!next &&
+            {!next && 
               <View style={{ marginTop: 8, marginBottom: 10 }}>
                 <Text style={styles.signupText}>Already have an account?
                   <Pressable onPress={() => { setIsSignUp(prevState => !prevState) }}>
@@ -83,8 +82,22 @@ const AuthScreen = () => {
               </View>
             }
 
-            {!secondNext && next && isSignUp && <UploadPhotosForm secondNext={secondNext} setSecondNext={setSecondNext} onBackPress={() => { setNext(prevState => !prevState) }} />}
-            {secondNext && <VideoForm setSecondNext={setSecondNext} />}
+            { !secondNext && next && isSignUp &&
+            <UploadPhotosForm
+               onBackPress={backToSignUpFormHandle}
+               photosReducer={photosReducer}
+               dispachPhotosReducer={dispachPhotosReducer}
+               secondNextHandle={secondNextHandle}
+              />
+            }
+            {secondNext &&
+             <VideoForm
+                setSecondNext={setSecondNext}
+                signUpHandle={signUpHandle}
+                videoUri={videoUri}
+                setVideoUri={setVideoUri}
+            />
+            }
           </KeyboardAvoidingView>
         </PageContainer>
       </ScrollView>

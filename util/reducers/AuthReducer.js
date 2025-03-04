@@ -1,31 +1,46 @@
 export const  signUpreducer = (state, action) => {
-    const { inputStatus, inputId, inputValue } = action;
+    switch(action.type){
+      case "IS VALID FORM":
+      const { inputStatus, inputId, inputValue } = action.payload;
   
-    const updatedValues = {
-      ...state.values,
-      [inputId]: inputStatus
-    };
-  
-    const uptatedActualValue = {
-      ...state.actualValues,
-      [inputId]:inputValue
-    };
-  
-    let updatedFormStatus = true;
-  
-    for (const key in updatedValues) {
-      if (updatedValues[key] !== undefined) {
-        updatedFormStatus = false;
-        break;
+      const updatedValues = {
+        ...state.values,
+        [inputId]: inputStatus
+      };
+    
+      const uptatedActualValue = {
+        ...state.actualValues,
+        [inputId]:inputValue
+      };
+    
+      let updatedFormStatus = true;
+    
+      for (const key in updatedValues) {
+        if (updatedValues[key] !== undefined) {
+          updatedFormStatus = false;
+          break;
+        }
       }
-    }
-  
-  
-    return {
-      actualValues:uptatedActualValue,
-      values: updatedValues,
-      formStatus: updatedFormStatus
-    };
+    
+    
+      return {
+        actualValues:uptatedActualValue,
+        values: updatedValues,
+        formStatus: updatedFormStatus
+      };
+
+      case 'UPDATE INPUT':
+        const { formState, stateValues } = action.payload;
+        return {
+          actualValues: { ...stateValues.actualValues },
+          values: Object.keys(stateValues || {}).reduce((acc, key) => {
+            acc[key] = undefined;
+            return acc;
+          }, {}),
+          formStatus: formState
+        };
+   }
+
   };
 
 
@@ -62,3 +77,43 @@ export const  signUpreducer = (state, action) => {
     }
     
   }
+
+
+  export const uploadImagesReducer = (state, action) => {
+    switch(action.type){
+      case 'INSERT IMAGES':
+        const { stateOfValue, inputId, inputValue } = action.payload;
+  
+        const updateActualValues = {
+          ...state.actualValues,
+          [inputId]: inputValue,
+          imagesContainer: inputValue ? 
+            [...state.actualValues.imagesContainer.filter(image => image !== state.actualValues[inputId]), inputValue] 
+            : state.actualValues.imagesContainer
+        };
+        
+      
+        const updateValues = {
+          ...state.values,
+          [inputId]: stateOfValue
+        };
+     
+        if (!inputValue) {
+          updateActualValues.imagesContainer = state.actualValues.imagesContainer.filter(image => image !== state.actualValues[inputId]);
+        }
+      
+    
+        const updateFormState = updateActualValues.imagesContainer.length >= 3;
+      
+        return {
+          actualValues: updateActualValues,
+          values: updateValues,
+          formState: updateFormState
+        };
+
+        case 'UPDATE PHOTOS VALUES':
+          
+    }
+   
+  };
+  
