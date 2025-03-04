@@ -34,8 +34,30 @@ export const initialState = {
       instagram:undefined
       
     },
-    formStatus:false
-    
-    
+    formStatus:false 
   }
+
+
+  export  const imagesInitialState = {
+    actualValues:{
+      firstImage:null,
+      secondImage:null,
+      thirdImage:null,
+      fourthImage:null,
+      fiveImage:null,
+      sixImage:null,
+      imagesContainer:[]
+    },
+    values:{
+      firstImage:false,
+      secondImage:false,
+      thirdImage:false,
+      fourthImage:false,
+      fiveImage:false,
+      sixImage:false, 
+      imagesContainer:false
+    },
+    formStatus:false 
+}
+  
   

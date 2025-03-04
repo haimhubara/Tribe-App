@@ -1,4 +1,4 @@
-import { Text, StyleSheet, View } from "react-native";
+import { Text, StyleSheet, View, Image } from "react-native";
 import TakeVideo from "../imagesAndVideo/TakeVideo";
 import { useState } from "react";
 import Button from "../buttons/Button";
@@ -9,41 +9,17 @@ import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Header from "../Header";
 import { GlobalStyles } from "../../constants/styles";
+import image from "../../assets/images/video.png"
 
 
-const VideoForm = ({setSecondNext}) => {
-    const [videoUri, setVideoUri] = React.useState(null);
+const VideoForm = ({setSecondNext,signUpHandle, videoUri,setVideoUri}) => {
     const [takeVideo, setTakeVideo] = useState(true);
-   
+    
     function takeAgain(){
       setTakeVideo(false);
       setVideoUri(null);
     }
-    if (videoUri && takeVideo) {
-      return (
-        <>
-        <View style={{justifyContent:'center',alignItems:'center'}}>
-             <Header title="Video Preview" onBackPress={()=>{setSecondNext(prevState =>!prevState)}}/>
-        </View>
-        
-
-      <View style={styles.root}>
-          <Video
-              source={{ uri: videoUri }}
-              style={styles.video}
-              useNativeControls
-              resizeMode="cover"
-              shouldPlay={true}
-            />
-            <Button buttonStyle={{backgroundColor:"white"}} text={<MaterialCommunityIcons name="camera-retake" size={50} color="black" />} handleClick={takeAgain}/>
-      </View>
-         <View style={styles.bottomButtonContainer}>
-             <SubmitButton onPress={()=>{console.log("hi")}} color={GlobalStyles.colors.mainColor} title="Sign Up"/>
-         </View>
-        </>
-      );
-    }
-  
+    
     return (
       <View style = {{flex:1}} >
         {
@@ -55,8 +31,37 @@ const VideoForm = ({setSecondNext}) => {
              
                  <View style={styles.root}>
                    <Text style={styles.text}>We'd like you to record a video introducing yourself so others can get to know you better</Text>
-                     <Button buttonStyle={{backgroundColor:"white"}} text={ <SimpleLineIcons name="camrecorder" size={50} color="black" />} handleClick={() => setTakeVideo(false)} />
+                    { !videoUri && 
+                    <Button buttonStyle={{backgroundColor:"white"}} text={ <SimpleLineIcons name="camrecorder" size={50} color="black" />} handleClick={() => setTakeVideo(false)} />}
                  </View>
+                
+                <View style={styles.root}>
+                {videoUri && 
+                <>
+                  <Video
+                  source={{ uri: videoUri }}
+                  style={styles.video}
+                  useNativeControls
+                  resizeMode="cover"
+                  shouldPlay={true}
+                  />
+                  <Button buttonStyle={{backgroundColor:"white"}} text={<MaterialCommunityIcons name="camera-retake" size={50} color="black" />} handleClick={takeAgain}/>
+                </>
+                  }
+                   { !videoUri &&  <Image
+                      source={image} 
+                      style={styles.video}
+                    />
+                  }
+                    <SubmitButton 
+                    disabeld={!videoUri}
+                    style={{marginTop:20, width:'100%'}}
+                    onPress={signUpHandle}
+                    title="Sign up" 
+                    color={GlobalStyles.colors.mainColor}
+                  />
+              </View>
+              
                </>
             ) : (
               <TakeVideo

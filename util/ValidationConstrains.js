@@ -165,3 +165,10 @@ export const validateLink = (inputId, inputValue) => {
 
   return undefined;
 };
+
+
+export const validateImage = (inputId, inputValue) => {
+  return inputValue && typeof inputValue === 'string' && inputValue.trim() !== ''
+    ? undefined
+    : 'Image is required';
+};

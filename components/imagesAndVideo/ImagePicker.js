@@ -1,11 +1,15 @@
 import { View, Text, StyleSheet, Alert, Image, Pressable, Modal } from "react-native";
 import { launchCameraAsync, launchImageLibraryAsync, useCameraPermissions, PermissionStatus } from 'expo-image-picker';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import React from "react";
+import React, { useState } from "react";
+import imageBack from '../../assets/images/camera.png'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-const ImagePicker = ({ pickedImage, setPickedImage, imageSytle, buttonStyle, imageRootStyle }) => {
+const ImagePicker = ({imageSytle, buttonStyle, imageRootStyle,takePhotoHandle,id,pickedImage }) => {
     const [cameraPermissionInformation, requestPermission] = useCameraPermissions();
     const [modalVisible, setModalVisible] = React.useState(false);
+
+    //const [pickedImage,setPickedImage] = useState(null);
 
     async function verifyPermissions() {
         if (cameraPermissionInformation.status === PermissionStatus.UNDETERMINED) {
@@ -41,7 +45,11 @@ const ImagePicker = ({ pickedImage, setPickedImage, imageSytle, buttonStyle, ima
             return;
         }
 
-        setPickedImage(imageUri);
+       // setPickedImage(imageUri);
+        takePhotoHandle(id,imageUri)
+    }
+    const deleteImageHandle = () => {
+        takePhotoHandle(id, null);
     }
 
     async function pickImageHandle() {
@@ -61,21 +69,20 @@ const ImagePicker = ({ pickedImage, setPickedImage, imageSytle, buttonStyle, ima
             return;
         }
 
-        setPickedImage(imageUri);
+        // setPickedImage(imageUri);
+        takePhotoHandle(id,imageUri)
     }
 
     return (
         <View style={[styles.root, imageRootStyle]}>
-            {pickedImage ? (
+           
                 <Pressable onPress={() => setModalVisible(true)}>
+                   
                     <View style={[styles.imagePreview, imageSytle]}>
-                        <Image style={styles.image} source={{ uri: pickedImage }} />
+                         <Image style={styles.image} source={pickedImage ? { uri: pickedImage } : imageBack} />
                     </View>
                 </Pressable>
-            ) : (
-                <View style={[styles.imagePreview, imageSytle]}>
-                </View>
-            )}
+           
 
             <View style={[styles.buttonsContainer, buttonStyle]}>
                 <Pressable
@@ -96,6 +103,15 @@ const ImagePicker = ({ pickedImage, setPickedImage, imageSytle, buttonStyle, ima
                 >
                     <Ionicons name="images" size={26} color="black" />
                 </Pressable>
+               {pickedImage &&  <Pressable
+                    style={({ pressed }) => [
+                        styles.icon,
+                        { opacity: pressed ? 0.6 : 1 },
+                    ]}
+                    onPress={deleteImageHandle}
+                >
+                  <MaterialIcons name="delete" size={26} color="black" />
+                </Pressable>}
             </View>
 
             {/* Modal for preview */}

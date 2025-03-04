@@ -77,3 +77,43 @@ export const  signUpreducer = (state, action) => {
     }
     
   }
+
+
+  export const uploadImagesReducer = (state, action) => {
+    switch(action.type){
+      case 'INSERT IMAGES':
+        const { stateOfValue, inputId, inputValue } = action.payload;
+  
+        const updateActualValues = {
+          ...state.actualValues,
+          [inputId]: inputValue,
+          imagesContainer: inputValue ? 
+            [...state.actualValues.imagesContainer.filter(image => image !== state.actualValues[inputId]), inputValue] 
+            : state.actualValues.imagesContainer
+        };
+        
+      
+        const updateValues = {
+          ...state.values,
+          [inputId]: stateOfValue
+        };
+     
+        if (!inputValue) {
+          updateActualValues.imagesContainer = state.actualValues.imagesContainer.filter(image => image !== state.actualValues[inputId]);
+        }
+      
+    
+        const updateFormState = updateActualValues.imagesContainer.length >= 3;
+      
+        return {
+          actualValues: updateActualValues,
+          values: updateValues,
+          formState: updateFormState
+        };
+
+        case 'UPDATE PHOTOS VALUES':
+          
+    }
+   
+  };
+  

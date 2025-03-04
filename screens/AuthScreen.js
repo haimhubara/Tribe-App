@@ -11,15 +11,22 @@ import VideoForm from '../components/auth/VideoForm'
 import { signUpreducer } from '../util/reducers/AuthReducer'
 import { signUp } from '../util/actions/AuthAction'
 import { initialState } from '../util/models/AuthModels'
+import { imagesInitialState } from '../util/models/AuthModels'
+import { uploadImagesReducer } from '../util/reducers/AuthReducer'
 
 
 const AuthScreen = () => {
-  const [isSignUp, setIsSignUp] = useState(false)
-  const [next, setNext] = useState(false)
-  const [secondNext, setSecondNext] = useState(false)
-  const scrollViewRef = useRef()
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [next, setNext] = useState(false);
+  const [secondNext, setSecondNext] = useState(false);
+  const scrollViewRef = useRef();
+   const [videoUri, setVideoUri] = React.useState(null);
 
   const [formUseStateValue, setFormUseStateValue] = useState(initialState);
+
+  // const [photosReducerUseStateValue, setPhotosReducerUseStateValue] = useState(imagesInitialState);
+
+  const [photosReducer,dispachPhotosReducer] = useReducer(uploadImagesReducer, imagesInitialState);
 
   const[formValues, dispachFormValues] = useReducer(signUpreducer,initialState);
 
@@ -29,10 +36,18 @@ const AuthScreen = () => {
       type: "UPDATE INPUT",
       payload: { formState: true, stateValues: formUseStateValue }
     });
-    signUp(formUseStateValue.actualValues);
-    setFormUseStateValue(initialState);
-    
+    setFormUseStateValue(initialState); 
   }
+
+  const secondNextHandle = () => {
+    setSecondNext(prevState =>!prevState);
+  }
+
+  const signUpHandle = () => {
+      signUp(formUseStateValue.actualValues,photosReducer.actualValues,videoUri);
+  }
+
+
 
   useEffect(() => {
     // Scroll to top whenever the next step changes
@@ -57,7 +72,7 @@ const AuthScreen = () => {
             }
             {!isSignUp && <SignInForm />}
 
-            {!next &&
+            {!next && 
               <View style={{ marginTop: 8, marginBottom: 10 }}>
                 <Text style={styles.signupText}>Already have an account?
                   <Pressable onPress={() => { setIsSignUp(prevState => !prevState) }}>
@@ -67,8 +82,22 @@ const AuthScreen = () => {
               </View>
             }
 
-            {!secondNext && next && isSignUp && <UploadPhotosForm secondNext={secondNext} setSecondNext={setSecondNext} onBackPress={backToSignUpFormHandle} />}
-            {secondNext && <VideoForm setSecondNext={setSecondNext} />}
+            { !secondNext && next && isSignUp &&
+            <UploadPhotosForm
+               onBackPress={backToSignUpFormHandle}
+               photosReducer={photosReducer}
+               dispachPhotosReducer={dispachPhotosReducer}
+               secondNextHandle={secondNextHandle}
+              />
+            }
+            {secondNext &&
+             <VideoForm
+                setSecondNext={setSecondNext}
+                signUpHandle={signUpHandle}
+                videoUri={videoUri}
+                setVideoUri={setVideoUri}
+            />
+            }
           </KeyboardAvoidingView>
         </PageContainer>
       </ScrollView>
