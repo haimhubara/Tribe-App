@@ -30,9 +30,13 @@ const VideoForm = ({setSecondNext,signUpHandle, videoUri,setVideoUri}) => {
                 </View> 
              
                  <View style={styles.root}>
-                   <Text style={styles.text}>We'd like you to record a video introducing yourself so others can get to know you better</Text>
+                   { !videoUri && <Text style={styles.text}>We like you to enter a video so other pepole can get to know you better</Text>}
+                   { videoUri && <Text style={[styles.text,{fontSize:20}]}>That's it time to sing up</Text>}
                     { !videoUri && 
                     <Button buttonStyle={{backgroundColor:"white"}} text={ <SimpleLineIcons name="camrecorder" size={50} color="black" />} handleClick={() => setTakeVideo(false)} />}
+                    {videoUri &&
+                      <Button buttonStyle={{backgroundColor:"white"}} text={<MaterialCommunityIcons name="camera-retake" size={50} color="black" />} handleClick={takeAgain}/>
+                    }
                  </View>
                 
                 <View style={styles.root}>
@@ -45,7 +49,6 @@ const VideoForm = ({setSecondNext,signUpHandle, videoUri,setVideoUri}) => {
                   resizeMode="cover"
                   shouldPlay={true}
                   />
-                  <Button buttonStyle={{backgroundColor:"white"}} text={<MaterialCommunityIcons name="camera-retake" size={50} color="black" />} handleClick={takeAgain}/>
                 </>
                   }
                    { !videoUri &&  <Image
@@ -89,7 +92,7 @@ const VideoForm = ({setSecondNext,signUpHandle, videoUri,setVideoUri}) => {
     },
     video: {
       width: "100%",
-      height: 300,
+      height: 340,
       borderRadius: 10,
       overflow: "hidden",
       marginBottom: 20,
