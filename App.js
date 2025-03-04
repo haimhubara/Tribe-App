@@ -13,6 +13,7 @@ import ChatScreen from './screens/chatScreens/ChatScreen';
 import AuthScreen from './screens/AuthScreen';
 import * as SplashScreen from "expo-splash-screen";
 import * as Font from 'expo-font';
+import ParticipantsListScreen from './screens/ParticipantsListScreen';
 
 
 
@@ -105,19 +106,37 @@ function WellcomeWindow() {
       })}
     >
       <Tab.Screen name="Home" component={AuthScreen} />
-      <Tab.Screen name="Search" component={PersonalActivityProfileScreen} initialParams={{myPage:1}}/>
+      <Tab.Screen name="Search" component={ActivityPages} initialParams={{myPage:1}}/>
       <Tab.Screen name="Chats Screen" component={ChatStack} options={{tabBarLabel:"Chats"}}/>
       <Tab.Screen
           name="New"
           component={AddNewEventScreen}
-          initialParams={{ resetForm: true }} // הוספנו את הפרמטר initialParams
+          initialParams={{ resetForm: true }} 
       />
       <Tab.Screen name="Profile Screen" component={ProfileStack} options={{tabBarLabel:"Profile"}}/>
      
     </Tab.Navigator>
   );
 }
-
+function ActivityPages(){
+  return(
+    <Stack.Navigator
+    screenOptions={{
+      cardStyle: {
+        flex: 1
+      },
+      cardStyleInterpolator: ({ current }) => ({
+        cardStyle: {
+          opacity: current.progress,
+        },
+      }),
+    }}>
+       <Stack.Screen name="PersonalActivityProfileScreen" component={PersonalActivityProfileScreen} options={{ headerShown: false }} />
+       <Stack.Screen name="ParticipantsListScreen" component={ParticipantsListScreen} options={{ headerShown: false }} />
+       <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={{ headerShown: false }} />
+    </Stack.Navigator>
+  );
+}
 
 
 function App() {
@@ -126,7 +145,7 @@ function App() {
 
   const onLayout = useCallback(async () => {
     if (appIsLoaded) {
-      await SplashScreen.hideAsync();
+      await SplashScreedn.hideAsync();
     }
   }, [appIsLoaded]);
   
@@ -174,8 +193,8 @@ function App() {
               flex: 1
             }
          }}>
-            {true && <Stack.Screen name="AuthScreen" component={AuthScreen} options={{ headerShown: false }}/>} 
-            {false && <Stack.Screen name="WellcomeWindow" component={WellcomeWindow} options={{ headerShown: false }} />}
+            {false && <Stack.Screen name="AuthScreen" component={AuthScreen} options={{ headerShown: false }}/>} 
+            {true && <Stack.Screen name="WellcomeWindow" component={WellcomeWindow} options={{ headerShown: false }} />}
           </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

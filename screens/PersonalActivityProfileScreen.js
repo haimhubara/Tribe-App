@@ -17,16 +17,19 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
     const [gender, setGender] = useState('Any');
     const [languages, setLanguage] = useState("Hebrew, English");
     const [categories, setCategories] = useState("Sport, Music");
-    const [maxPartitions, setMaxPartitions] = useState(5);
     const myPage = route.params?.myPage ?? 1;
 
-    function handleEditClick() {
-        navigation.navigate('New', {
-            ifGoBack: true,
-            activityName, time, location, description, date,
-            ages, gender, languages, categories, maxPartitions, activityImage,
-        });
-    }
+    const handleEditClick = (id) => {
+        if (id === "editButton") {
+            navigation.navigate('New', {
+                ifGoBack: true,
+                activityName,  time: time.toISOString(), location, description, date: date.toISOString(),
+                ages, gender, languages, categories, activityImage,
+            });
+        } else if (id === "participantsButton") {
+            navigation.navigate('ParticipantsListScreen');
+        }
+    };
 
     function getAges() {
         return ages[0] === ages[1] ? ages[0] : `${ages[0]}-${ages[1]}`;
@@ -48,16 +51,21 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
                             { icon: "man", text: `Gender: ${gender}` },
                             { icon: "chatbubbles", text: `Languages: ${languages}` },
                             { icon: "musical-notes", text: `Categories: ${categories}` },
-                            { icon: "person-add", text: `Max Participants: ${maxPartitions}` }
-                        ].map(({ icon, text }, index) => (
+                            { icon: "people", text: "View Participants", onPress: () => handleEditClick("participantsButton") }
+                        ].map(({ icon, text, onPress }, index) => (
                             <View key={index} style={styles.infoRow}>
                                 <Ionicons name={icon} style={styles.icon} />
-                                <Text style={styles.infoText}>{text}</Text>
+                                <Text 
+                                    style={[styles.infoText, onPress && styles.clickableText]} 
+                                    onPress={onPress}
+                                >
+                                    {text}
+                                </Text>
                             </View>
                         ))}
                     </View>
                     {myPage !== 0 && (
-                        <Button text="Edit Event" handleClick={handleEditClick} style={styles.editButton} />
+                        <Button id="editButton" text="Edit Event" handleClick={() => handleEditClick("editButton")} style={styles.editButton} />
                     )}
                 </View>
             </ScrollView>
@@ -81,7 +89,6 @@ const styles = StyleSheet.create({
         shadowRadius: 5,
         elevation: 3
     },
-    title: { fontSize: 24, fontWeight: "bold", color: "#333", marginBottom: 10 },
     subtitle: { fontSize: 16, color: "#555", marginBottom: 20, textAlign: "center" },
     infoContainer: { width: "100%", alignItems: "flex-start" },
     infoRow: { flexDirection: "row", alignItems: "center", marginVertical: 5 },
@@ -92,6 +99,10 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginLeft: 15,
         transform: [{ translateY: -2 }, { translateX: -3 }]
+    },
+    clickableText: {
+        color: "#4A90E2", 
+        textDecorationLine: "underline"
     },
     editButton: { marginTop: 20 },
     icon: { fontSize: 30, color: "#4A90E2" }

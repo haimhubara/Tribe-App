@@ -4,53 +4,53 @@ import {
   Text,
   StyleSheet,
   View,
-  TextInput,
   ScrollView,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
   TouchableOpacity,
-  Modal,
-  Button,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import { SafeAreaView } from "react-native-safe-area-context";
 import HobbiesPicker from "../components/HobbiesPicker";
 import Header from "../components/Header";
 import GalInput from "../components/GalInput";
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import PageContainer from "../components/PageContainer";
 import DatePicker from "../components/DatePicker";
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 import InputPicker from "../components/InputPicker";
+import TimePicker from "../components/TimePicker";
 
-const AddNewEventScreen = ({navigation,route}) => {
+const AddNewEventScreen = ({ navigation, route }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(
+    route.params?.date ? new Date(route.params.date) : new Date()
+  );
   const [selectedNumPartitions, setSelectedNumPartitions] = useState();
   const [isPartitionsVisible, setPartitionsVisible] = useState(false);
   const [selectedGender, setSelectedGender] = useState();
   const [ages, setAges] = useState({ values: [18, 35] });
-  const [language, setLanguage]=useState("");
-  const [selectedHobbies,setSelectedHobbies]=useState("");
-
+  const [language, setLanguage] = useState("");
+  const [selectedHobbies, setSelectedHobbies] = useState("");
+  const [time, setTime] = useState(
+    route.params?.time ? new Date(route.params.time) : new Date()
+  );
+  const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
 
   const ifGoBack = route.params?.ifGoBack;
 
-  const onInuptChange = (id,text) => {
-    if(id==='name'){
-
-    }
-    else if(id === 'number_of_partitions'){
+  const onInuptChange = (id, text) => {
+    if (id === "name") {
+    } else if (id === "number_of_partitions") {
       setSelectedNumPartitions(text);
-    }else if(id ==='description'){
+    } else if (id === "description") {
       setDescription(text);
     }
-  }
-
+  };
 
   const multiSliderValuesChange = (values) => {
     setAges({ values });
@@ -61,6 +61,7 @@ const AddNewEventScreen = ({navigation,route}) => {
       name,
       description,
       date,
+      time,
       selectedNumPartitions,
       selectedGender,
       ageRange: ages.values,
@@ -69,114 +70,158 @@ const AddNewEventScreen = ({navigation,route}) => {
     alert("Event created successfully!");
   };
 
+  const showTimePicker = () => {
+    setTimePickerVisibility(true);
+  };
+
+  const hideTimePicker = () => {
+    setTimePickerVisibility(false);
+  };
+
+  const handleConfirm = (selectedTime) => {
+    setTime(selectedTime);
+    hideTimePicker();
+  };
+
   return (
-    
     <KeyboardAvoidingView style={styles.flexContainer} behavior="padding">
-      <SafeAreaView
-      edges={['left','right']}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <View style={styles.container}>
-            {ifGoBack && <Header title={"Create New Event"} onBackPress={()=>{navigation.navigate('Search')}}></Header>}
-            {!ifGoBack && <Text style={styles.title}>Create New Event</Text>}
-            <PageContainer>
-              <GalInput
-                label="Name Of The Event:"
-                IconPack={MaterialCommunityIcons}
-                iconName="party-popper"
-                onInuptChange={onInuptChange} 
-                id='name'           
+      <SafeAreaView edges={["left", "right"]}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <View style={styles.container}>
+              {ifGoBack && (
+                <Header
+                  title={"Create New Event"}
+                  onBackPress={() => {
+                    navigation.navigate("Search");
+                  }}
+                ></Header>
+              )}
+              {!ifGoBack && (
+                <Text style={styles.title}>Create New Event</Text>
+              )}
+              <PageContainer>
+                <GalInput
+                  label="Name Of The Event:"
+                  IconPack={MaterialCommunityIcons}
+                  iconName="party-popper"
+                  onInuptChange={onInuptChange}
+                  id="name"
+                />
+
+                <GalInput
+                  label="Event Description:"
+                  IconPack={MaterialIcons}
+                  iconName="description"
+                  onInuptChange={onInuptChange}
+                  styleInputContainer={styles.styleInputContainer}
+                  inputOption={{
+                    multiline: true,
+                    numberOfLines: 10,
+                    maxLength: 200,
+                  }}
+                  id="description"
+                />
+                <DatePicker
+                  date={date}
+                  setDate={setDate}
+                  label="Date:"
+                  iconName="calendar"
+                  IconPack={FontAwesome}
+                  onInuptChange={onInuptChange}
+                />
+                
+                <TimePicker
+                  time={time}
+                  setTime={setTime}
+                  label="Time:"
+                  iconName="clockcircleo"
+                  IconPack={AntDesign}
+                  onInuptChange={onInuptChange}
+                />
+
+                <InputPicker
+                  label="Number Of Partitions:"
+                  iconName="numeric"
+                  IconPack={MaterialCommunityIcons}
+                  options={Array.from({ length: 100 }, (_, i) => ({
+                    label: `${i + 1}`,
+                    value: i + 1,
+                  }))}
+                  onInuptChange={onInuptChange}
+                  id="number_of_partitions"
+                  selectedValue={selectedNumPartitions}
+                />
+
+                {isPartitionsVisible && (
+                  <InputPicker
+                    label="Gender"
+                    iconName="human-male-female"
+                    IconPack={MaterialCommunityIcons}
+                    options={[
+                      { label: "Male", value: "Male" },
+                      { label: "Female", value: "Female" },
+                      { label: "Any", value: "Any" },
+                    ]}
+                    onInuptChange={onInuptChange}
+                    id="gender"
+                  />
+                )}
+
+                <Text style={styles.label}>Age Range:</Text>
+                <View style={styles.sliderContainer}>
+                  <MultiSlider
+                    values={[ages.values[0], ages.values[1]]}
+                    sliderLength={280}
+                    selectedStyle={{ backgroundColor: "#FFCA28" }}
+                    onValuesChange={multiSliderValuesChange}
+                    min={0}
+                    max={65}
+                    step={1}
+                  />
+                  <Text style={styles.ageText}>
+                    {`From ${ages.values[0]} to ${ages.values[1]} years`}
+                  </Text>
+                </View>
+              </PageContainer>
+              <HobbiesPicker
+                text="Pick Language Of The Partition:"
+                array={["Hebrew", "Arabic", "English", "Russin"]}
+                selectedHobbies={language}
+                setSelectedHobbies={setLanguage}
               />
-    
-              <GalInput
-                label="Event Description:"
-                IconPack={MaterialIcons}
-                iconName="description"
-                onInuptChange={onInuptChange} 
-                styleInputContainer={styles.styleInputContainer}   
-                inputOption={{
-                  multiline:true,
-                  numberOfLines:10,
-                  maxLength:200
-                }}
-                id='description'   
-               />
-           <DatePicker 
-             date={date} 
-             setDate={setDate}
-             label="Date:"
-             iconName='calendar' 
-             IconPack={FontAwesome} 
-             onInuptChange={onInuptChange}  
-          />
 
-
-            <InputPicker 
-              label="Number Of Partitions:" 
-              iconName="numeric" 
-              IconPack={MaterialCommunityIcons}
-              options={Array.from({ length: 100 }, (_, i) => ({
-                label: `${i + 1}`,
-                value: i + 1
-              }))}
-              onInuptChange={onInuptChange}
-              id="number_of_partitions"
-              selectedValue={selectedNumPartitions}
-            />
-
-
-            {isPartitionsVisible && (
-            <InputPicker label="Gender" iconName="human-male-female" IconPack={MaterialCommunityIcons}
-            options={[
-              { label: 'Male', value: 'Male' },
-              { label: 'Female', value: 'Female' },
-              {label: 'Any', value: 'Any'}
-            ]}
-            onInuptChange={onInuptChange}
-            id="gender"
-          />
-             )}
-
-           
-        
-            <Text style={styles.label}>Age Range:</Text>
-            <View style={styles.sliderContainer}>
-              <MultiSlider
-                values={[ages.values[0], ages.values[1]]}
-                sliderLength={280}
-                selectedStyle={{ backgroundColor: "#FFCA28" }}
-                onValuesChange={multiSliderValuesChange}
-                min={0}
-                max={65}
-                step={1}
+              <HobbiesPicker
+                selectedHobbies={selectedHobbies}
+                setSelectedHobbies={setSelectedHobbies}
+                text="Select your hobbies"
+                array={[
+                  "Reading",
+                  "Traveling",
+                  "Cooking",
+                  "Sports",
+                  "Music",
+                  "Gaming",
+                  "Photography",
+                  "Art",
+                ]}
               />
-              <Text style={styles.ageText}>
-                {`From ${ages.values[0]} to ${ages.values[1]} years`}
-              </Text>
+
+              <TouchableOpacity
+                style={styles.submitButton}
+                onPress={handleSubmit}
+              >
+                <Text style={styles.submitButtonText}>Submit</Text>
+              </TouchableOpacity>
             </View>
-            </PageContainer>
-            <HobbiesPicker text="Pick Language Of The Partition:" array={["Hebrew","Arabic","English","Russin"]} selectedHobbies={language} setSelectedHobbies={setLanguage}/>
-            
-            <HobbiesPicker 
-            selectedHobbies={selectedHobbies}
-            setSelectedHobbies={setSelectedHobbies}
-            text="Select your hobbies" 
-            array={['Reading', 'Traveling', 'Cooking', 'Sports', 'Music', 'Gaming', 'Photography', 'Art']}
-          />
-
-            <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-              <Text style={styles.submitButtonText}>Submit</Text>
-            </TouchableOpacity>
-
-          </View>
-        </ScrollView>
-      </TouchableWithoutFeedback>
+          </ScrollView>
+        </TouchableWithoutFeedback>
       </SafeAreaView>
     </KeyboardAvoidingView>
-    
   );
 };
 
+// ... (שאר הסגנונות)
 const styles = StyleSheet.create({
   flexContainer: { flex: 1, marginTop:16},
   scrollContainer: { flexGrow: 1, justifyContent: "center", padding: 20 },
