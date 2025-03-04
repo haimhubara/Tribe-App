@@ -154,13 +154,13 @@ const SignUpForm = ({setNext,formValues,dispachFormValues, setFormUseStateValue}
           label='Day of birth'
           iconName='date' 
           IconPack={Fontisto}   
-          date={date } 
+          date={formValues.actualValues['date'] || date } 
           setDate={setDate}
           id='date'
-          onInuptChange={inputChangeHandler}
+          onInputChange={inputChangeHandler} // שים לב לשם הנכון כאן
           error={formValues.values['date']}
-         // selectedValue={formValues.actualValues['date']}
         />
+
 
         <Input 
            inputOption={{autoCapitalize:'none'}}

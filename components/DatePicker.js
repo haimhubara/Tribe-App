@@ -4,14 +4,14 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import dayjs from "dayjs";
 import { GlobalStyles } from "../constants/styles";
 
-const DatePicker = ({ label, iconName, IconPack, iconSize, error, date, setDate, id, onInuptChange }) => {
+const DatePicker = ({ label, iconName, IconPack, iconSize, error, date, setDate, id, onInputChange }) => {
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);
 
   const handleDateChange = (event, selectedDate) => {
     setDatePickerVisible(false);
     if (selectedDate) {
       setDate(selectedDate);
-      onInuptChange(id, dayjs(selectedDate).format("YYYY-MM-DD"), true); 
+      onInputChange(id, dayjs(selectedDate).format("YYYY-MM-DD"), true); 
     }
   };
 
@@ -33,16 +33,12 @@ const DatePicker = ({ label, iconName, IconPack, iconSize, error, date, setDate,
       </Pressable>
 
         {isDatePickerVisible && (
-          <DateTimePicker
-            value={date}
-            mode="date"
-            display="default"
-            onChange={onInuptChange? handleDateChange :
-               ()=> {
-                setDatePickerVisible(false); 
-                setDate(date);
-              }}
-          />
+         <DateTimePicker
+         value={dayjs(date).isValid() ? new Date(date) : new Date()}
+         mode="date"
+         display="default"
+         onChange={handleDateChange}
+       />
         )}
       </View>
       {error && (
