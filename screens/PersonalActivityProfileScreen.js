@@ -1,13 +1,12 @@
-import { Text, View, StyleSheet, ScrollView, Image } from "react-native";
+import { Text, View, StyleSheet, ScrollView, Image, TouchableOpacity } from "react-native";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from '@expo/vector-icons';
-import Button from "../components/buttons/Button";
 import Header from "../components/Header";
 import { GlobalStyles } from "../constants/styles";
 
 const PersonalActivityProfileScreen = ({ navigation, route }) => {
-    const [activityName, setActivityName] = useState("Morning Run");
+    const [name, setName] = useState("Morning Run");
     const [time, setTime] = useState(new Date());
     const [location, setLocation] = useState("Central Park");
     const [description, setDescription] = useState("A great way to start the day!");
@@ -15,19 +14,23 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
     const [activityImage, setActivityImage] = useState(require("../assets/icon.png"));
     const [ages, setAges] = useState([18, 22]);
     const [gender, setGender] = useState('Any');
-    const [languages, setLanguage] = useState("Hebrew, English");
-    const [categories, setCategories] = useState("Sport, Music");
-    const myPage = route.params?.myPage ?? 1;
+    const [languages, setLanguage] = useState(["Hebrew", "English"]);
+    const [categories, setCategories] = useState(["Sports", "Music"]);
+    const [selectedNumPartitions, setSelectedNumPartitions] = useState(6);
+    const [isJoined, setIsJoined] = useState(false);
+    const myPage = route.params?.myPage;
 
     const handleEditClick = (id) => {
         if (id === "editButton") {
-            navigation.navigate('New', {
+            navigation.navigate('AddNewEventScreen', {
                 ifGoBack: true,
-                activityName,  time: time.toISOString(), location, description, date: date.toISOString(),
-                ages, gender, languages, categories, activityImage,
+                name, time: time.toISOString(), location, description, date: date.toISOString(),
+                ages, gender, languages, categories, activityImage, selectedNumPartitions,
             });
         } else if (id === "participantsButton") {
             navigation.navigate('ParticipantsListScreen');
+        } else if (id === "joinButton") {
+            setIsJoined(!isJoined); // שינוי הערך של isJoined לסירוגין
         }
     };
 
@@ -38,7 +41,7 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
     return (
         <SafeAreaView edges={['top', 'left', 'right']} style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <Header title={activityName} onBackPress={() => navigation.goBack()} />
+                <Header title={name} onBackPress={() => navigation.goBack()} />
                 <Image source={activityImage} style={styles.image} />
                 <View style={styles.invitationContainer}>
                     <Text style={styles.subtitle}>{description}</Text>
@@ -55,8 +58,8 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
                         ].map(({ icon, text, onPress }, index) => (
                             <View key={index} style={styles.infoRow}>
                                 <Ionicons name={icon} style={styles.icon} />
-                                <Text 
-                                    style={[styles.infoText, onPress && styles.clickableText]} 
+                                <Text
+                                    style={[styles.infoText, onPress && styles.clickableText]}
                                     onPress={onPress}
                                 >
                                     {text}
@@ -65,7 +68,18 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
                         ))}
                     </View>
                     {myPage !== 0 && (
-                        <Button id="editButton" text="Edit Event" handleClick={() => handleEditClick("editButton")} style={styles.editButton} />
+                        <TouchableOpacity onPress={() => handleEditClick("editButton")} style={styles.editButton}>
+                            <Text style={styles.editButtonText}>Edit Event</Text>
+                        </TouchableOpacity>
+                    )}
+                    {myPage !== 1 && (
+                        <TouchableOpacity
+                            onPress={() => handleEditClick("joinButton")}
+                            style={[styles.joinButton, isJoined && styles.joinedButton]}
+                        >
+                            <Ionicons name={isJoined ? "time-outline" : "flame-outline"} style={styles.joinButtonIcon} />
+                            <Text style={styles.joinButtonText}>{isJoined ? "Pending" : "Tribe Us!"}</Text>
+                        </TouchableOpacity>
                     )}
                 </View>
             </ScrollView>
@@ -101,11 +115,39 @@ const styles = StyleSheet.create({
         transform: [{ translateY: -2 }, { translateX: -3 }]
     },
     clickableText: {
-        color: "#4A90E2", 
+        color: "#4A90E2",
         textDecorationLine: "underline"
     },
-    editButton: { marginTop: 20 },
-    icon: { fontSize: 30, color: "#4A90E2" }
+    editButton: {
+        marginTop: 20,
+        backgroundColor: "#4A90E2",
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+    },
+    editButtonText: {
+        color: 'white',
+        fontSize: 16,
+    },
+    joinButton: {
+        marginTop: 20,
+        backgroundColor: "#4A90E2",
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        flexDirection: 'row', 
+    },
+    joinButtonText: {
+        color: 'white',
+        fontSize: 16,
+        marginLeft: 5,
+    },
+    joinButtonIcon: {
+        color: 'white',
+        fontSize: 20,
+    },
+    icon: { fontSize: 30, color: "#4A90E2" },
+    joinedButton: { backgroundColor: "grey" }
 });
 
 export default PersonalActivityProfileScreen;

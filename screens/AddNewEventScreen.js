@@ -25,18 +25,16 @@ import InputPicker from "../components/InputPicker";
 import TimePicker from "../components/TimePicker";
 
 const AddNewEventScreen = ({ navigation, route }) => {
-  const [name, setName] = useState(route.params?.name || console.log(route.params?.name ));
+  const [name, setName] = useState(route.params?.name );
   const [description, setDescription] = useState(route.params?.description || "");
   const [date, setDate] = useState(route.params?.date ? new Date(route.params.date) : new Date());
-  const [selectedNumPartitions, setSelectedNumPartitions] = useState();
+  const [selectedNumPartitions, setSelectedNumPartitions] = useState(route.params?.selectedNumPartitions);
   const [isPartitionsVisible, setPartitionsVisible] = useState(false);
-  const [selectedGender, setSelectedGender] = useState();
-  const [ages, setAges] = useState({ values: [18, 35] });
-  const [language, setLanguage] = useState("");
-  const [selectedHobbies, setSelectedHobbies] = useState("");
-  const [time, setTime] = useState(
-    route.params?.time ? new Date(route.params.time) : new Date()
-  );
+  const [selectedGender, setSelectedGender] = useState(route.params?.gender);
+  const [ages, setAges] = useState(route.params?.ages|| [18, 35] );
+  const [languages, setLanguage] = useState(route.params?.languages||"");
+  const [selectedHobbies, setSelectedHobbies] = useState(route.params?.categories||"");
+  const [time, setTime] = useState(route.params?.time ? new Date(route.params.time) : new Date());
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
 
   const ifGoBack = route.params?.ifGoBack;
@@ -47,6 +45,8 @@ const AddNewEventScreen = ({ navigation, route }) => {
       setSelectedNumPartitions(text);
     } else if (id === "description") {
       setDescription(text);
+    }else if( id==="date"){
+      setDate(text);
     }
   };
 
@@ -91,7 +91,7 @@ const AddNewEventScreen = ({ navigation, route }) => {
                 <Header
                   title={"Create New Event"}
                   onBackPress={() => {
-                    navigation.navigate("Search");
+                    navigation.goBack()
                   }}
                 ></Header>
               )}
@@ -104,6 +104,7 @@ const AddNewEventScreen = ({ navigation, route }) => {
                   IconPack={MaterialCommunityIcons}
                   iconName="party-popper"
                   onInuptChange={onInuptChange}
+                  value={name}
                   id="name"
                 />
 
@@ -118,6 +119,7 @@ const AddNewEventScreen = ({ navigation, route }) => {
                     numberOfLines: 10,
                     maxLength: 200,
                   }}
+                  value={description}
                   id="description"
                 />
                 <DatePicker
@@ -127,6 +129,7 @@ const AddNewEventScreen = ({ navigation, route }) => {
                   iconName="calendar"
                   IconPack={FontAwesome}
                   onInputChange={onInuptChange}
+                  id="date"
                 />
                 
                 <TimePicker
@@ -151,7 +154,7 @@ const AddNewEventScreen = ({ navigation, route }) => {
                   selectedValue={selectedNumPartitions}
                 />
 
-                {isPartitionsVisible && (
+                
                   <InputPicker
                     label="Gender"
                     iconName="human-male-female"
@@ -163,13 +166,14 @@ const AddNewEventScreen = ({ navigation, route }) => {
                     ]}
                     onInuptChange={onInuptChange}
                     id="gender"
+                    selectedValue={selectedGender}
                   />
-                )}
+                
 
                 <Text style={styles.label}>Age Range:</Text>
                 <View style={styles.sliderContainer}>
                   <MultiSlider
-                    values={[ages.values[0], ages.values[1]]}
+                    values={[ages[0], ages[1]]}
                     sliderLength={280}
                     selectedStyle={{ backgroundColor: "#FFCA28" }}
                     onValuesChange={multiSliderValuesChange}
@@ -178,14 +182,15 @@ const AddNewEventScreen = ({ navigation, route }) => {
                     step={1}
                   />
                   <Text style={styles.ageText}>
-                    {`From ${ages.values[0]} to ${ages.values[1]} years`}
+                    {`From ${ages[0]} to ${ages[1]} years`}
                   </Text>
                 </View>
               </PageContainer>
+              
               <HobbiesPicker
                 text="Pick Language Of The Partition:"
                 array={["Hebrew", "Arabic", "English", "Russin"]}
-                selectedHobbies={language}
+                selectedHobbies={languages}
                 setSelectedHobbies={setLanguage}
               />
 
