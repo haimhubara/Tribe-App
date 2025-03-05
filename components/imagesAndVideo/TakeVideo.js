@@ -1,5 +1,5 @@
 import { Camera, CameraView } from 'expo-camera';
-import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, useWindowDimensions, TouchableOpacity } from 'react-native';
 import { useState, useEffect, useRef } from 'react';
 import Button from '../buttons/Button';
 import { GlobalStyles } from "../../constants/styles";
@@ -8,8 +8,9 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Video } from 'expo-av';
 import { useNavigation } from '@react-navigation/native';
+import Ionicons from "@expo/vector-icons/Ionicons";
 
-const TakeVideo = ({videoUri,setVideoUri,setTakeVideo}) => {
+const TakeVideo = ({videoUri,setVideoUri,setTakeVideo,onBackPress}) => {
     const [permission, setPermission] = useState(null);
     const [type, setType] = useState("back");
     const [flashMode, setFlashMode] = useState("on");
@@ -166,7 +167,7 @@ const TakeVideo = ({videoUri,setVideoUri,setTakeVideo}) => {
         );
     }
     return (
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1 }}>  
             <CameraView
                 mode={mode}
                 style={{height:height,width:width,flex: 1 }}
@@ -176,6 +177,14 @@ const TakeVideo = ({videoUri,setVideoUri,setTakeVideo}) => {
                 ref={cameraRef}
                 autoFocus="on"
             >
+            {!isRecording && onBackPress &&
+             <TouchableOpacity
+                style={{position: 'absolute', top: 10, left: 10, backgroundColor: 'transparent', padding: 10,}}
+                onPress={onBackPress} 
+            >    
+                <Ionicons name="arrow-back" size={24} color="white" />
+            </TouchableOpacity>
+            }
             </CameraView>
             <View style={styles.buttonsContainer}>
                 <Button buttonStyle={buttonStyle} text={<MaterialCommunityIcons name="camera-flip" size={40} color="white" />} handleClick={toggleCameraType} />
