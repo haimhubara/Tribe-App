@@ -41,17 +41,20 @@ const AddNewEventScreen = ({ navigation, route }) => {
 
   const onInuptChange = (id, text) => {
     if (id === "name") {
+      setName(text);
     } else if (id === "number_of_partitions") {
       setSelectedNumPartitions(text);
     } else if (id === "description") {
       setDescription(text);
     }else if( id==="date"){
       setDate(text);
+    }else if(id==="gender"){
+      setSelectedGender(text)
     }
   };
 
   const multiSliderValuesChange = (values) => {
-    setAges({ values });
+    setAges( values );
   };
 
   const handleSubmit = () => {
