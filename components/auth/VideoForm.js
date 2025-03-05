@@ -68,6 +68,7 @@ const VideoForm = ({setSecondNext,signUpHandle, videoUri,setVideoUri}) => {
                </>
             ) : (
               <TakeVideo
+                onBackPress={()=>{setTakeVideo(prevState =>!prevState)}}
                 setTakeVideo={setTakeVideo}
                 style={{ flex: 1 }}
                 videoUri={videoUri}
