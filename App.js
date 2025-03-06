@@ -17,7 +17,7 @@ import ParticipantsListScreen from './screens/ParticipantsListScreen';
 import ActivityComponent from './components/ActivityComponent';
 
 
-
+SplashScreen.preventAutoHideAsync();
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
