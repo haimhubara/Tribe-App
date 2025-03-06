@@ -35,7 +35,11 @@ const VideoForm = ({setSecondNext,signUpHandle, videoUri,setVideoUri}) => {
                     { !videoUri && 
                     <Button buttonStyle={{backgroundColor:"white"}} text={ <SimpleLineIcons name="camrecorder" size={50} color="black" />} handleClick={() => setTakeVideo(false)} />}
                     {videoUri &&
-                      <Button buttonStyle={{backgroundColor:"white"}} text={<MaterialCommunityIcons name="camera-retake" size={50} color="black" />} handleClick={takeAgain}/>
+                    <>
+                    <Text style={[styles.text,{fontSize:18,color:GlobalStyles.colors.errorColor}]}>Note! retake will remove the last Video</Text>
+                    <Button buttonStyle={{backgroundColor:"white"}} text={<MaterialCommunityIcons name="camera-retake" size={50} color="black" />} handleClick={takeAgain}/>
+                    </>
+                     
                     }
                  </View>
                 
@@ -101,7 +105,7 @@ const VideoForm = ({setSecondNext,signUpHandle, videoUri,setVideoUri}) => {
     text: {
       fontSize: 20,
       textAlign: "center",
-      marginBottom: 30,
+      marginBottom: 20,
       lineHeight: 30,
       fontFamily:'bold',
       letterSpacing:0.3,

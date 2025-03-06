@@ -145,7 +145,7 @@ function App() {
 
   const onLayout = useCallback(async () => {
     if (appIsLoaded) {
-      await SplashScreedn.hideAsync();
+      await SplashScreen.hideAsync();
     }
   }, [appIsLoaded]);
   
