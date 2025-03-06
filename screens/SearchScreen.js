@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Platform, TextInput, TouchableOpaci
 import ActivityComponent from '../components/ActivityComponent';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
-
+import Sidebar from '../components/Sidebar';
 const SearchScreen = ({ navigation, route }) => {
     const [search, setSearch] = useState('');
     const handleActivityPress = (activityData) => {
@@ -48,6 +48,7 @@ const SearchScreen = ({ navigation, route }) => {
                             autoComplete="off"
                         />
                     </View>
+                    <Sidebar/>
                     {activities.map((activity, index) => (
                         <TouchableOpacity key={index} onPress={() => handleActivityPress(activity)}>
                             <ActivityComponent
@@ -58,6 +59,7 @@ const SearchScreen = ({ navigation, route }) => {
                             />
                         </TouchableOpacity>
                     ))}
+                    
                 </View>
             </ScrollView>
         </SafeAreaView>
