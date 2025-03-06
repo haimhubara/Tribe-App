@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/whiteLogo.png",
       "resizeMode": "cover",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#F4F8F7"
     },
     "ios": {
       "supportsTablet": true,
