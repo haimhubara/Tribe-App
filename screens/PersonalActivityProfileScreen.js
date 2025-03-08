@@ -78,7 +78,7 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
         } else if (id === "joinButton") {
             setIsJoined(!isJoined);
         }else if(id==="requestsButton"){
-            
+            navigation.navigate('RequestsList')
         }
     };
 

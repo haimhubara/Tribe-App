@@ -1,7 +1,7 @@
 import { View,Text,StyleSheet, FlatList } from "react-native"
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from "react";
-import FriendComponent from "../components/FriendComponent";
+import FriendRequestComponent from "../components/FriendRequestComponent";
 import Header from "../components/Header";
 import { useLayoutEffect } from "react";
 
@@ -31,14 +31,14 @@ const RequestsList = ({navigation}) => {
     
     <View style={{flex:1}}>
       <View style={styles.root}>
-          <Header title="Participants" onBackPress={backArrowHandle}/>
+          <Header title="PersonalActivityProfileScreen" onBackPress={backArrowHandle}/>
       </View>
       
       {
         <FlatList 
         data={friendsList}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={(itemData)=>{return (<FriendComponent user={itemData.item} />)}  
+        renderItem={(itemData)=>{return (<FriendRequestComponent user={itemData.item} />)}  
     } />
       }
       {

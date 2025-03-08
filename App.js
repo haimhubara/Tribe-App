@@ -15,6 +15,7 @@ import * as SplashScreen from "expo-splash-screen";
 import * as Font from 'expo-font';
 import ParticipantsListScreen from './screens/ParticipantsListScreen';
 import ActivityComponent from './components/ActivityComponent';
+import RequestsList from './screens/RequestsList';
 
 
 SplashScreen.preventAutoHideAsync();
@@ -153,6 +154,7 @@ function SearchPage(){
         <Stack.Screen name="ActivityComponent" component={ActivityComponent}  />
         <Stack.Screen name="ParticipantsListScreen" component={ParticipantsListScreen} options={{ headerShown: false }} />
         <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="RequestsList" component={RequestsList} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
