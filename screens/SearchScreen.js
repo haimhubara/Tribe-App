@@ -1,83 +1,134 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, StyleSheet, ScrollView, Platform, TextInput, TouchableOpacity, RefreshControl, Modal, Pressable } from 'react-native';
 import ActivityComponent from '../components/ActivityComponent';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Sidebar from '../components/Sidebar';
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
+import firebaseConfig from "../util/firebaseConfig.json";
+
 const SearchScreen = ({ navigation, route }) => {
     const [search, setSearch] = useState('');
-    const handleActivityPress = (activityData) => {
-        navigation.navigate('PersonalActivityProfileScreen', { activity: activityData, myPage: 1 });
+    const [activities, setActivities] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
+    const [sidebarVisible, setSidebarVisible] = useState(false);
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const handleActivityPress = (activityData,id) => {
+        navigation.navigate('PersonalActivityProfileScreen', { activity: activityData, myPage: 1 , id:id});
     };
 
-    const activities = [
-        { name: "Yoga in the Park", description: "Relaxing yoga class in nature", participants: 15, distance: "0 km" },
-        { name: "Bike Tour", description: "Bike tour along the coast", participants: 20, distance: "10 km" },
-        { name: "Cooking Workshop", description: "Healthy and tasty cooking workshop", participants: 12, distance: "0 km" },
-        { name: "Movie Night", description: "Outdoor movie night", participants: 30, distance: "0 km" },
-        { name: "Basketball Game", description: "Group basketball game in the park", participants: 18, distance: "0 km" },
-        { name: "Painting Workshop", description: "Painting workshop for beginners and advanced", participants: 10, distance: "0 km" },
-        { name: "Sunset Hike", description: "Hiking to watch the sunset", participants: 25, distance: "5 km" },
-        { name: "Soccer Game", description: "Friendly soccer game in the park", participants: 22, distance: "0 km" },
-        { name: "Photography Workshop", description: "Outdoor photography workshop", participants: 8, distance: "0 km" },
-        { name: "Karaoke Night", description: "Karaoke night with friends", participants: 16, distance: "0 km" },
-        { name: "Tennis Game", description: "Doubles tennis game in the park", participants: 4, distance: "0 km" },
-        { name: "Gardening Workshop", description: "Home gardening workshop and plant growing tips", participants: 14, distance: "0 km" },
-        { name: "Sunrise Hike", description: "Hiking to watch the sunrise", participants: 28, distance: "5 km" },
-        { name: "Volleyball Game", description: "Beach volleyball game", participants: 12, distance: "0 km" },
-        { name: "Dance Workshop", description: "Salsa dance workshop", participants: 10, distance: "0 km" },
-        { name: "Board Games Night", description: "Board games night with friends", participants: 18, distance: "0 km" },
-        { name: "Frisbee Game", description: "Frisbee game in the park", participants: 16, distance: "0 km" },
-        { name: "Writing Workshop", description: "Creative writing workshop", participants: 8, distance: "0 km" },
-        { name: "Mountain Bike Tour", description: "Challenging mountain bike tour", participants: 20, distance: "20 km" },
-        { name: "Sing-Along Night", description: "Sing-along night with guitar", participants: 25, distance: "0 km" },
-    ];
+    const isoToDateString = (isoString) => {
+        if (!isoString) return null; // אם אין ערך, החזר null
+        const date = new Date(isoString);
+        if (isNaN(date.getTime())) return null; // אם התאריך לא תקף, החזר null
+        return date.toISOString().split('T')[0]; // מחזיר YYYY-MM-DD
+    };
+    
+    const isoToTimeString = (isoString) => {
+        if (!isoString) return null;
+        const date = new Date(isoString);
+        if (isNaN(date.getTime())) return null;
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }); // מחזיר בפורמט 24 שעות
+    };
+    
+
+    const fetchActivities = useCallback(async () => {
+        setRefreshing(true);
+        try {
+            const querySnapshot = await getDocs(collection(db, "activities"));
+            const fetchedActivities = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+            }));
+            setActivities(fetchedActivities);
+        } catch (error) {
+            console.error("Error fetching activities:", error);
+        }
+        setRefreshing(false);
+    }, [db]);
+
+    useEffect(() => {
+        fetchActivities();
+    }, [fetchActivities]);
+
+    const onRefresh = useCallback(() => {
+        fetchActivities();
+    }, [fetchActivities]);
 
     return (
         <SafeAreaView edges={['top', 'left', 'right']} style={styles.container}>
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <View style={styles.root}>
-                    <View style={[styles.searchContainer, Platform.OS === 'ios' && styles.inputIOS, Platform.OS === 'web' && { padding: 10 }]}>
-                        <Ionicons name="search" size={16} color="grey" style={styles.searchIcon} />
-                        <TextInput placeholder="Search"
-                            style={{ flex: 1, marginRight: 10 }}
-                            onChangeText={(data) => { setSearch(data) }}
-                            value={search}
-                            autoCorrect={false}
-                            autoCapitalize="none"
-                            autoComplete="off"
-                        />
-                    </View>
-                    <Sidebar/>
-                    {activities.map((activity, index) => (
-                        <TouchableOpacity key={index} onPress={() => handleActivityPress(activity)}>
+            <View style={styles.headerContainer}>
+                <Sidebar/>
+                <View style={styles.searchContainer}>
+                    <Ionicons name="search" size={16} color="grey" style={styles.searchIcon} />
+                    <TextInput 
+                        placeholder="Search"
+                        style={{ flex: 1, marginRight: 10 }}
+                        onChangeText={setSearch}
+                        value={search}
+                        autoCorrect={false}
+                        autoCapitalize="none"
+                        autoComplete="off"
+                    />
+                </View>
+            </View>
+
+            <ScrollView
+                contentContainerStyle={styles.scrollContainer}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            >
+                {activities
+                    .sort((a, b) => a.distance - b.distance)
+                    .map((activity, index) => (
+                        <TouchableOpacity key={index} onPress={() => handleActivityPress(activity, activity.id)}>
                             <ActivityComponent
+                                id={activity.id}
                                 name={activity.name}
                                 description={activity.description}
-                                participants={activity.participants}
+                                participants={activity.selectedNumPartitions}
                                 distance={activity.distance}
+                                date={isoToDateString(activity.date)}
+                                time={isoToTimeString(activity.time)}
                             />
                         </TouchableOpacity>
                     ))}
-                    
-                </View>
             </ScrollView>
+
+
+            {/* Modal של ה-Sidebar */}
+            <Modal visible={sidebarVisible} animationType="slide" transparent>
+                <Pressable style={styles.modalOverlay} onPress={() => setSidebarVisible(false)} />
+                <View style={styles.sidebarContainer}>
+                    <Sidebar closeSidebar={() => setSidebarVisible(false)} />
+                </View>
+            </Modal>
         </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
-    root: {
+    container: {
         flex: 1,
+        backgroundColor: '#fff',
+    },
+    headerContainer: {
+        flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center'
+        padding: 10,
+    },
+    menuButton: {
+        padding: 10,
+        marginRight: 10,
     },
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#ededed',
         padding: 2,
-        margin: 16,
         borderRadius: 8,
         borderWidth: 0.1,
         shadowColor: "#000",
@@ -85,12 +136,32 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 5,
         elevation: 5,
-        width: '90%',
+        flex: 1,
         height: 40,
     },
     searchIcon: {
         marginLeft: 8,
-    }
+    },
+    scrollContainer: {
+        flexGrow: 1,
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    sidebarContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '75%',
+        height: '100%',
+        backgroundColor: 'white',
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.5,
+        shadowRadius: 10,
+        elevation: 5,
+    },
 });
 
 export default SearchScreen;

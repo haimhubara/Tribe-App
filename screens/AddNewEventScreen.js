@@ -1,15 +1,6 @@
 import React, { useState } from "react";
 import { GlobalStyles } from "../constants/styles";
-import {
-  Text,
-  StyleSheet,
-  View,
-  ScrollView,
-  KeyboardAvoidingView,
-  TouchableWithoutFeedback,
-  Keyboard,
-  TouchableOpacity,
-} from "react-native";
+import {Text,StyleSheet,View,ScrollView,KeyboardAvoidingView,TouchableWithoutFeedback,Keyboard,TouchableOpacity} from "react-native";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import { SafeAreaView } from "react-native-safe-area-context";
 import HobbiesPicker from "../components/HobbiesPicker";
@@ -23,21 +14,33 @@ import DatePicker from "../components/DatePicker";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import InputPicker from "../components/InputPicker";
 import TimePicker from "../components/TimePicker";
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+import {  doc, updateDoc, addDoc, collection } from "firebase/firestore"; 
+import firebaseConfig from "../util/firebaseConfig.json";
 
 const AddNewEventScreen = ({ navigation, route }) => {
-  const [name, setName] = useState(route.params?.name );
+  const [name, setName] = useState(route.params?.name||"" );
   const [description, setDescription] = useState(route.params?.description || "");
   const [date, setDate] = useState(route.params?.date ? new Date(route.params.date) : new Date());
   const [selectedNumPartitions, setSelectedNumPartitions] = useState(route.params?.selectedNumPartitions);
   const [isPartitionsVisible, setPartitionsVisible] = useState(false);
-  const [selectedGender, setSelectedGender] = useState(route.params?.gender);
+  const [selectedGender, setSelectedGender] = useState(route.params?.gender||"Any");
   const [ages, setAges] = useState(route.params?.ages|| [18, 35] );
   const [languages, setLanguage] = useState(route.params?.languages||"");
-  const [selectedHobbies, setSelectedHobbies] = useState(route.params?.categories||"");
+  const [selectedCategories, setSelectedCategories] = useState(route.params?.categories||"");
   const [time, setTime] = useState(route.params?.time ? new Date(route.params.time) : new Date());
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
 
   const ifGoBack = route.params?.ifGoBack;
+
+  
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+
+
+  // Initialize Cloud Firestore and get a reference to the service
+  const db = getFirestore(app);
 
   const onInuptChange = (id, text) => {
     if (id === "name") {
@@ -50,14 +53,39 @@ const AddNewEventScreen = ({ navigation, route }) => {
       setDate(text);
     }else if(id==="gender"){
       setSelectedGender(text)
+    }else if (id === "time") {
+      // הוספת תאריך נוכחי כדי למנוע שגיאה
+      const today = new Date();
+      const [hours, minutes] = text.split(":").map(Number);
+      const parsedTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes);
+  
+      setTime(parsedTime);
+      hideTimePicker();
+    }else if(id==="languages"){
+      setLanguage(text);
+    }else if(id==="categories"){
+      setSelectedCategories(text);
     }
   };
+
+  const parseDateString = (dateString) => {
+    if (!dateString) return null; // אם אין תאריך, החזר null
+
+    const [year, month, day] = dateString.split('-').map(Number);
+    if (isNaN(year) || isNaN(month) || isNaN(day)) return null; // בדיקה אם קיימת שגיאה
+
+    const parsedDate = new Date(year, month - 1, day); // המרת מחרוזת לתאריך (חודשים מתחילים מ-0)
+    
+    return isNaN(parsedDate.getTime()) ? null : parsedDate; // בדיקה אם התוצאה תקינה
+};
+
+
 
   const multiSliderValuesChange = (values) => {
     setAges( values );
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const eventData = {
       name,
       description,
@@ -67,9 +95,48 @@ const AddNewEventScreen = ({ navigation, route }) => {
       selectedGender,
       ageRange: ages.values,
     };
-    console.log("Event Data:", eventData);
-    alert("Event created successfully!");
+    
+    try {
+      if (route.params?.ifGoBack) {
+          if (route.params?.activityId) { 
+              const docRef = doc(db, "activities", route.params?.activityId);
+              await updateDoc(docRef, {
+                  name: name,
+                  description: description,
+                  date: parseDateString(date) instanceof Date ? parseDateString(date).toISOString() : new Date().toISOString(),
+                  time: time instanceof Date ? time.toISOString() : new Date().toISOString(),
+                  selectedNumPartitions: selectedNumPartitions,
+                  gender: selectedGender,
+                  ageRange: ages,
+                  languages: languages,
+                  categories: selectedCategories
+              });
+              alert("Event updated successfully!");
+              navigation.navigate("SearchScreen");
+          } else {
+              alert("Error: No activity ID provided.");
+          }
+      } else {
+          await addDoc(collection(db, "activities"), {
+              name: name,
+              description: description,
+              date: date instanceof Date ? date.toISOString() : new Date().toISOString(),
+              time: time instanceof Date ? time.toISOString() : new Date().toISOString(),
+              selectedNumPartitions: selectedNumPartitions,
+              gender: selectedGender,
+              ages: ages,
+              languages: languages,
+              categories: selectedCategories
+          });
+          alert("Event created successfully!");
+          navigation.navigate("Search");
+      }
+  }  catch (e) {
+      console.error("Error adding document: "+route.params?.activityId, e);
+    }
+
   };
+  
 
   const showTimePicker = () => {
     setTimePickerVisibility(true);
@@ -83,6 +150,8 @@ const AddNewEventScreen = ({ navigation, route }) => {
     setTime(selectedTime);
     hideTimePicker();
   };
+
+
 
   return (
     <KeyboardAvoidingView style={styles.flexContainer} behavior="padding">
@@ -136,6 +205,7 @@ const AddNewEventScreen = ({ navigation, route }) => {
                 />
                 
                 <TimePicker
+                  id="time"
                   time={time}
                   setTime={setTime}
                   label="Time:"
@@ -195,12 +265,14 @@ const AddNewEventScreen = ({ navigation, route }) => {
                 array={["Hebrew", "Arabic", "English", "Russin"]}
                 selectedHobbies={languages}
                 setSelectedHobbies={setLanguage}
+                id="languages"
+                onInuptChange={onInuptChange}
               />
 
               <HobbiesPicker
-                selectedHobbies={selectedHobbies}
-                setSelectedHobbies={setSelectedHobbies}
-                text="Select your hobbies"
+                selectedHobbies={selectedCategories}
+                setSelectedHobbies={setSelectedCategories}
+                text="Select Categories"
                 array={[
                   "Reading",
                   "Traveling",
@@ -211,6 +283,8 @@ const AddNewEventScreen = ({ navigation, route }) => {
                   "Photography",
                   "Art",
                 ]}
+                id="categories"
+                onInuptChange={onInuptChange}
               />
 
               <TouchableOpacity
@@ -227,7 +301,6 @@ const AddNewEventScreen = ({ navigation, route }) => {
   );
 };
 
-// ... (שאר הסגנונות)
 const styles = StyleSheet.create({
   flexContainer: { flex: 1, marginTop:16},
   scrollContainer: { flexGrow: 1, justifyContent: "center", padding: 20 },

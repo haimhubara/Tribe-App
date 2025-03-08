@@ -6,7 +6,7 @@ import Header from "../components/Header";
 import { useLayoutEffect } from "react";
 
 
-const ParticipantsListScreen = ({navigation}) => {
+const RequestsList = ({navigation}) => {
 
   const [search, setSearch] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -75,4 +75,4 @@ const styles = StyleSheet.create({
       }
 });
 
-export default ParticipantsListScreen
+export default RequestsList

@@ -107,17 +107,34 @@ function WellcomeWindow() {
       })}
     >
       <Tab.Screen name="Home" component={AuthScreen} />
-      <Tab.Screen name="Search" component={SearchPage} />
+      <Tab.Screen name="Search" component={SearchPage} initialParams={{myPage:0}}/>
       <Tab.Screen name="Chats Screen" component={ChatStack} options={{tabBarLabel:"Chats"}}/>
-      <Tab.Screen name="New" component={AddNewEventScreen} />
+      <Tab.Screen name="New" component={AddActivityPage} />
       <Tab.Screen name="Profile Screen" component={ProfileStack} options={{tabBarLabel:"Profile"}}/>
      
     </Tab.Navigator>
   );
 }
+function AddActivityPage(){
+  return(
+    <Stack.Navigator
+    screenOptions={{
+      cardStyle: {
+        flex: 1
+      },
+      cardStyleInterpolator: ({ current }) => ({
+        cardStyle: {
+          opacity: current.progress,
+        },
+      }),
+    }}>
+        <Stack.Screen name="AddNewEventScreen" component={AddNewEventScreen} options={{ headerShown: false }}  />
+        <Stack.Screen name="Search" component={SearchPage} options={{ headerShown: false }}  />
+    </Stack.Navigator>
+  );
+}
 
 function SearchPage(){
-
   return(
     <Stack.Navigator
     screenOptions={{
@@ -134,6 +151,8 @@ function SearchPage(){
         <Stack.Screen name="PersonalActivityProfileScreen" component={PersonalActivityProfileScreen} options={{ headerShown: false }} />
         <Stack.Screen name="AddNewEventScreen" component={AddNewEventScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ActivityComponent" component={ActivityComponent}  />
+        <Stack.Screen name="ParticipantsListScreen" component={ParticipantsListScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }

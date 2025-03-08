@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome'; // התקן את הספריה אם לא מותקנת
 
-const ActivityComponent = ({ activityImage, name, description, participants, distance }) => {
+const ActivityComponent = ({ activityImage, name, description, participants, distance,date,id,time }) => {
     const [image, setImage] = useState(require("../assets/icon.png"));
 
     return (
@@ -13,6 +13,8 @@ const ActivityComponent = ({ activityImage, name, description, participants, dis
             <View style={styles.textContainer}>
                 <Text style={styles.activityName}>{name || "Activity Name"}</Text>
                 <Text style={styles.activityDescription}>{description || "Activity Description"}</Text>
+                <Text style={styles.activityDescription}>{"Date: "+date || "No Date"}</Text>
+                <Text style={styles.activityDescription}>{"time: "+time || "No Time"}</Text>
             </View>
             <View style={styles.participantsContainer}>
                 <View style={styles.participantsRow}>

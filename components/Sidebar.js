@@ -9,6 +9,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Checkbox } from 'react-native-paper'; 
 import { GlobalStyles } from '../constants/styles';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const SIDEBAR_WIDTH = 280;
 
@@ -73,7 +74,7 @@ const Sidebar = () => {
           setIsAnimating(true);
           Animated.timing(sidebarPosition, {
               toValue: -SIDEBAR_WIDTH,
-              duration: 170,
+              duration: 200,
               useNativeDriver: false,
           }).start(() => setIsAnimating(false));
       }
@@ -95,6 +96,19 @@ const Sidebar = () => {
       } 
      
     };
+
+    const parseTimeString = (timeString) => {
+      if (!timeString) return null; // Handle empty time string
+    
+      const [hours, minutes] = timeString.split(':').map(Number);
+      if (isNaN(hours) || isNaN(minutes)) return null; // Handle invalid format
+    
+      const now = new Date();
+      now.setHours(hours, minutes, 0, 0); // Set hours and minutes
+    
+      return now;
+    };
+
     const onInputChange = (id, text) => {
       if (id === "name") {
         setName(text);
@@ -109,9 +123,9 @@ const Sidebar = () => {
       }else if(id==="gender"){
         setSelectedGender(text)
       }else if( id==="timeStart"){
-        setDateStart(text);
+        setTimeStart(text);
       }else if( id==="timeEnd"){
-        setDateEnd(text);
+        setTimeEnd(text);
       }else if(id==="numPartitions"){
         setSelectedNumPartitions(text);
       }else if(id==="gender"){
@@ -120,8 +134,8 @@ const Sidebar = () => {
     };
 
     function handleEditClick(){
-      console.log("start from: "+dateStart);
-      console.log("end in: "+dateEnd);
+      console.log("Date start from: "+dateStart);
+      console.log("Date end in: "+dateEnd);
       console.log("start time: "+timeStart);
       console.log("end time: "+timeEnd);
       console.log("part num: "+selectedNumPartitions);
@@ -220,7 +234,12 @@ const Sidebar = () => {
 
     return (
       <View style={styles.container}>
-          <Button title="Filters" onPress={toggleSidebar} />
+
+
+          <TouchableOpacity style={styles.menuButton} onPress={toggleSidebar}>
+                    <Ionicons name="menu" size={28} color="black" />
+                </TouchableOpacity>
+
           <Modal transparent={true} visible={isSidebarVisible} animationType="none">
               <View style={styles.modalContainer}>
                   <TouchableOpacity style={styles.overlay} onPress={toggleSidebar} />
@@ -248,7 +267,7 @@ const Sidebar = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+    container: { },
     modalContainer: { flex: 1, flexDirection: 'row', justifyContent: 'flex-end' },
     overlay: { flex: 1 },
     sidebar: { marginTop: 110, height: '76%', backgroundColor: '#f9f9f9', padding: 20, borderTopLeftRadius: 15, borderBottomLeftRadius: 15, shadowColor: '#000', shadowOffset: { width: -2, height: 0 }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 5, position: 'absolute' },
@@ -288,6 +307,13 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 20,
     },
+    menuButton: {
+      padding: 10,
+      //marginRight: 110,
+      justifyContent:"flex-start",
+      alignItems:"flex-start",
+      
+  },
 });
 
 export default Sidebar;

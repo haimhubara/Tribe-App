@@ -1,40 +1,89 @@
 import { Text, View, StyleSheet, ScrollView, Image, TouchableOpacity } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from '@expo/vector-icons';
 import Header from "../components/Header";
 import { GlobalStyles } from "../constants/styles";
+import { initializeApp } from "firebase/app";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
+import firebaseConfig from "../util/firebaseConfig.json";
+import Button from "../components/buttons/Button";
 
 const PersonalActivityProfileScreen = ({ navigation, route }) => {
-    const [name, setName] = useState("Morning Run");
+    const activityId = route.params?.id; 
+    const myPage = route.params?.myPage;
+
+    const [name, setName] = useState("Loading...");
     const [time, setTime] = useState(new Date());
-    const [location, setLocation] = useState("Central Park");
-    const [description, setDescription] = useState("A great way to start the day!");
+    const [location, setLocation] = useState("");
+    const [description, setDescription] = useState("");
     const [date, setDate] = useState(new Date());
     const [activityImage, setActivityImage] = useState(require("../assets/icon.png"));
-    const [ages, setAges] = useState([18, 22]);
+    const [ages, setAges] = useState("");
     const [gender, setGender] = useState('Any');
-    const [languages, setLanguage] = useState(["Hebrew", "English"]);
-    const [categories, setCategories] = useState(["Sports", "Music"]);
-    const [selectedNumPartitions, setSelectedNumPartitions] = useState(6);
+    const [languages, setLanguage] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [selectedNumPartitions, setSelectedNumPartitions] = useState();
     const [isJoined, setIsJoined] = useState(false);
-    const myPage = route.params?.myPage;
+    
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    useEffect(() => {
+        if (!activityId) return;
+
+        const fetchActivityData = async () => {
+            try {
+                const activityRef = doc(db, "activities", activityId);
+                const activitySnap = await getDoc(activityRef);
+
+                if (activitySnap.exists()) {
+                    const data = activitySnap.data();
+                    setName(data.name || "Unnamed Activity");
+                    setDate(data.date ? new Date(data.date) : new Date());
+                    setTime(data.time ? new Date(data.time) : new Date());
+                    setLocation(data.location || "Unknown");
+                    setDescription(data.description || "No description available.");
+                    setAges(data.ages);
+                    setGender(data.gender || "Any");
+                    setLanguage(data.languages || []);
+                    setCategories(data.categories || []);
+                    setSelectedNumPartitions(data.selectedNumPartitions || 0);
+                  
+
+                    if (data.activityImage) {
+                        setActivityImage({ uri: data.activityImage }); 
+                    }
+                } else {
+                    console.error("No such document!");
+                }
+            } catch (error) {
+                console.error("Error fetching activity data:", error);
+            }
+        };
+
+        fetchActivityData();
+    }, [activityId]); 
 
     const handleEditClick = (id) => {
         if (id === "editButton") {
             navigation.navigate('AddNewEventScreen', {
                 ifGoBack: true,
-                name, time: time.toISOString(), location, description, date: date.toISOString(),
-                ages, gender, languages, categories, activityImage, selectedNumPartitions,
+                name, location, description,date: new Date().toISOString(),time: new Date().toISOString(),
+                ages, gender, languages, categories, activityImage, selectedNumPartitions,myPage,activityId
             });
         } else if (id === "participantsButton") {
             navigation.navigate('ParticipantsListScreen');
         } else if (id === "joinButton") {
-            setIsJoined(!isJoined); // שינוי הערך של isJoined לסירוגין
+            setIsJoined(!isJoined);
+        }else if(id==="requestsButton"){
+            
         }
     };
 
     function getAges() {
+      
         return ages[0] === ages[1] ? ages[0] : `${ages[0]}-${ages[1]}`;
     }
 
@@ -46,14 +95,14 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
                 <View style={styles.invitationContainer}>
                     <Text style={styles.subtitle}>{description}</Text>
                     <View style={styles.infoContainer}>
-                        {[
+                        {[ 
                             { icon: "calendar", text: date.toDateString() },
-                            { icon: "time", text: time.toLocaleTimeString() },
+                            { icon: "time", text: time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
                             { icon: "location", text: location },
                             { icon: "people", text: `Ages: ${getAges()}` },
                             { icon: "man", text: `Gender: ${gender}` },
-                            { icon: "chatbubbles", text: `Languages: ${languages}` },
-                            { icon: "musical-notes", text: `Categories: ${categories}` },
+                            { icon: "chatbubbles", text: `Languages: ${languages.join(", ")}` },
+                            { icon: "musical-notes", text: `Categories: ${categories.join(", ")}` },
                             { icon: "people", text: "View Participants", onPress: () => handleEditClick("participantsButton") }
                         ].map(({ icon, text, onPress }, index) => (
                             <View key={index} style={styles.infoRow}>
@@ -68,10 +117,24 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
                         ))}
                     </View>
                     {myPage !== 0 && (
-                        <TouchableOpacity onPress={() => handleEditClick("editButton")} style={styles.editButton}>
-                            <Text style={styles.editButtonText}>Edit Event</Text>
-                        </TouchableOpacity>
+                        <View style={styles.buttonRow}>
+                            <TouchableOpacity
+                                onPress={() => handleEditClick("editButton")}
+                                style={styles.editButton}
+                            >
+                                <Text style={styles.editButtonText}>Edit Event</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={styles.requestsButton}
+                                onPress={() => handleEditClick("requestsButton")}
+                            >
+                                <Text style={styles.requestsButtonText}>Requests</Text>
+                            </TouchableOpacity>
+                        </View>
                     )}
+
+
                     {myPage !== 1 && (
                         <TouchableOpacity
                             onPress={() => handleEditClick("joinButton")}
@@ -81,6 +144,7 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
                             <Text style={styles.joinButtonText}>{isJoined ? "Pending" : "Tribe Us!"}</Text>
                         </TouchableOpacity>
                     )}
+                    
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -119,15 +183,19 @@ const styles = StyleSheet.create({
         textDecorationLine: "underline"
     },
     editButton: {
-        marginTop: 20,
         backgroundColor: "#4A90E2",
-        padding: 10,
+        paddingVertical: 12,
+        paddingHorizontal: 12,
         borderRadius: 5,
-        alignItems: 'center',
+        marginLeft:-35,
+        alignItems: "center",
+        flex: 1,
+        marginHorizontal: 5,
     },
     editButtonText: {
-        color: 'white',
+        color: "white",
         fontSize: 16,
+        fontWeight: "bold",
     },
     joinButton: {
         marginTop: 20,
@@ -147,7 +215,31 @@ const styles = StyleSheet.create({
         fontSize: 20,
     },
     icon: { fontSize: 30, color: "#4A90E2" },
-    joinedButton: { backgroundColor: "grey" }
+    joinedButton: { backgroundColor: "grey" },
+    buttonRow: {
+        flexDirection: "row", 
+        justifyContent: "space-evenly", 
+        alignItems: "center",
+        width: "90%",
+        paddingHorizontal: 20, 
+        marginTop: 15, 
+    },
+    requestsButton: {
+        backgroundColor: "#FF5722",
+        paddingVertical: 12,
+        paddingHorizontal: 10,
+        borderRadius: 5,
+        marginRight:-35,
+        alignItems: "center",
+        flex: 1,
+        marginHorizontal: 5,
+    },
+    requestsButtonText: {
+        color: "white",
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+
 });
 
 export default PersonalActivityProfileScreen;
