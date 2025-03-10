@@ -18,6 +18,9 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import {  doc, updateDoc, addDoc, collection } from "firebase/firestore"; 
 import firebaseConfig from "../util/firebaseConfig.json";
+import ImageGenerator from "../components/imagesAndVideo/ImageGenerator";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
 
 const AddNewEventScreen = ({ navigation, route }) => {
   const [name, setName] = useState(route.params?.name||null );
@@ -31,11 +34,14 @@ const AddNewEventScreen = ({ navigation, route }) => {
   const [selectedCategories, setSelectedCategories] = useState(route.params?.categories||"");
   const [time, setTime] = useState(route.params?.time ? new Date(route.params.time) : null);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const ifGoBack = route.params?.ifGoBack;
 
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
+  const storage = getStorage(app);
+
 
   // Initialize Cloud Firestore and get a reference to the service
   const db = getFirestore(app);
@@ -65,6 +71,8 @@ const AddNewEventScreen = ({ navigation, route }) => {
       setLanguage(text);
     }else if(id==="categories"){
       setSelectedCategories(text);
+    }else if(id==="image"){
+      setSelectedImage(text);
     }
   };
 
@@ -109,69 +117,85 @@ const AddNewEventScreen = ({ navigation, route }) => {
 
   const handleSubmit = async () => {
     if (name == null || description == null || date == null || time == null){
-      alert("You Missed Something");
-      return;
-    }else if((selectedCategories=="")||(languages=="")){
-      alert("You Missed Something");
-      return;
-    }else{
-      
-    // const eventData = {
-    //   name,
-    //   description,
-    //   date,
-    //   time,
-    //   selectedNumPartitions,
-    //   selectedGender,
-    //   ageRange: ages.values,
-    // };
-    // console.log(parseDateString(date).toISOString()+"gggggggggg");
-    try {
-      if (route.params?.ifGoBack) {
-          if (route.params?.activityId) { 
-              const docRef = doc(db, "activities", route.params?.activityId);
-              await updateDoc(docRef, {
-                  name: name,
-                  description: description,
-                  date: parseDateString(date).toISOString(),
-                  time: time instanceof Date ? time.toISOString() : new Date().toISOString(),
-                  selectedNumPartitions: selectedNumPartitions,
-                  gender: selectedGender,
-                  ageRange: ages,
-                  languages: languages,
-                  categories: selectedCategories
-              });
-              alert("Event updated successfully!");
-              navigation.navigate("SearchScreen");
-          } else {
-              alert("Error: No activity ID provided.");
-          }
-      } else {
-          await addDoc(collection(db, "activities"), {
-              name: name,
-              description: description,
-              date: parseDateString(date).toISOString(),
-              time: time instanceof Date ? time.toISOString() : new Date().toISOString(),
-              selectedNumPartitions: selectedNumPartitions,
-              gender: selectedGender,
-              ages: ages,
-              languages: languages,
-              categories: selectedCategories
-          });
-          alert("Event created successfully!");
-          resetForm();
-          navigation.navigate("Search");
-      }
-  }  catch (e) {
-      console.error("Error adding document: "+route.params?.activityId, e);
+        alert("You Missed Something");
+        return;
+    } else if((selectedCategories == "") || (languages == "")){
+        alert("You Missed Something");
+        return;
     }
-  }
 
-  };
+    try {
+        let imageUrl = null;
+        if (selectedImage) {  // נבדוק אם יש תמונה שנבחרה
+            imageUrl = await uploadImageAsync(selectedImage);
+        }
+
+        if (route.params?.ifGoBack) {
+            if (route.params?.activityId) {
+                const docRef = doc(db, "activities", route.params?.activityId);
+                await updateDoc(docRef, {
+                    name,
+                    description,
+                    date: parseDateString(date).toISOString(),
+                    time: time instanceof Date ? time.toISOString() : new Date().toISOString(),
+                    selectedNumPartitions,
+                    gender: selectedGender,
+                    ageRange: ages,
+                    languages,
+                    categories: selectedCategories,
+                    imageUrl  // נוסיף את ה-URL של התמונה
+                });
+                alert("Event updated successfully!");
+                navigation.navigate("SearchScreen");
+            } else {
+                alert("Error: No activity ID provided.");
+            }
+        } else {
+            await addDoc(collection(db, "activities"), {
+                name,
+                description,
+                date: parseDateString(date).toISOString(),
+                time: time instanceof Date ? time.toISOString() : new Date().toISOString(),
+                selectedNumPartitions,
+                gender: selectedGender,
+                ages,
+                languages,
+                categories: selectedCategories,
+                imageUrl  // נוסיף את ה-URL של התמונה
+            });
+            alert("Event created successfully!");
+            resetForm();
+            navigation.navigate("Search");
+        }
+    } catch (e) {
+        console.error("Error adding document: " + route.params?.activityId, e);
+    }
+};
+
 
   const hideTimePicker = () => {
     setTimePickerVisibility(false);
   };
+
+  const uploadImageAsync = async (imageUri) => {
+    try {
+        if (!imageUri) return null;
+
+        const response = await fetch(imageUri);
+        const blob = await response.blob();
+
+        const fileName = `activities/${new Date().getTime()}_image.jpg`; // שם ייחודי לקובץ
+        const imageRef = ref(storage, fileName);
+
+        await uploadBytes(imageRef, blob);
+        return await getDownloadURL(imageRef); // קבלת URL להורדה
+    } catch (error) {
+        console.error("Error uploading image:", error);
+        return null;
+    }
+};
+
+
 
   return (
     <KeyboardAvoidingView style={styles.flexContainer} behavior="padding">
@@ -199,6 +223,10 @@ const AddNewEventScreen = ({ navigation, route }) => {
                   value={name}
                   id="name"
                 />
+               <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+              <ImageGenerator onInputChange={onInuptChange} />
+              </View>
+
 
                 <GalInput
                   label="Event Description:"
