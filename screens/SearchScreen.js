@@ -13,6 +13,8 @@ const SearchScreen = ({ navigation, route }) => {
     const [activities, setActivities] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
     const [sidebarVisible, setSidebarVisible] = useState(false);
+    const [filters, setFilters] = useState({});
+
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
@@ -36,20 +38,83 @@ const SearchScreen = ({ navigation, route }) => {
     };
     
 
-    const fetchActivities = useCallback(async () => {
+    // const fetchActivities = useCallback(async () => {
+    //     setRefreshing(true);
+    //     try {
+    //         const querySnapshot = await getDocs(collection(db, "activities"));
+    //         const fetchedActivities = querySnapshot.docs.map(doc => ({
+    //             id: doc.id,
+    //             ...doc.data(),
+    //         }));
+    //         setActivities(fetchedActivities);
+    //     } catch (error) {
+    //         console.error("Error fetching activities:", error);
+    //     }
+    //     setRefreshing(false);
+    // }, [db]);
+
+    const fetchActivities = useCallback(async (filters = {}) => {
         setRefreshing(true);
         try {
             const querySnapshot = await getDocs(collection(db, "activities"));
-            const fetchedActivities = querySnapshot.docs.map(doc => ({
+            let fetchedActivities = querySnapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data(),
             }));
+    
+            // סינון לפי תאריך התחלה וסיום
+            if (filters.dateStart || filters.dateEnd) {
+                fetchedActivities = fetchedActivities.filter(activity => {
+                    const activityDate = new Date(activity.date);
+                    return (!filters.dateStart || activityDate >= new Date(filters.dateStart)) &&
+                        (!filters.dateEnd || activityDate <= new Date(filters.dateEnd));
+                });
+            }
+
+            if (filters.timeStart || filters.timeEnd) {
+                fetchedActivities = fetchedActivities.filter(activity => {
+                    if (!activity.time) return false; // אם אין זמן, הפעילות לא תיכלל
+                    
+                    const activityTime = new Date(activity.time);
+                    if (isNaN(activityTime.getTime())) return false; // אם הזמן אינו תקף, דלג על הפעילות
+            
+                    return (!filters.timeStart || new Date(filters.timeStart) <= activityTime) &&
+                           (!filters.timeEnd || new Date(filters.timeEnd) >= activityTime);
+                });
+            }
+            
+    
+
+            if (filters.selectedGender && filters.selectedGender !== "Any") {
+                fetchedActivities = fetchedActivities.filter(activity => activity.gender === filters.selectedGender);
+            }
+
+            if(filters.selectedNumPartitions>1){
+                fetchedActivities = fetchedActivities.filter(activity => activity.selectedNumPartitions >= filters.selectedNumPartitions);
+            }
+    
+
+            if (Array.isArray(filters.selectedCategories) && filters.selectedCategories.length > 0) {
+                fetchedActivities = fetchedActivities.filter(activity =>
+                    filters.selectedCategories.some(category => activity.categories.includes(category))
+                );
+            }
+    
+            // ✅ תיקון: בדיקה אם selectedLanguages מוגדר לפני גישה ל-length
+            if (Array.isArray(filters.selectedLanguages) && filters.selectedLanguages.length > 0) {
+                fetchedActivities = fetchedActivities.filter(activity =>
+                    filters.selectedLanguages.some(language => activity.languages.includes(language))
+                );
+            }
+    
             setActivities(fetchedActivities);
         } catch (error) {
             console.error("Error fetching activities:", error);
         }
         setRefreshing(false);
     }, [db]);
+    
+    
 
     useEffect(() => {
         fetchActivities();
@@ -59,10 +124,16 @@ const SearchScreen = ({ navigation, route }) => {
         fetchActivities();
     }, [fetchActivities]);
 
+    const applyFilters = (filters) => {
+        setFilters(filters); // שמירת הפילטרים
+        fetchActivities(filters); // קריאה לפונקציה שמביאה את הנתונים עם הפילטרים
+    };
+    
+
     return (
         <SafeAreaView edges={['top', 'left', 'right']} style={styles.container}>
             <View style={styles.headerContainer}>
-                <Sidebar/>
+            <Sidebar applyFilters={applyFilters} />
                 <View style={styles.searchContainer}>
                     <Ionicons name="search" size={16} color="grey" style={styles.searchIcon} />
                     <TextInput 
@@ -79,7 +150,9 @@ const SearchScreen = ({ navigation, route }) => {
 
             <ScrollView
                 contentContainerStyle={styles.scrollContainer}
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                //refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => fetchActivities(filters)} />}
+
             >
                 {activities
                     .sort((a, b) => a.distance - b.distance)

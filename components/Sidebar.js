@@ -11,16 +11,17 @@ import { Checkbox } from 'react-native-paper';
 import { GlobalStyles } from '../constants/styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
+
 const SIDEBAR_WIDTH = 280;
 
-const Sidebar = () => {
+const Sidebar = ({ applyFilters }) => {
     const [isSidebarVisible, setIsSidebarVisible] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
     const sidebarPosition = useRef(new Animated.Value(-SIDEBAR_WIDTH)).current;
-    const [dateStart, setDateStart] = useState(new Date());
-    const [dateEnd, setDateEnd] = useState(new Date());
-    const [timeStart, setTimeStart] = useState(new Date());
-    const [timeEnd, setTimeEnd] = useState(new Date());
+    const [dateStart, setDateStart] = useState(null);
+    const [dateEnd, setDateEnd] = useState(null);
+    const [timeStart, setTimeStart] = useState(null);
+    const [timeEnd, setTimeEnd] = useState(null);
     const [selectedNumPartitions, setSelectedNumPartitions] = useState(1);
     const [selectedGender, setSelectedGender] = useState("Any");
     const [ages, setAges] = useState([18, 35]);
@@ -123,9 +124,15 @@ const Sidebar = () => {
       }else if(id==="gender"){
         setSelectedGender(text)
       }else if( id==="timeStart"){
-        setTimeStart(text);
+        const today = new Date();
+        const [hours, minutes] = text.split(":").map(Number);
+        const parsedTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes);
+        setTimeStart(parsedTime);
       }else if( id==="timeEnd"){
-        setTimeEnd(text);
+        const today = new Date();
+        const [hours, minutes] = text.split(":").map(Number);
+        const parsedTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes);
+        setTimeEnd(parsedTime);
       }else if(id==="numPartitions"){
         setSelectedNumPartitions(text);
       }else if(id==="gender"){
@@ -133,18 +140,44 @@ const Sidebar = () => {
       }
     };
 
-    function handleEditClick(){
-      console.log("Date start from: "+dateStart);
-      console.log("Date end in: "+dateEnd);
-      console.log("start time: "+timeStart);
-      console.log("end time: "+timeEnd);
-      console.log("part num: "+selectedNumPartitions);
-      console.log("gender: "+selectedGender);
-      console.log("categories: "+selectedCategories);
-      console.log("languages: "+selectedLanguages);
-      console.log("age range: "+ages[0]+"-"+ages[1]);
+    function handleApplyClick(){
+      
+      applyFilters({
+        dateStart,
+        dateEnd,
+        selectedNumPartitions,
+        selectedGender,
+        selectedCategories,
+        selectedLanguages,
+        ages,
+        timeStart,
+        timeEnd
+    });
     }
-    
+    const handleClearClick = () => {
+      setDateStart(null);
+      setDateEnd(null);
+      setSelectedNumPartitions(1);
+      setSelectedGender("Any");
+      setSelectedCategories([]);
+      setSelectedLanguages([]);
+      setAges([18, 35]);
+      setTimeStart(null);
+      setTimeEnd(null);
+  
+      applyFilters({
+          dateStart: null,
+          dateEnd: null,
+          selectedNumPartitions: 1,
+          selectedGender: "Any",
+          selectedCategories: [],
+          selectedLanguages: [],
+          ages: [18, 35],
+          timeStart: null,
+          timeEnd: null
+      });
+  };
+  
 
     const renderCategoryContent = (category) => {
         switch (category.title) {
@@ -252,11 +285,18 @@ const Sidebar = () => {
                               </View>
                           ))}
                           <TouchableOpacity
-                            onPress={() => handleEditClick("applyButton")}
+                            onPress={() => handleApplyClick("applyButton")}
                             style={[styles.applyButton]}
                         >
                             <MaterialCommunityIcons name="check" style={styles.applyButtonIcon} />
                             <Text style={styles.applyButtonText}>Apply</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => handleClearClick("applyButton")}
+                            style={[styles.applyButton]}
+                        >
+                            <MaterialCommunityIcons name="check" style={styles.applyButtonIcon} />
+                            <Text style={styles.applyButtonText}>Clear</Text>
                         </TouchableOpacity>
                       </ScrollView>
                   </Animated.View>
