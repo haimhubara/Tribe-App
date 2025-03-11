@@ -19,7 +19,8 @@ import { getFirestore } from "firebase/firestore";
 import {  doc, updateDoc, addDoc, collection } from "firebase/firestore"; 
 import firebaseConfig from "../util/firebaseConfig.json";
 import ImageGenerator from "../components/imagesAndVideo/ImageGenerator";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
+
 
 
 const AddNewEventScreen = ({ navigation, route }) => {
@@ -34,13 +35,13 @@ const AddNewEventScreen = ({ navigation, route }) => {
   const [selectedCategories, setSelectedCategories] = useState(route.params?.categories||"");
   const [time, setTime] = useState(route.params?.time ? new Date(route.params.time) : null);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
+
 
   const ifGoBack = route.params?.ifGoBack;
 
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
-  const storage = getStorage(app);
+
 
 
   // Initialize Cloud Firestore and get a reference to the service
@@ -71,8 +72,6 @@ const AddNewEventScreen = ({ navigation, route }) => {
       setLanguage(text);
     }else if(id==="categories"){
       setSelectedCategories(text);
-    }else if(id==="image"){
-      setSelectedImage(text);
     }
   };
 
@@ -125,10 +124,6 @@ const AddNewEventScreen = ({ navigation, route }) => {
     }
 
     try {
-        let imageUrl = null;
-        if (selectedImage) {  // נבדוק אם יש תמונה שנבחרה
-            imageUrl = await uploadImageAsync(selectedImage);
-        }
 
         if (route.params?.ifGoBack) {
             if (route.params?.activityId) {
@@ -143,7 +138,6 @@ const AddNewEventScreen = ({ navigation, route }) => {
                     ageRange: ages,
                     languages,
                     categories: selectedCategories,
-                    imageUrl  // נוסיף את ה-URL של התמונה
                 });
                 alert("Event updated successfully!");
                 navigation.navigate("SearchScreen");
@@ -161,7 +155,6 @@ const AddNewEventScreen = ({ navigation, route }) => {
                 ages,
                 languages,
                 categories: selectedCategories,
-                imageUrl  // נוסיף את ה-URL של התמונה
             });
             alert("Event created successfully!");
             resetForm();
@@ -176,26 +169,6 @@ const AddNewEventScreen = ({ navigation, route }) => {
   const hideTimePicker = () => {
     setTimePickerVisibility(false);
   };
-
-  const uploadImageAsync = async (imageUri) => {
-    try {
-        if (!imageUri) return null;
-
-        const response = await fetch(imageUri);
-        const blob = await response.blob();
-
-        const fileName = `activities/${new Date().getTime()}_image.jpg`; // שם ייחודי לקובץ
-        const imageRef = ref(storage, fileName);
-
-        await uploadBytes(imageRef, blob);
-        return await getDownloadURL(imageRef); // קבלת URL להורדה
-    } catch (error) {
-        console.error("Error uploading image:", error);
-        return null;
-    }
-};
-
-
 
   return (
     <KeyboardAvoidingView style={styles.flexContainer} behavior="padding">
@@ -223,10 +196,6 @@ const AddNewEventScreen = ({ navigation, route }) => {
                   value={name}
                   id="name"
                 />
-               <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-              <ImageGenerator onInputChange={onInuptChange} />
-              </View>
-
 
                 <GalInput
                   label="Event Description:"

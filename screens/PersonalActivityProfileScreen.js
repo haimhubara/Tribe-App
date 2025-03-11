@@ -96,7 +96,7 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
                     <Text style={styles.subtitle}>{description}</Text>
                     <View style={styles.infoContainer}>
                         {[ 
-                            { icon: "calendar", text: date.toDateString() },
+                            { icon: "calendar", text: new Date(date.setDate(date.getDate() - 1)).toDateString() },
                             { icon: "time", text: time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
                             { icon: "location", text: location },
                             { icon: "people", text: `Ages: ${getAges()}` },

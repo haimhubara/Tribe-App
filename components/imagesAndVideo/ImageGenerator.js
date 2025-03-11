@@ -3,12 +3,12 @@ import { launchImageLibraryAsync } from 'expo-image-picker';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useState } from "react";
 
-const ImageGenerator = ({ imageStyle, buttonStyle, imageRootStyle, selectedImage, setSelectedImage }) => {
+const ImageGenerator = ({ imageStyle, buttonStyle, imageRootStyle, onInputChange, selectedImage }) => {
     async function pickImageHandle() {
         const result = await launchImageLibraryAsync({ allowsEditing: true, quality: 0.7 });
         if (!result.canceled) {
             const imageUri = result.assets?.[0]?.uri;
-            setSelectedImage(imageUri);
+            onInputChange("image", imageUri);  // עדכון התמונה ב-parent
         }
     }
 
@@ -28,6 +28,7 @@ const ImageGenerator = ({ imageStyle, buttonStyle, imageRootStyle, selectedImage
         </View>
     );
 };
+
 
 
 const styles = StyleSheet.create({

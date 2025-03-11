@@ -38,21 +38,6 @@ const SearchScreen = ({ navigation, route }) => {
     };
     
 
-    // const fetchActivities = useCallback(async () => {
-    //     setRefreshing(true);
-    //     try {
-    //         const querySnapshot = await getDocs(collection(db, "activities"));
-    //         const fetchedActivities = querySnapshot.docs.map(doc => ({
-    //             id: doc.id,
-    //             ...doc.data(),
-    //         }));
-    //         setActivities(fetchedActivities);
-    //     } catch (error) {
-    //         console.error("Error fetching activities:", error);
-    //     }
-    //     setRefreshing(false);
-    // }, [db]);
-
     const fetchActivities = useCallback(async (filters = {}) => {
         setRefreshing(true);
         try {
@@ -100,7 +85,6 @@ const SearchScreen = ({ navigation, route }) => {
                 );
             }
     
-            // ✅ תיקון: בדיקה אם selectedLanguages מוגדר לפני גישה ל-length
             if (Array.isArray(filters.selectedLanguages) && filters.selectedLanguages.length > 0) {
                 fetchedActivities = fetchedActivities.filter(activity =>
                     filters.selectedLanguages.some(language => activity.languages.includes(language))
@@ -150,7 +134,7 @@ const SearchScreen = ({ navigation, route }) => {
 
             <ScrollView
                 contentContainerStyle={styles.scrollContainer}
-                //refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => fetchActivities(filters)} />}
 
             >
