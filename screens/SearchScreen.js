@@ -43,6 +43,7 @@ const SearchScreen = ({ navigation }) => {
             let fetchedActivities = querySnapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data(),
+                imageUrl: doc.data().imageUrl || null, // שמירת כתובת התמונה אם קיימת
             }));
 
             // סינון לפי חיפוש
@@ -132,6 +133,7 @@ const SearchScreen = ({ navigation }) => {
                                 distance={activity.distance}
                                 date={isoToDateString(activity.date)}
                                 time={isoToTimeString(activity.time)}
+                                imageUrl={activity.imageUrl} // ✅ הצגת תמונה אם קיימת
                             />
                         </TouchableOpacity>
                     ))}

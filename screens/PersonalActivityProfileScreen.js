@@ -52,8 +52,8 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
                     setSelectedNumPartitions(data.selectedNumPartitions || 0);
                   
 
-                    if (data.activityImage) {
-                        setActivityImage({ uri: data.activityImage }); 
+                    if (data.imageUrl) {
+                        setActivityImage({ uri: data.imageUrl });
                     }
                 } else {
                     console.error("No such document!");

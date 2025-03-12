@@ -19,6 +19,7 @@ import { getFirestore } from "firebase/firestore";
 import {  doc, updateDoc, addDoc, collection } from "firebase/firestore"; 
 import firebaseConfig from "../util/firebaseConfig.json";
 import ImageGenerator from "../components/imagesAndVideo/ImageGenerator";
+import { uploadImageToCloudinary } from "../components/Cloudinary";
 
 
 
@@ -35,6 +36,8 @@ const AddNewEventScreen = ({ navigation, route }) => {
   const [selectedCategories, setSelectedCategories] = useState(route.params?.categories||"");
   const [time, setTime] = useState(route.params?.time ? new Date(route.params.time) : null);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
+  const [generatedImage, setGeneratedImage] = useState(null);
+
 
 
   const ifGoBack = route.params?.ifGoBack;
@@ -72,6 +75,8 @@ const AddNewEventScreen = ({ navigation, route }) => {
       setLanguage(text);
     }else if(id==="categories"){
       setSelectedCategories(text);
+    }else if(id==="image"){
+      setGeneratedImage(text);
     }
   };
 
@@ -124,6 +129,11 @@ const AddNewEventScreen = ({ navigation, route }) => {
     }
 
     try {
+        let imageUrl = null;
+    
+        if (generatedImage) {
+          imageUrl = await uploadImageToCloudinary(generatedImage);
+        }
 
         if (route.params?.ifGoBack) {
             if (route.params?.activityId) {
@@ -138,6 +148,7 @@ const AddNewEventScreen = ({ navigation, route }) => {
                     ageRange: ages,
                     languages,
                     categories: selectedCategories,
+                    imageUrl: imageUrl
                 });
                 alert("Event updated successfully!");
                 navigation.navigate("SearchScreen");
@@ -155,6 +166,7 @@ const AddNewEventScreen = ({ navigation, route }) => {
                 ages,
                 languages,
                 categories: selectedCategories,
+                imageUrl: imageUrl,
             });
             alert("Event created successfully!");
             resetForm();
@@ -195,6 +207,10 @@ const AddNewEventScreen = ({ navigation, route }) => {
                   onInuptChange={onInuptChange}
                   value={name}
                   id="name"
+                />
+                <ImageGenerator 
+                  selectedImage={generatedImage} 
+                  onInputChange={onInuptChange} 
                 />
 
                 <GalInput
