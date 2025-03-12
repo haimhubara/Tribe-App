@@ -16,10 +16,11 @@ import InputPicker from "../components/InputPicker";
 import TimePicker from "../components/TimePicker";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import {  doc, updateDoc, addDoc, collection } from "firebase/firestore"; 
+import {  doc, updateDoc, addDoc,getDoc, collection } from "firebase/firestore"; 
 import firebaseConfig from "../util/firebaseConfig.json";
 import ImageGenerator from "../components/imagesAndVideo/ImageGenerator";
-import { uploadImageToCloudinary } from "../components/Cloudinary";
+import { uploadImageToCloudinary,deleteImageFromCloudinary } from "../components/Cloudinary";
+
 
 
 
@@ -36,7 +37,8 @@ const AddNewEventScreen = ({ navigation, route }) => {
   const [selectedCategories, setSelectedCategories] = useState(route.params?.categories||"");
   const [time, setTime] = useState(route.params?.time ? new Date(route.params.time) : null);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
-  const [generatedImage, setGeneratedImage] = useState(null);
+  const [generatedImage, setGeneratedImage] = useState(route.params?.activityImage||null);
+  
 
 
 
@@ -117,22 +119,37 @@ const AddNewEventScreen = ({ navigation, route }) => {
     setLanguage(defaultState.languages);
     setSelectedCategories(defaultState.selectedCategories);
   };
-  
+ 
 
-  const handleSubmit = async () => {
-    if (name == null || description == null || date == null || time == null){
+const handleSubmit = async () => {
+    if (name == null || description == null || date == null || time == null) {
         alert("You Missed Something");
         return;
-    } else if((selectedCategories == "") || (languages == "")){
+    } else if ((selectedCategories == "") || (languages == "")) {
         alert("You Missed Something");
         return;
     }
 
     try {
         let imageUrl = null;
-    
+
         if (generatedImage) {
-          imageUrl = await uploadImageToCloudinary(generatedImage);
+            if (route.params?.activityId) {
+                // שליפת ה-URL הישן מה-Firebase
+                const docRef = doc(db, "activities", route.params.activityId);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const oldImageUrl = docSnap.data().imageUrl;
+                    if (oldImageUrl) {
+                        // חילוץ ה-public_id מ-Cloudinary (שם הקובץ בלי הקידומת)
+                        const publicId = oldImageUrl.split('/').pop().split('.')[0];
+                        await deleteImageFromCloudinary(publicId);
+                    }
+                }
+            }
+
+            // העלאת התמונה החדשה
+            imageUrl = await uploadImageToCloudinary(generatedImage);
         }
 
         if (route.params?.ifGoBack) {
@@ -148,7 +165,7 @@ const AddNewEventScreen = ({ navigation, route }) => {
                     ageRange: ages,
                     languages,
                     categories: selectedCategories,
-                    imageUrl: imageUrl
+                    imageUrl: imageUrl // עדכון URL של התמונה החדשה
                 });
                 alert("Event updated successfully!");
                 navigation.navigate("SearchScreen");
@@ -176,6 +193,7 @@ const AddNewEventScreen = ({ navigation, route }) => {
         console.error("Error adding document: " + route.params?.activityId, e);
     }
 };
+
 
 
   const hideTimePicker = () => {

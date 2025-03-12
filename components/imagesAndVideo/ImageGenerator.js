@@ -1,22 +1,31 @@
 import { View, Text, StyleSheet, Image, Pressable } from "react-native";
 import { launchImageLibraryAsync } from 'expo-image-picker';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 
 const ImageGenerator = ({ imageStyle, buttonStyle, imageRootStyle, onInputChange, selectedImage }) => {
+    const [image, setImage] = useState(
+        selectedImage?.uri ? selectedImage.uri : selectedImage
+    );
+
+    useEffect(() => {
+        setImage(selectedImage?.uri ? selectedImage.uri : selectedImage);
+    }, [selectedImage]);
+
     async function pickImageHandle() {
         const result = await launchImageLibraryAsync({ allowsEditing: true, quality: 0.7 });
         if (!result.canceled) {
             const imageUri = result.assets?.[0]?.uri;
-            onInputChange("image", imageUri);  // עדכון התמונה ב-parent
+            setImage(imageUri);
+            onInputChange("image", imageUri); // שליחת מחרוזת בלבד
         }
     }
 
     return (
         <View style={[styles.root, imageRootStyle]}>
             <View style={[styles.imagePreview, imageStyle]}>
-                {selectedImage ? (
-                    <Image style={styles.image} source={{ uri: selectedImage }} />
+                {image ? (
+                    <Image style={styles.image} source={{ uri: image }} />
                 ) : (
                     <Text style={styles.placeholderText}>No Image</Text>
                 )}
@@ -28,6 +37,7 @@ const ImageGenerator = ({ imageStyle, buttonStyle, imageRootStyle, onInputChange
         </View>
     );
 };
+
 
 
 
