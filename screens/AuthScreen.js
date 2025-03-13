@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import PageContainer from '../components/PageContainer'
 import SignUpForm from '../components/auth/SignUpForm'
 import SignInForm from '../components/auth/SignInForm'
-import { Pressable, Text, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native'
+import { Pressable, Text, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native'
 import { GlobalStyles } from '../constants/styles'
 import { View } from 'react-native'
 import UploadPhotosForm from '../components/auth/UploadPhotosForm'
@@ -17,6 +17,8 @@ import { uploadImagesReducer } from '../util/reducers/AuthReducer'
 
 const AuthScreen = () => {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
   const [next, setNext] = useState(false);
   const [secondNext, setSecondNext] = useState(false);
   const scrollViewRef = useRef();
@@ -43,9 +45,22 @@ const AuthScreen = () => {
     setSecondNext(prevState =>!prevState);
   }
 
-  const signUpHandle = () => {
-      signUp(formUseStateValue.actualValues,photosReducer.actualValues,videoUri);
+  const signUpHandle = async() => {
+    try{
+      setIsLoading(true)
+      await signUp(formUseStateValue.actualValues,photosReducer.actualValues,videoUri);
+    }catch(error){
+      setError(error.message);
+      setIsLoading(false);
+
+    }
   }
+  
+  useEffect(() => {
+    if(error){
+      Alert.alert("An error occured",error);
+    }
+ },[error])
 
 
 
@@ -96,6 +111,7 @@ const AuthScreen = () => {
                 signUpHandle={signUpHandle}
                 videoUri={videoUri}
                 setVideoUri={setVideoUri}
+                isLoading={isLoading}
             />
             }
           </KeyboardAvoidingView>

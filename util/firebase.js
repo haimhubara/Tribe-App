@@ -20,3 +20,20 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
+
+
+export const getFirebaseApp = () => {
+  const firebaseConfig = {
+    apiKey: "AIzaSyD8ldjF1Ep8co4GthgrSp6V-_apFe_VXfc",
+    authDomain: "tribe-6a392.firebaseapp.com",
+    projectId: "tribe-6a392",
+    storageBucket: "tribe-6a392.firebasestorage.app",
+    messagingSenderId: "213065827904",
+    appId: "1:213065827904:web:0908f28dd1a285e4f741a5",
+    measurementId: "G-0GFF463M7M"
+  };
+  
+  // Initialize Firebase
+  return initializeApp(firebaseConfig);
+  
+}

@@ -1,4 +1,4 @@
-import { Text, StyleSheet, View, Image } from "react-native";
+import { Text, StyleSheet, View, Image, ActivityIndicator } from "react-native";
 import TakeVideo from "../imagesAndVideo/TakeVideo";
 import { useState } from "react";
 import Button from "../buttons/Button";
@@ -12,7 +12,7 @@ import { GlobalStyles } from "../../constants/styles";
 import image from "../../assets/images/video.png"
 
 
-const VideoForm = ({setSecondNext,signUpHandle, videoUri,setVideoUri}) => {
+const VideoForm = ({isLoading,setSecondNext,signUpHandle, videoUri,setVideoUri}) => {
     const [takeVideo, setTakeVideo] = useState(true);
     
     function takeAgain(){
@@ -60,13 +60,21 @@ const VideoForm = ({setSecondNext,signUpHandle, videoUri,setVideoUri}) => {
                       style={styles.video}
                     />
                   }
-                    <SubmitButton 
+                  {isLoading ? 
+                  (<ActivityIndicator
+                    size={'small'}
+                    color={GlobalStyles.colors.mainColor}
+                    style={{marginTop:10}}
+                  />)
+                   :(
+                   <SubmitButton 
                     disabeld={!videoUri}
                     style={{marginTop:20, width:'100%'}}
                     onPress={signUpHandle}
                     title="Sign up" 
                     color={GlobalStyles.colors.mainColor}
-                  />
+                  /> )}
+                    
               </View>
               
                </>
