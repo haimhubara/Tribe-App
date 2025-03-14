@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect,useReducer } from 'react'
+import React, { useState, useRef, useEffect,useReducer, useCallback } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import PageContainer from '../components/PageContainer'
 import SignUpForm from '../components/auth/SignUpForm'
@@ -13,16 +13,19 @@ import { signUp } from '../util/actions/AuthAction'
 import { initialState } from '../util/models/AuthModels'
 import { imagesInitialState } from '../util/models/AuthModels'
 import { uploadImagesReducer } from '../util/reducers/AuthReducer'
+import { useDispatch } from 'react-redux'
 
 
 const AuthScreen = () => {
+  const dispach = useDispatch();
   const [isSignUp, setIsSignUp] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
   const [next, setNext] = useState(false);
   const [secondNext, setSecondNext] = useState(false);
   const scrollViewRef = useRef();
-   const [videoUri, setVideoUri] = React.useState(null);
+  const [videoUri, setVideoUri] = React.useState(null);
+  const [takeVideo, setTakeVideo] = useState(true);
 
   const [formUseStateValue, setFormUseStateValue] = useState(initialState);
 
@@ -40,21 +43,28 @@ const AuthScreen = () => {
     });
     setFormUseStateValue(initialState); 
   }
+  
 
   const secondNextHandle = () => {
     setSecondNext(prevState =>!prevState);
   }
 
-  const signUpHandle = async() => {
+  
+  
+
+  const signUpHandle = useCallback (async() => {
     try{
       setIsLoading(true)
-      await signUp(formUseStateValue.actualValues,photosReducer.actualValues,videoUri);
+      const action = (signUp(formUseStateValue.actualValues,photosReducer.actualValues,videoUri));
+      setError(null);
+      await dispach(action);
+   
     }catch(error){
       setError(error.message);
       setIsLoading(false);
 
     }
-  }
+  },[dispach,formUseStateValue,photosReducer,videoUri])
   
   useEffect(() => {
     if(error){
@@ -70,7 +80,7 @@ const AuthScreen = () => {
   }, [next, secondNext])
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: secondNext && !takeVideo ? 'black' : '#F0F0F0' }}>
       <ScrollView style={{ flex: 1 }} ref={scrollViewRef}>
         <PageContainer bool={secondNext} style={{ paddingHorizontal: 0 }}>
           <KeyboardAvoidingView
@@ -112,6 +122,8 @@ const AuthScreen = () => {
                 videoUri={videoUri}
                 setVideoUri={setVideoUri}
                 isLoading={isLoading}
+                takeVideo={takeVideo}
+                setTakeVideo={setTakeVideo}
             />
             }
           </KeyboardAvoidingView>

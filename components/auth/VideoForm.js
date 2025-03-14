@@ -12,8 +12,8 @@ import { GlobalStyles } from "../../constants/styles";
 import image from "../../assets/images/video.png"
 
 
-const VideoForm = ({isLoading,setSecondNext,signUpHandle, videoUri,setVideoUri}) => {
-    const [takeVideo, setTakeVideo] = useState(true);
+const VideoForm = ({takeVideo,setTakeVideo,isLoading,setSecondNext,signUpHandle, videoUri,setVideoUri}) => {
+   
     
     function takeAgain(){
       setTakeVideo(false);

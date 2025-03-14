@@ -7,8 +7,9 @@ import * as MediaLibrary from 'expo-media-library';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Video } from 'expo-av';
-import { useNavigation } from '@react-navigation/native';
 import Ionicons from "@expo/vector-icons/Ionicons";
+import IconButton from '../buttons/IconButton';
+import { StatusBar } from 'react-native';
 
 const TakeVideo = ({videoUri,setVideoUri,setTakeVideo,onBackPress}) => {
     const [permission, setPermission] = useState(null);
@@ -20,15 +21,12 @@ const TakeVideo = ({videoUri,setVideoUri,setTakeVideo,onBackPress}) => {
     const [isRecording, setIsRecording] = useState(false);
     const [mode, setMode] = useState("video");
     const videoRef = useRef(null);
-    const navigation = useNavigation();
-
-   
+ 
     
+
 
     const { width } = useWindowDimensions();
     const height = Math.round((width * 16) / 9);
-    const buttonStyle = {margin:0, paddingHorizontal:0,  paddingVertical: 4,  paddingHorizontal:6, marginTop:0,backgroundColor:'black'}
-
     useEffect(() => {
         (async () => {
             const { status: cameraStatus } = await Camera.requestCameraPermissionsAsync();
@@ -43,11 +41,7 @@ const TakeVideo = ({videoUri,setVideoUri,setTakeVideo,onBackPress}) => {
         })();
     }, []);
 
-    useEffect(()=>{
-        navigation.setOptions({
-            tabBarStyle: { display: 'none' }, 
-          });
-    },[])
+
 
     function btnGivePermissionHandle() {
         Camera.requestCameraPermissionsAsync().then(({ status }) => {
@@ -168,6 +162,15 @@ const TakeVideo = ({videoUri,setVideoUri,setTakeVideo,onBackPress}) => {
     }
     return (
         <View style={{ flex: 1 }}>  
+        {onBackPress && (
+            <TouchableOpacity 
+                style={{ marginLeft: 10, marginBottom: 5, opacity: isRecording ? 0.5 : 1 }}
+                onPress={!isRecording ? onBackPress : null} // הופך ללא לחיץ בזמן ההקלטה
+                disabled={isRecording} // מונע לחיצה אם מקליטים
+            >    
+                <Ionicons name="arrow-back" size={30} color="white" />
+            </TouchableOpacity>
+        )}
             <CameraView
                 mode={mode}
                 style={{height:height,width:width,flex: 1 }}
@@ -177,23 +180,46 @@ const TakeVideo = ({videoUri,setVideoUri,setTakeVideo,onBackPress}) => {
                 ref={cameraRef}
                 autoFocus="on"
             >
-            {!isRecording && onBackPress &&
-             <TouchableOpacity
-                style={{position: 'absolute', top: 10, left: 10, backgroundColor: 'transparent', padding: 10,}}
-                onPress={onBackPress} 
-            >    
-                <Ionicons name="arrow-back" size={24} color="white" />
-            </TouchableOpacity>
-            }
             </CameraView>
             <View style={styles.buttonsContainer}>
-                <Button buttonStyle={buttonStyle} text={<MaterialCommunityIcons name="camera-flip" size={40} color="white" />} handleClick={toggleCameraType} />
+                <IconButton
+                    iconColor="white"
+                    iconName="camera-flip"
+                    IconPack={MaterialCommunityIcons}
+                    iconSize={40}
+                    containerStyle={styles.buttonContainer}
+                    onPress={toggleCameraType} 
+                />
                 {mode === "picture" ? (
-                    <Button buttonStyle={buttonStyle} text={<MaterialIcons name="photo-camera" size={40} color="white" />} handleClick={capturePhotoHandle} />
+                  
+                    <IconButton
+                    iconColor="white"
+                    iconName="photo-camera"
+                    IconPack={MaterialIcons}
+                    iconSize={40}
+                    containerStyle={styles.buttonContainer}
+                    onPress={capturePhotoHandle} 
+                />
                 ) : isRecording ? (
-                    <Button buttonStyle={buttonStyle} text={<MaterialCommunityIcons name="stop-circle-outline" size={40} color="red" />} handleClick={stopRecordHandle} />
+                   
+                   <IconButton
+                    iconColor="red"
+                    iconName= "stop-circle-outline"
+                    IconPack={MaterialCommunityIcons}
+                    iconSize={40}
+                    containerStyle={styles.buttonContainer}
+                    onPress={stopRecordHandle} 
+                />
                 ) : (
-                    <Button buttonStyle={buttonStyle} text={<MaterialCommunityIcons name="record-circle-outline" size={40} color="white" />} handleClick={RecordHandle} />
+                 
+                    <IconButton
+                    iconColor="white"
+                    iconName= "record-circle-outline"
+                    IconPack={MaterialCommunityIcons}
+                    iconSize={40}
+                    containerStyle={styles.buttonContainer}
+                    onPress={RecordHandle} 
+                />
                 )}
               
             </View>
@@ -213,8 +239,13 @@ const styles = StyleSheet.create({
         alignItems:'center',
         justifyContent:'center',
         backgroundColor:'black',
-        padding: 10,
     },
+    buttonContainer:{
+        paddingVertical:10,
+        paddingHorizontal:0,
+        backgroundColor:'black',
+        
+    }
    
 });
 

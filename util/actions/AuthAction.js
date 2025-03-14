@@ -1,8 +1,16 @@
 import { getFirebaseApp } from "../firebase";
-import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth'
+import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
+import { authenticate, logout } from "../../store/authSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getUserData } from "./userAction";
 
-export const  signUp = async(signUpFormValue,uploadImagesFormValues,videoUri) => {
+
+
+let timer;
+
+export const  signUp = (signUpFormValue,uploadImagesFormValues,videoUri) => {
+    return async dispach => {
 
     const app = getFirebaseApp();
     const auth = getAuth(app);
@@ -10,13 +18,22 @@ export const  signUp = async(signUpFormValue,uploadImagesFormValues,videoUri) =>
 
     try{
         const result = await createUserWithEmailAndPassword(auth,signUpFormValue['email'],signUpFormValue['password']);
-        const { uid } = result.user;
+        const { uid, stsTokenManager } = result.user;
+        const { accessToken, expirationTime } = stsTokenManager;
+        const expiryDate = new Date(expirationTime)
+        const timeNow =  new Date();
+        const millisecondUntilExpiry = expiryDate - timeNow;
         const userData = await createUser(firestore,signUpFormValue, uid);
-        console.log(userData);
+        dispach(authenticate({token:accessToken,userData}));
+        saveDataToStorage(accessToken,uid,expiryDate);
+
+        timer = setTimeout(() => {
+            dispach(userLogout());
+        },millisecondUntilExpiry);
 
     }catch(error){
         const errorCode = error.code;
-        console.error(errorCode);
+        //console.error(errorCode);
         let message = "Something went wrong.";
     
         if(errorCode === "auth/email-already-in-use"){
@@ -33,14 +50,64 @@ export const  signUp = async(signUpFormValue,uploadImagesFormValues,videoUri) =>
         }
     }
     // console.log('videoUri: ',videoUri);
+
+    }
+
+    
 }
    
 
 
 export const  signin = (email,password) => {
-    console.log(email+ " " +password);
+    return async dispach => {
+
+        const app = getFirebaseApp();
+        const auth = getAuth(app);
+        const firestore = getFirestore(app);
+    
+        try{
+            const result = await signInWithEmailAndPassword(auth,email,password);
+            const { uid, stsTokenManager } = result.user;
+            const { accessToken, expirationTime } = stsTokenManager;
+            const expiryDate = new Date(expirationTime);
+            const timeNow =  new Date();
+            const millisecondUntilExpiry = expiryDate - timeNow;
+            const userData = await getUserData(uid);
+            dispach(authenticate({token:accessToken,userData}));
+            saveDataToStorage(accessToken,uid,expiryDate);
+            
+            timer = setTimeout(() => {
+                dispach(userLogout());
+            },millisecondUntilExpiry);
+
+    
+        }catch(error){
+            const errorCode = error.code;
+            console.log(errorCode);
+            let message = "Something went wrong.";
+
+            if (errorCode=== "auth/email-already-in-use") {
+                message = "This email is already in use";
+            } else if (errorCode === "auth/invalid-credential") {
+                message = "The credentials provided are invalid.";
+            } else if (errorCode === "auth/wrong-password" || errorCode === "auth/user-not-found") {
+                message = "The email or password was incorrect.";
+            }
+            throw new Error(message);
+        }
+    
+        }
+    
+   
 }
 
+export const userLogout = () => {
+    return async dispach => {
+        AsyncStorage.clear();
+        clearTimeout(timer);
+        dispach(logout())
+    }
+}
 
 const createUser = async(firestore,signUpFormValue,userId) => {
     const userData = {
@@ -62,4 +129,13 @@ const createUser = async(firestore,signUpFormValue,userId) => {
     const userRef = doc(collection(firestore, "users"), userId);
     await setDoc(userRef, userData);
     return userData;
+}
+
+
+const saveDataToStorage = (token,userId, expiryDate) => {
+    AsyncStorage.setItem("userData", JSON.stringify({
+        token,
+        userId,
+        expiryDate:expiryDate.toISOString()
+    }));
 }

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback,useState,useEffect } from 'react'
 import Input from '../../components/Input'
 import Feather from '@expo/vector-icons/Feather';
 import SubmitButton from '../../components/buttons/SubmitButton'
@@ -8,6 +8,9 @@ import { validateInput } from '../../util/actions/FormActions';
 import { useReducer } from 'react';
 import { signin } from '../../util/actions/AuthAction';
 import { signInReducer } from '../../util/reducers/AuthReducer';
+import { useDispatch } from 'react-redux';
+import { Alert } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 
 
 const initialState = {
@@ -26,12 +29,40 @@ const initialState = {
 
 
 const SignInForm = () => {
- const [formValues, dispachFormValues] = useReducer(signInReducer,initialState);
+  const dispach = useDispatch();
 
- const SingInHandle = ()=>{
-    signin(formValues.actualValues.email,formValues.actualValues.password);
- }
+
+  const [error,setError] = useState();
+  const [isLoading,setIsLoading] = useState(false);
   
+  const [formValues, dispachFormValues] = useReducer(signInReducer,initialState);
+
+  const SingInHandle = useCallback ( async() => {
+    try{
+      setIsLoading(true);
+
+      const action = signin(
+        formValues.actualValues.email,
+        formValues.actualValues.password
+      );
+
+      setError(null);
+      await dispach(action);
+
+    }catch(error){
+      setError(error.message);
+      setIsLoading(false);
+
+    }
+  },[dispach, formValues]);
+
+  
+  useEffect(() => {
+    if(error){
+      Alert.alert("An error occured",error);
+    }
+ },[error])
+    
  
  const inputChangeHandler =  useCallback((inputId,inputValue) =>{
   const result = validateInput(inputId,inputValue)
@@ -61,13 +92,20 @@ const SignInForm = () => {
           IconPack={Feather}
         />
 
-        <SubmitButton 
-          disabeld={!formValues.formState}
-          style={{marginTop:20}} 
-          onPress={SingInHandle}
-          title="Sign In" 
-          color={GlobalStyles.colors.mainColor}
-        />
+         {isLoading ? 
+            (<ActivityIndicator
+               size={'small'}
+                color={GlobalStyles.colors.mainColor}
+                style={{marginTop:10}}
+            />)
+             :(
+               <SubmitButton 
+                 disabeld={!formValues.formState}
+                  style={{marginTop:20, width:'100%'}}
+                  onPress={SingInHandle}
+                  title="Sign In" 
+                  color={GlobalStyles.colors.mainColor}
+              /> )}
   </>
        
   )

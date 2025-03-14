@@ -1,169 +1,20 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet,View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
-import { createStackNavigator } from '@react-navigation/stack';
-import { HomeScreen, ProfileScreen, ChatListScreen, SearchScreen, AddNewEventScreen,PersonalActivityProfileScreen } from './screens';
-import { useState, useCallback, useEffect } from 'react';
-import FriendsScreen from './screens/proflieScreens/FriendsScreen';
-import FriendProfileScreen from './screens/proflieScreens/ForeignProfileScreen';
-import { SafeAreaProvider,  } from 'react-native-safe-area-context';
-import ChatScreen from './screens/chatScreens/ChatScreen';
-import AuthScreen from './screens/AuthScreen';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SplashScreen from "expo-splash-screen";
 import * as Font from 'expo-font';
-import ParticipantsListScreen from './screens/ParticipantsListScreen';
-import ActivityComponent from './components/ActivityComponent';
-import RequestsList from './screens/RequestsList';
+import { store } from './store/store';
+import { Provider } from 'react-redux';
+import { useState, useCallback, useEffect } from 'react';
+import AppNavigation from './navigation/AppNavigation';
+import { StatusBar } from 'expo-status-bar';
 
 
 SplashScreen.preventAutoHideAsync();
-const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator();
-
-
-function ProfileStack(){
-  return(
-    <Stack.Navigator
-    screenOptions={{
-      cardStyle: {
-        flex: 1
-      },
-      cardStyleInterpolator: ({ current }) => ({
-        cardStyle: {
-          opacity: current.progress,
-        },
-      }),
-    }}>
-       <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
-       <Stack.Screen name="FriendsScreen" component={FriendsScreen} options={{ headerShown: false }} />
-       <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={{ headerShown: false }} />
-    </Stack.Navigator>
-  );
-
-}
-
-
-
-function ChatStack(){
-  return(
-    <Stack.Navigator
-    screenOptions={{
-      cardStyle: {
-        flex: 1
-      },
-      animationEnabled: true,
-      cardStyleInterpolator: ({ current }) => ({
-        cardStyle: {
-          opacity: current.progress,
-        },
-      }),
-    }}>
-      <Stack.Screen name="Chats" component={ChatListScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="Chat" component={ChatScreen} options={({ navigation }) => ({
-      headerTitle: "Chat Screen",
-      headerShadowVisible: false,
-      headerTitleAlign: 'center',
-      headerTitleStyle: { fontSize: 28,fontWeight:'bold' },
-      headerLeft: () => (
-        <View style={{width:40}}>
-          <Ionicons name="arrow-back" size={32}  color="black"  style={{ marginLeft: 15 }} 
-            onPress={() => navigation.goBack()} 
-          />
-        </View>
-      ),
-    })} 
-  />
-   
-    </Stack.Navigator>
-  );
-}
-
-function WellcomeWindow() {
-  return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ color, size }) => {
-          let iconName;
-          if (route.name === 'Home') {
-            iconName = 'home';
-          } else if (route.name === 'Search') {
-            iconName = 'search';
-          } else if (route.name === 'Chats Screen') {
-            iconName = 'chatbubble-ellipses-outline';
-          } else if (route.name === 'Profile Screen') {
-            iconName = 'person';
-          } else if (route.name === 'New') {
-            iconName = 'add-circle-outline';
-          }
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: 'black',
-        tabBarInactiveTintColor: 'gray',
-        tabBarStyle: {
-          backgroundColor: '#fff',
-        },
-        headerShown: false,
-      })}
-    >
-      <Tab.Screen name="Home" component={AuthScreen} />
-      <Tab.Screen name="Search" component={SearchPage} initialParams={{myPage:0}}/>
-      <Tab.Screen name="Chats Screen" component={ChatStack} options={{tabBarLabel:"Chats"}}/>
-      <Tab.Screen name="New" component={AddActivityPage} />
-      <Tab.Screen name="Profile Screen" component={ProfileStack} options={{tabBarLabel:"Profile"}}/>
-     
-    </Tab.Navigator>
-  );
-}
-function AddActivityPage(){
-  return(
-    <Stack.Navigator
-    screenOptions={{
-      cardStyle: {
-        flex: 1
-      },
-      cardStyleInterpolator: ({ current }) => ({
-        cardStyle: {
-          opacity: current.progress,
-        },
-      }),
-    }}>
-        <Stack.Screen name="AddNewEventScreen" component={AddNewEventScreen} options={{ headerShown: false }}  />
-        <Stack.Screen name="Search" component={SearchPage} options={{ headerShown: false }}  />
-    </Stack.Navigator>
-  );
-}
-
-function SearchPage(){
-  return(
-    <Stack.Navigator
-    screenOptions={{
-      cardStyle: {
-        flex: 1
-      },
-      cardStyleInterpolator: ({ current }) => ({
-        cardStyle: {
-          opacity: current.progress,
-        },
-      }),
-    }}>
-        <Stack.Screen name="SearchScreen" component={SearchScreen} options={{ headerShown: false }}  />
-        <Stack.Screen name="PersonalActivityProfileScreen" component={PersonalActivityProfileScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="AddNewEventScreen" component={AddNewEventScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="ActivityComponent" component={ActivityComponent}  />
-        <Stack.Screen name="ParticipantsListScreen" component={ParticipantsListScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="RequestsList" component={RequestsList} options={{ headerShown: false }} />
-    </Stack.Navigator>
-  );
-}
-
 
 
 function App() {
 
   const [appIsLoaded, setAppIsLoaded] = useState(false);
+  
 
   const onLayout = useCallback(async () => {
     if (appIsLoaded) {
@@ -205,32 +56,14 @@ function App() {
   }
 
   return (
-    // this line inside SafeAreaProvider onLayout={onLayout}
-    <SafeAreaProvider onLayout={onLayout}>
-      <NavigationContainer>
-          <StatusBar style="dark" />
-          <Stack.Navigator 
-          screenOptions={{
-            cardStyle: {
-              flex: 1
-            }
-         }}>
-            {false && <Stack.Screen name="AuthScreen" component={AuthScreen} options={{ headerShown: false }}/>} 
-            {true && <Stack.Screen name="WellcomeWindow" component={WellcomeWindow} options={{ headerShown: false }} />}
-            
-          </Stack.Navigator>
-      </NavigationContainer>
-    </SafeAreaProvider>
+    <Provider store={store}>
+      <SafeAreaProvider  onLayout={onLayout}>
+        <StatusBar style="dark" />
+        <AppNavigation/>
+      </SafeAreaProvider>
+    </Provider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
 
 export default App;
