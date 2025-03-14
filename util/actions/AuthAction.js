@@ -1,9 +1,10 @@
 import { getFirebaseApp } from "../firebase";
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+import { createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut } from 'firebase/auth'
 import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
 import { authenticate, logout } from "../../store/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getUserData } from "./userAction";
+import { auth } from "../firebase";
 
 
 
@@ -13,7 +14,7 @@ export const  signUp = (signUpFormValue,uploadImagesFormValues,videoUri) => {
     return async dispach => {
 
     const app = getFirebaseApp();
-    const auth = getAuth(app);
+    // const auth = getAuth(app);
     const firestore = getFirestore(app);
 
     try{
@@ -62,7 +63,7 @@ export const  signin = (email,password) => {
     return async dispach => {
 
         const app = getFirebaseApp();
-        const auth = getAuth(app);
+        // const auth = getAuth(app);
         //const firestore = getFirestore(app);
     
         try{
@@ -103,6 +104,7 @@ export const  signin = (email,password) => {
 
 export const userLogout = () => {
     return async dispach => {
+        await signOut(auth);
         AsyncStorage.clear();
         clearTimeout(timer);
         dispach(logout())
