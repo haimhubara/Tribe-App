@@ -13,16 +13,19 @@ import { Alert } from 'react-native';
 import { ActivityIndicator } from 'react-native';
 
 
+const isTestMode = true;
+
+
 const initialState = {
     values:{
-      email:false,
-      password:false
+      email: isTestMode,
+      password: isTestMode
     },
     actualValues:{
-      email:"",
-      password:""
+      email: isTestMode ? "moti@gmail.xom" : "",
+      password: isTestMode ? "12345678" : ""
     },
-    formState:false
+    formState:isTestMode
 }
 
 
@@ -79,6 +82,7 @@ const SignInForm = () => {
          id="email" 
          label="Email"
          iconName="mail" 
+         value={formValues.actualValues.email}
          IconPack={Feather}
        />
 
@@ -89,6 +93,7 @@ const SignInForm = () => {
           id="password"
           label="Password"
           iconName="lock" 
+          value={formValues.actualValues.password}
           IconPack={Feather}
         />
 

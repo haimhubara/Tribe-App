@@ -63,7 +63,7 @@ export const  signin = (email,password) => {
 
         const app = getFirebaseApp();
         const auth = getAuth(app);
-        const firestore = getFirestore(app);
+        //const firestore = getFirestore(app);
     
         try{
             const result = await signInWithEmailAndPassword(auth,email,password);
