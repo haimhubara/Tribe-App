@@ -5,6 +5,7 @@ import { authenticate, logout } from "../../store/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getUserData } from "./userAction";
 import { auth } from "../firebase";
+import { uploadImageToCloudinary,uploadVideoToCloudinary } from "../../components/Cloudinary";
 
 
 
@@ -24,7 +25,17 @@ export const  signUp = (signUpFormValue,uploadImagesFormValues,videoUri) => {
         const expiryDate = new Date(expirationTime)
         const timeNow =  new Date();
         const millisecondUntilExpiry = expiryDate - timeNow;
-        const userData = await createUser(firestore,signUpFormValue, uid);
+
+        let imageUrls = {};
+        for(const key in uploadImagesFormValues){
+            if(uploadImagesFormValues[key] !== null && key !=='imagesContainer'){
+                const imageUrl = await uploadImageToCloudinary(uploadImagesFormValues[key]);
+                imageUrls[key] = imageUrl;
+            }
+        }
+        const videoUrl = await uploadVideoToCloudinary(videoUri);
+        
+        const userData = await createUser(firestore,signUpFormValue,imageUrls,videoUrl, uid);
         dispach(authenticate({token:accessToken,userData}));
         saveDataToStorage(accessToken,uid,expiryDate);
 
@@ -43,13 +54,6 @@ export const  signUp = (signUpFormValue,uploadImagesFormValues,videoUri) => {
         throw new Error(message);
     }
  
-    for(const key in uploadImagesFormValues){
-        if(uploadImagesFormValues[key] !== null && key !=='imagesContainer'){
-            // console.log(key, ": "+uploadImagesFormValues[key]);
-            // console.log();
-
-        }
-    }
     // console.log('videoUri: ',videoUri);
 
     }
@@ -111,7 +115,7 @@ export const userLogout = () => {
     }
 }
 
-const createUser = async(firestore,signUpFormValue,userId) => {
+const createUser = async(firestore,signUpFormValue,imageUrls,videoUrl,userId) => {
     const userData = {
         userId:userId,
         firstName: signUpFormValue['firstName'],
@@ -127,6 +131,8 @@ const createUser = async(firestore,signUpFormValue,userId) => {
         facebook: signUpFormValue['facebook'],
         instagram: signUpFormValue['instagram'],
         tiktok: signUpFormValue['tiktok'],
+        images: imageUrls,
+        videoUrl:videoUrl
     }
     const userRef = doc(collection(firestore, "users"), userId);
     await setDoc(userRef, userData);

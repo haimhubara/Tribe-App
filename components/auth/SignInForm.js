@@ -22,7 +22,7 @@ const initialState = {
       password: isTestMode
     },
     actualValues:{
-      email: isTestMode ? "moti@gmail.xom" : "",
+      email: isTestMode ? "moshek@gmail.com" : "",
       password: isTestMode ? "12345678" : ""
     },
     formState:isTestMode
