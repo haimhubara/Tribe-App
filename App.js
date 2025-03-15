@@ -7,7 +7,6 @@ import { useState, useCallback, useEffect } from 'react';
 import AppNavigation from './navigation/AppNavigation';
 import { StatusBar } from 'expo-status-bar';
 
-
 SplashScreen.preventAutoHideAsync();
 
 

@@ -1,102 +1,228 @@
 import { View, StyleSheet} from "react-native";
 import HobbiesPicker from "../HobbiesPicker";
-import Button from "../buttons/Button";
 import SwapImages from "../swapImages/SwapImages";
-import Output from "../Output";
+import Input from "../Input";
 import PageContainer from "../PageContainer";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Feather from '@expo/vector-icons/Feather';
+import { useSelector } from "react-redux";
+import { validateInput } from "../../util/actions/FormActions";
+import { useReducer } from "react";
+import { signUpreducer } from "../../util/reducers/AuthReducer";
+import SubmitButton from "../buttons/SubmitButton";
+import { ActivityIndicator } from "react-native";
+import { GlobalStyles } from "../../constants/styles";
+import Header from "../Header";
+import { useNavigation } from "@react-navigation/native";
+import { updateSignInUserData } from "../../util/actions/AuthAction";
+import { useDispatch } from "react-redux";
+import { updateLoggedInUserData } from "../../store/authSlice";
 
 
-const EditProfile = ({saveClickHandle,isEdit}) => {
 
-  const [selectedHobbies, setSelectedHobbies] = useState(['Reading', 'Traveling', 'Cooking']);
-  const [languages, setLanguages] = useState(["Hebrew","English"]);
 
-  const onInuptChange = (id,text) => {
+
+const EditProfile = ({isEdit,setIsEdit}) => {
+  const navigation = useNavigation();
+  const dispach = useDispatch();
+  
+  const [isLoading, setIsLoading] = useState(false);
+  const userData = useSelector(state => state.auth.userData);
+
+  
+  
+  const initialState = {
+    actualValues:{
+      firstName: userData.firstName || "",
+      lastName: userData.lastName || "",
+      userName: userData.userName || "",
+      phoneNumber: userData.phoneNumber || "",
+      hobbies: userData.hobbies || [],
+      languages: userData.languages || [],
+      facebook: userData.facebook || "",
+      tiktok: userData.tiktok || "",
+      instagram: userData.instagram || ""
+    },
+    values:{
+      firstName:undefined,
+      lastName:undefined,
+      userName:undefined,
+      phoneNumber:undefined,
+      hobbies:undefined,
+      languages:undefined,
+      facebook:undefined,
+      tiktok:undefined,
+      instagram:undefined
       
+    },
+    formStatus:false 
   }
+  const[formValues, dispachFormValues] = useReducer(signUpreducer,initialState);
+
+   const inputChangeHandler = useCallback((inputId, inputValue) => {
+
+      const result = validateInput(inputId, inputValue);
+      dispachFormValues({
+        type: 'IS VALID FORM',
+        payload: { inputStatus: result, inputId, inputValue }
+      });
+    }, [dispachFormValues]);
+
+  
+    const saveHandler = useCallback(async() => {
+      const updatedValues = formValues.actualValues
+
+      try {
+        setIsLoading(true);
+        await updateSignInUserData(userData.userId,updatedValues);
+        dispach(updateLoggedInUserData({newData:updatedValues}));
+
+      } catch (error) {
+        
+      }
+      finally {
+          setIsLoading(false)
+      }
+  
+      setIsEdit(!isEdit);
+      const parentNav = navigation.getParent();
+      if (parentNav) {
+        parentNav.setOptions({ tabBarStyle: { display:'flex' } });
+      }
+    },[formValues,dispach]);
+
+    const onBackPress = () => {
+      setIsEdit(!isEdit);
+      const parentNav = navigation.getParent();
+      if (parentNav) {
+        parentNav.setOptions({ tabBarStyle: { display:'flex' } });
+      }
+    }
+
 
 
   return (
     <View style={styles.root}>
-         <SwapImages/>
-         <View style={styles.buttons}>
-            <Button text="Save" handleClick={saveClickHandle} />
-         </View>
+      <Header title="Profile" onBackPress={onBackPress}/>
+        
+         <SwapImages  isEdit={isEdit} imagess={userData.images}/>
+        
          <PageContainer>
+
+         {isLoading ? 
+                  (<ActivityIndicator
+                    size={'small'}
+                    color={GlobalStyles.colors.mainColor}
+                    style={{marginTop:10}}
+                  />)
+                   :(
+                  <View style={{ alignItems: "center" }}>
+                   <SubmitButton 
+                    disabeld={!formValues.formStatus }
+                    style={{marginTop:30,marginBottom:20, width:'40%',}}
+                    onPress={saveHandler}
+                    title="Save" 
+                    color={GlobalStyles.colors.mainColor}
+                   /> 
+                   </View>
+           
+           )}
             
-         <Output 
-          label="First name"  
-          inputOption={{editable:isEdit}} 
-          iconName="user-o"
-          IconPack={FontAwesome}
+         <Input 
+            inputOption={{autoCapitalize:'none'}}
+            label="First Name"
+            iconName="user-o"
+            IconPack={FontAwesome}
+            onInuptChange={inputChangeHandler}
+            id="firstName"
+            error={formValues.values['firstName']}
+            initialValue={userData.firstName}
         />
-         <Output
-            label="Last name"
+          <Input 
+            inputOption={{autoCapitalize:'none'}}
+            label="Last Name"
             iconName="user-o" 
             IconPack={FontAwesome}
-            inputOption={{editable:isEdit}} 
-        />
-         <Output
-            label="Email"
-            iconName="mail"
-            IconPack={Feather}
-            inputOption={{editable:!isEdit}} 
+            onInuptChange={inputChangeHandler}
+            id="lastName"
+            error={formValues.values['lastName']}
+            initialValue={userData.lastName}
          />
-         <Output 
-            label="Username"
-            iconName="user-o" 
+        
+         <Input
+            inputOption={{autoCapitalize:'none'}}
+            label="Username" 
+            iconName="user-o"
             IconPack={FontAwesome}
-            inputOption={{editable:!isEdit}} 
-          />
-         <Output
-            label="Phone number"
+            onInuptChange={inputChangeHandler}
+            id='userName'
+            error={formValues.values['userName']}
+            initialValue={userData.userName}
+        />
+         <Input 
+            inputOption={{ keyboardType:"numeric"}}
+            label="Phone Number"
             iconName="phone" 
             IconPack={Feather}
-            inputOption={{editable:isEdit}} 
-            
-          />
-           <Output
-            label="Facebook"
+            onInuptChange={inputChangeHandler}
+            id="phoneNumber"
+            error={formValues.values['phoneNumber']}
+            initialValue={userData.phoneNumber}
+        />
+          <Input 
+            inputOption={{autoCapitalize:'none'}}
+            label="Facebook (optional)"
             iconName="facebook"
             IconPack={Feather}
-            inputOption={{editable:isEdit}} 
-         />
-         <Output 
-            label="TikTok"
-            iconName="logo-tiktok"
-            IconPack={Ionicons}
-            inputOption={{editable:isEdit}} 
-          />
-         <Output
-            label="Instagram "
-            iconName="instagram"
-            IconPack={FontAwesome}
-            editable={isEdit}
-            inputOption={{editable:isEdit}} 
-            
-          />
-          <Output 
-           label="Age"  
-           iconName="user-circle" 
+            onInuptChange={inputChangeHandler}
+            id="facebook"
+            error={formValues.values['facebook']}
+            initialValue={userData.facebook}
+        />
+         <Input 
+           inputOption={{autoCapitalize:'none'}}
+           label="TikTok (optional)"
+           iconName="logo-tiktok"
+           IconPack={Ionicons}
+           onInuptChange={inputChangeHandler}
+           id="tiktok"
+           error={formValues.values['tiktok']}
+           initialValue={userData.tiktok}
+        />
+        
+        <Input 
+           inputOption={{autoCapitalize:'none'}}
+           label="Instagram (optional)"
+           iconName="instagram"
            IconPack={FontAwesome}
-           inputOption={{editable:!isEdit}} 
-         />
-          <HobbiesPicker 
-            selectedHobbies={selectedHobbies}
-            setSelectedHobbies={setSelectedHobbies}
-            text="Select your hobbies" 
+           onInuptChange={inputChangeHandler}
+           id="instagram"
+           error={formValues.values['instagram']}
+           initialValue={userData.instagram}
+        />
+         
+         <HobbiesPicker
+          
+            text="Select your hobbies"
             array={['Reading', 'Traveling', 'Cooking', 'Sports', 'Music', 'Gaming', 'Photography', 'Art']}
-          />
-          <HobbiesPicker
-            selectedHobbies={languages}
-            setSelectedHobbies={setLanguages}
-            text="Select Languages" 
-            array={["Hebrew","Arabic","English","Russin"]}
-           />
+            id='hobbies'
+            onInuptChange={inputChangeHandler}
+            value={formValues.actualValues.hobbies}
+            error={formValues.values['hobbies']}
+       />
+       <HobbiesPicker
+          text="Select Languages"
+          array={["Hebrew","Arabic","English","Russin"]} 
+        
+          id='languages'
+          onInuptChange={inputChangeHandler}
+          value={formValues.actualValues.languages}
+          error={formValues.values['languages']}
+       /> 
+
+        
         </PageContainer>
          
       </View>
@@ -114,6 +240,8 @@ const styles = StyleSheet.create({
       marginVertical:20
   
     },
+   
+   
 })
 
 export default EditProfile

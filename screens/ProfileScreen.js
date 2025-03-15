@@ -47,11 +47,12 @@ const ProfileScreen = ({navigation}) => {
   return (
     <SafeAreaView >
     <ScrollView >
-      <Text  style={styles.header}>Profile</Text>
+     
       {isEdit === true &&
         <EditProfile
           isEdit={isEdit} 
-          saveClickHandle={saveClickHandle}
+          setIsEdit={setIsEdit}
+          
         />
       }
       

@@ -4,13 +4,25 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { GlobalStyles } from "../../constants/styles";
 import { launchCameraAsync, launchImageLibraryAsync, useCameraPermissions, PermissionStatus } from 'expo-image-picker';
 import IconButton from "../buttons/IconButton";
+import { deleteImageFromCloudinary, uploadImageToCloudinary } from "../Cloudinary";
+import { updateLoggedInUserData } from "../../store/authSlice";
+import { updateSignInUserData } from "../../util/actions/AuthAction";
+import { useDispatch, useSelector } from "react-redux";
+import { ActivityIndicator } from "react-native";
 
 
 
-const SwapImageItem = ({ imageUri , setImageUri, editStyle }) => {
+
+const SwapImageItem = ({ imageUri , editStyle ,imageId}) => {
      const [cameraPermissionInformation, requestPermission] = useCameraPermissions();
+     const [loading, setLoading] = useState(false);
+     const dispach = useDispatch();
      const { width, height } = useWindowDimensions();
      const [modalVisible, setModalVisible] = useState(false);
+     const defaultImage = "https://via.placeholder.com/150/FFFFFF?text=No+Image";
+     const [image,setImage] = useState()
+     
+     const userData = useSelector(state => state.auth.userData);
 
       async function verifyPermissions() {
             if (cameraPermissionInformation.status === PermissionStatus.UNDETERMINED) {
@@ -24,11 +36,53 @@ const SwapImageItem = ({ imageUri , setImageUri, editStyle }) => {
             return true;
         }
 
-
-    function editPressHandle() {
+    const editPressHandle = () => {
         setModalVisible(true);
+        
     }
 
+   
+   
+    async function handleNewImageSelection(result) {
+        if (result.canceled) {
+            Alert.alert("Error", "Image picking was canceled.");
+            return;
+        }
+
+        const newImageUri = result.assets?.[0]?.uri;
+        if (!newImageUri) {
+            Alert.alert("Error", "No image found.");
+            return;
+        }
+        try {
+            setLoading(true);
+            if (imageUri === defaultImage) {
+                let images = { ...userData.images }; 
+                const imageCloudinaryUrl = await uploadImageToCloudinary(newImageUri);
+                images[imageId] = imageCloudinaryUrl;
+              
+        
+                await updateSignInUserData(userData.userId, { images });
+                dispach(updateLoggedInUserData({newData:{ images }}));
+            }else{
+                const oldImageUrl = userData.images[imageId];
+                const publicId = oldImageUrl.split('/').pop().split('.')[0];
+                let images = { ...userData.images }; 
+                await deleteImageFromCloudinary(publicId);
+                const imageCloudinaryUrl = await uploadImageToCloudinary(newImageUri);
+                images[imageId] = imageCloudinaryUrl;
+                await updateSignInUserData(userData.userId, { images });
+                dispach(updateLoggedInUserData({newData:{ images }}));
+            }
+        } catch (error) {
+            console.log(error);
+       
+        }finally {
+         setLoading(false);
+        }
+        setModalVisible(false);
+    }
+        
     async function openCamera() {
         const hasPermission = await verifyPermissions();
         if (!hasPermission) {
@@ -41,20 +95,8 @@ const SwapImageItem = ({ imageUri , setImageUri, editStyle }) => {
             aspect: [1, 1]
 
         });
-    
-        if (result.canceled) {
-            Alert.alert("Error", "Image picking was canceled.");
-            return;
-        }
-    
-        const imageUri = result.assets && result.assets.length > 0 ? result.assets[0].uri : null;
-        if (!imageUri) {
-            Alert.alert("Error", "No image found.");
-            return;
-        }
-    
-        setImageUri(imageUri); 
-        setModalVisible(false); 
+
+        await handleNewImageSelection(result);
     }
     
     async function openGallery() {
@@ -63,20 +105,8 @@ const SwapImageItem = ({ imageUri , setImageUri, editStyle }) => {
             quality: 0.5,
             aspect: [1, 1]
         });
-    
-        if (result.canceled) {
-            Alert.alert("Error", "Image picking was canceled.");
-            return;
-        }
-    
-        const imageUri = result.assets && result.assets.length > 0 ? result.assets[0].uri : null;
-        if (!imageUri) {
-            Alert.alert("Error", "No image found.");
-            return;
-        }
-    
-        setImageUri(imageUri);  
-        setModalVisible(false);  
+
+        await handleNewImageSelection(result);
     }
 
   
@@ -100,36 +130,46 @@ const SwapImageItem = ({ imageUri , setImageUri, editStyle }) => {
           />
 
          
-           
-            {/* Modal for Camera/Gallery Selection */}
-            <Modal
-                transparent={true}
-                animationType="slide"
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
-            >
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContainer}>
-                        <Text style={styles.modalTitle}>Choose an option</Text>
-                        <Pressable  style= {styles.modalButton} onPress={openCamera}>
-                            <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                 <Icon name="camera" size={18} color="white" />
-                                 <Text style={[styles.modalButtonText,{marginLeft:5}]}>Open Camera</Text>
-                            </View>
-                        </Pressable>
-                        <Pressable style={styles.modalButton} onPress={openGallery}>
-                            <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                <Icon name="photo" size={18} color="white" />
-                                <Text style={[styles.modalButtonText,{marginLeft:5}]}>Open Gallery</Text>
-                            </View>
-                        </Pressable>
-                        <Pressable style={styles.modalCancel} onPress={() => setModalVisible(false)}>
-                            <Text style={styles.modalCancelText}>Cancel</Text>
-                        </Pressable>
-                    </View>
+                 {/* ActivityIndicator מוצג בזמן טעינה */}
+        {loading && (
+            <ActivityIndicator
+                size={'small'}
+                color={GlobalStyles.colors.mainColor}
+                style={{ marginTop: 10 }}
+            />
+        )}
+
+        {/* Modal הצגת אפשרויות */}
+        <Modal
+            transparent={true}
+            animationType="slide"
+            visible={modalVisible && !loading} 
+            onRequestClose={() => setModalVisible(false)}
+        >
+            <View style={styles.modalOverlay}>
+                <View style={styles.modalContainer}>
+                    <Text style={styles.modalTitle}>Choose an option</Text>
+                    <Pressable style={styles.modalButton} onPress={openCamera}>
+                        <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+                            <Icon name="camera" size={18} color="white" />
+                            <Text style={[styles.modalButtonText, { marginLeft: 5 }]}>Open Camera</Text>
+                        </View>
+                    </Pressable>
+                    <Pressable style={styles.modalButton} onPress={openGallery}>
+                        <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+                            <Icon name="photo" size={18} color="white" />
+                            <Text style={[styles.modalButtonText, { marginLeft: 5 }]}>Open Gallery</Text>
+                        </View>
+                    </Pressable>
+                    <Pressable style={styles.modalCancel} onPress={() => setModalVisible(false)}>
+                        <Text style={styles.modalCancelText}>Cancel</Text>
+                    </Pressable>
                 </View>
-            </Modal>
+            </View>
+        </Modal>
+
         </View>
+      
     );
 };
 

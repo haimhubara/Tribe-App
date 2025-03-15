@@ -1,6 +1,6 @@
 import { getFirebaseApp } from "../firebase";
 import { createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut } from 'firebase/auth'
-import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
+import { getFirestore, collection, doc, setDoc,updateDoc  } from "firebase/firestore";
 import { authenticate, logout } from "../../store/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getUserData } from "./userAction";
@@ -32,7 +32,11 @@ export const  signUp = (signUpFormValue,uploadImagesFormValues,videoUri) => {
                 const imageUrl = await uploadImageToCloudinary(uploadImagesFormValues[key]);
                 imageUrls[key] = imageUrl;
             }
+            else if(uploadImagesFormValues[key] === null && key !=='imagesContainer'){
+                imageUrls[key] = "https://via.placeholder.com/150/FFFFFF?text=No+Image"; 
+            } 
         }
+       
         const videoUrl = await uploadVideoToCloudinary(videoUri);
         
         const userData = await createUser(firestore,signUpFormValue,imageUrls,videoUrl, uid);
@@ -114,6 +118,13 @@ export const userLogout = () => {
         dispach(logout())
     }
 }
+
+export const updateSignInUserData = async (userId, newData) => {
+    const app = getFirebaseApp();
+    const firestore = getFirestore(app);
+    const userRef = doc(firestore, "users", userId);
+    await updateDoc(userRef, newData);
+};
 
 const createUser = async(firestore,signUpFormValue,imageUrls,videoUrl,userId) => {
     const userData = {

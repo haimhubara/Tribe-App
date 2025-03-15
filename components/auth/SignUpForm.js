@@ -157,7 +157,7 @@ const SignUpForm = ({setNext,formValues,dispachFormValues, setFormUseStateValue}
           date={formValues.actualValues['date'] || date } 
           setDate={setDate}
           id='date'
-          onInputChange={inputChangeHandler} // שים לב לשם הנכון כאן
+          onInputChange={inputChangeHandler} 
           error={formValues.values['date']}
         />
 
