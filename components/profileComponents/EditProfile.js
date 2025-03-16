@@ -112,6 +112,12 @@ const EditProfile = ({isEdit,setIsEdit}) => {
         parentNav.setOptions({ tabBarStyle: { display:'flex' } });
       }
     }
+    const EqualArray = (arr1, arr2) => {
+      if (arr1.length !== arr2.length) return false;
+      const sortedArr1 = [...arr1].sort();
+      const sortedArr2 = [...arr2].sort();
+      return sortedArr1.every((val, index) => val === sortedArr2[index]);
+    };
 
     const hasChanges = () => {
       const currentValues = formValues.actualValues;
@@ -121,8 +127,8 @@ const EditProfile = ({isEdit,setIsEdit}) => {
           currentValues.lastName != lastName ||
           currentValues.userName != userName ||
           currentValues.phoneNumber != phoneNumber ||
-          currentValues.hobbies != hobbies ||
-          currentValues.languages != languages ||
+          !EqualArray(currentValues.hobbies,hobbies) ||
+          !EqualArray(currentValues.languages,languages) ||
           currentValues.facebook != facebook ||
           currentValues.tiktok != tiktok ||
           currentValues.instagram != instagram
