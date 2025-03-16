@@ -9,8 +9,8 @@ const FriendRequestComponent = ({ user }) => {
     const [isFriend, setIsFriend] = useState(false);
     const [isRequestApproved, setIsRequestApproved] = useState(false);
 
-    function openFriendProfileHandle() {
-        navigation.navigate("FriendProfile", { isFriend: isFriend });
+    function openForeignProfileHandle() {
+        navigation.navigate("ForeignProfileScreen");
     }
 
     function handleApproveRequest() {
@@ -20,7 +20,7 @@ const FriendRequestComponent = ({ user }) => {
     }
 
     return (
-        <Pressable onPress={openFriendProfileHandle}>
+        <Pressable onPress={openForeignProfileHandle}>
             {({ pressed }) => (
                 <View style={[styles.root, pressed && styles.clicked]}>
                     <ImageToShow 

@@ -3,8 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { createStackNavigator } from '@react-navigation/stack';
 import { HomeScreen, ProfileScreen, ChatListScreen, SearchScreen, AddNewEventScreen,PersonalActivityProfileScreen } from '../screens';
-import FriendsScreen from '../screens/proflieScreens/FriendsScreen';
-import FriendProfileScreen from '../screens/proflieScreens/ForeignProfileScreen';
+import ForeignProfileScreen from '../screens/proflieScreens/ForeignProfileScreen';
 import ChatScreen from '../screens/chatScreens/ChatScreen';
 import ParticipantsListScreen from '../screens/ParticipantsListScreen';
 import ActivityComponent from '../components/ActivityComponent';
@@ -35,8 +34,7 @@ function ProfileStack(){
       }),
     }}>
        <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
-       <Stack.Screen name="FriendsScreen" component={FriendsScreen} options={{ headerShown: false }} />
-       <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={{ headerShown: false }} />
+       <Stack.Screen name="ForeignProfileScreen" component={ForeignProfileScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 
@@ -151,7 +149,7 @@ function SearchPage(){
         <Stack.Screen name="AddNewEventScreen" component={AddNewEventScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ActivityComponent" component={ActivityComponent}  />
         <Stack.Screen name="ParticipantsListScreen" component={ParticipantsListScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="ForeignProfileScreen" component={ForeignProfileScreen} options={{ headerShown: false }} />
         <Stack.Screen name="RequestsList" component={RequestsList} options={{ headerShown: false }} />
     </Stack.Navigator>
   );

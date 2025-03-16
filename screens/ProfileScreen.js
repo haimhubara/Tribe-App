@@ -29,20 +29,9 @@ const ProfileScreen = ({navigation}) => {
         if (parentNav) {
           parentNav.setOptions({ tabBarStyle: { display: 'none' } });
         }
+    }
       
-       
-    }
-    function handleFriendsClick(){
-      navigation.navigate("FriendsScreen");
-    }
-    function saveClickHandle() {
-      setIsEdit(!isEdit);
-      const parentNav = navigation.getParent();
-        if (parentNav) {
-          parentNav.setOptions({ tabBarStyle: { display:'flex' } });
-        }
-      
-    }
+ 
     
   return (
     <SafeAreaView >
@@ -58,7 +47,6 @@ const ProfileScreen = ({navigation}) => {
       
       { isEdit!== true && 
         <ProfileComponent
-           handleFriendsClick={handleFriendsClick}
            handleEditProfileClick={handleEditProfileClick}
            handleLogout={handleLogout}
         />

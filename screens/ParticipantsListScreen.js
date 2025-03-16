@@ -1,7 +1,7 @@
 import { View,Text,StyleSheet, FlatList } from "react-native"
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from "react";
-import FriendComponent from "../components/FriendComponent";
+import UserComponent from "../components/UserComponent";
 import Header from "../components/Header";
 import { useLayoutEffect } from "react";
 
@@ -38,7 +38,7 @@ const ParticipantsListScreen = ({navigation}) => {
         <FlatList 
         data={friendsList}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={(itemData)=>{return (<FriendComponent user={itemData.item} />)}  
+        renderItem={(itemData)=>{return (<UserComponent user={itemData.item} />)}  
     } />
       }
       {

@@ -9,7 +9,7 @@ import Feather from '@expo/vector-icons/Feather';
 import { useSelector } from "react-redux";
 
 
-const ProfileComponent = ({handleEditProfileClick,handleFriendsClick,handleLogout}) => {
+const ProfileComponent = ({handleEditProfileClick,handleLogout}) => {
 
   const calculateAge = (dayOfBirth) => {
     const birthDate = new Date(dayOfBirth);
@@ -31,7 +31,6 @@ const ProfileComponent = ({handleEditProfileClick,handleFriendsClick,handleLogou
         <SwapImages isEdit={false} imagess={userData.images} editStyle={{display:'none'}}/>
          <View style={styles.buttons}>
            <Button  buttonStyle={{marginHorizontal:10}} text="Edit profile" handleClick={handleEditProfileClick} />
-           <Button  buttonStyle={{marginHorizontal:10}} text="Friends" handleClick={handleFriendsClick}/>
         </View>
         <PageContainer>
 

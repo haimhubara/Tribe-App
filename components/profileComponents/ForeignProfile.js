@@ -18,7 +18,7 @@ import defaultImage from "../../assets/images/camera.png"
 
 
 
-const ForeignProfile = ({AddFreindHandle,startChatHandle,backArrowHandle,isFriend,facebookHandle,tikTokHandle,InstagramHandle}) => {
+const ForeignProfile = ({startChatHandle,backArrowHandle}) => {
 
 
   const [selectedHobbies, setSelectedHobbies] = useState(['Reading', 'Traveling', 'Cooking']);
@@ -33,6 +33,16 @@ const ForeignProfile = ({AddFreindHandle,startChatHandle,backArrowHandle,isFrien
     "sixImage":defaultImage,
 
   })
+ 
+  const facebookHandle = () => {
+
+  }
+  const tikTokHandle = () => {
+    
+  }
+  const InstagramHandle = () => {
+    
+  }
 
 
   return (
@@ -41,7 +51,6 @@ const ForeignProfile = ({AddFreindHandle,startChatHandle,backArrowHandle,isFrien
           <SwapImages imagess={Object.values(images)}  editStyle={{display:'none'}}/>
          <View style={styles.buttons}>
             <Button text="Send Message" handleClick={startChatHandle} />
-            {isFriend && <Button text="Add Friend" handleClick={AddFreindHandle} />}
          </View>
          <PageContainer>
          <Output 
