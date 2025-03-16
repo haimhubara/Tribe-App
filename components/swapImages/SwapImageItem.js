@@ -120,7 +120,8 @@ const SwapImageItem = ({ imageUri , editStyle ,imageId}) => {
         <View style={[styles.container, { width }]}>
     
            <Image 
-                source={{ uri: imageUri }}  
+                // source={{ uri: imageUri }}  
+                source={typeof imageUri === "string" && imageUri.startsWith("http") ? { uri: imageUri } : imageUri}
                 style={[styles.image, { width:width*0.9, height:width*0.9}]} 
                 resizeMode="cover"
             />

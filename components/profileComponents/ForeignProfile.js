@@ -13,6 +13,10 @@ import IconButton from "../buttons/IconButton";
 import { GlobalStyles } from "../../constants/styles";
 
 
+import defaultImage from "../../assets/images/camera.png"
+
+
+
 
 const ForeignProfile = ({AddFreindHandle,startChatHandle,backArrowHandle,isFriend,facebookHandle,tikTokHandle,InstagramHandle}) => {
 
@@ -20,11 +24,21 @@ const ForeignProfile = ({AddFreindHandle,startChatHandle,backArrowHandle,isFrien
   const [selectedHobbies, setSelectedHobbies] = useState(['Reading', 'Traveling', 'Cooking']);
   const [languages, setLanguages] = useState(["Hebrew","English"]);
 
+  const [images, setImage] =  useState({
+    "firstImage":defaultImage,
+    "secondImage":defaultImage,
+    "thirdImage":defaultImage,
+    "fourthImage":defaultImage,
+    "fiveImage":defaultImage,
+    "sixImage":defaultImage,
+
+  })
+
 
   return (
     <View style={styles.root}>
           <Header title="Foreign Profile" onBackPress={backArrowHandle}/>
-          <SwapImages editStyle={{display:'none'}}/>
+          <SwapImages imagess={Object.values(images)}  editStyle={{display:'none'}}/>
          <View style={styles.buttons}>
             <Button text="Send Message" handleClick={startChatHandle} />
             {isFriend && <Button text="Add Friend" handleClick={AddFreindHandle} />}
