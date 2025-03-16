@@ -99,10 +99,6 @@ const EditProfile = ({isEdit,setIsEdit}) => {
       setTimeout(()=>{
         setUploadDataSucced(false);
       },3000);
-      const parentNav = navigation.getParent();
-      if (parentNav) {
-        parentNav.setOptions({ tabBarStyle: { display:'flex' } });
-      }
     },[formValues,dispach]);
 
     const onBackPress = () => {
@@ -138,7 +134,7 @@ const EditProfile = ({isEdit,setIsEdit}) => {
 
   return (
     <View style={styles.root}>
-      <Header title="Profile" onBackPress={onBackPress}/>
+      <Header title="Edit Profile" onBackPress={onBackPress}/>
         
          <SwapImages  isEdit={isEdit} imagess={userData.images}/>
         
