@@ -8,10 +8,13 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import firebaseConfig from "../util/firebaseConfig.json";
 import Button from "../components/buttons/Button";
+import { useSelector } from "react-redux";
 
 const PersonalActivityProfileScreen = ({ navigation, route }) => {
     const activityId = route.params?.id; 
-    const myPage = route.params?.myPage;
+    // const userData = useSelector(state => state.auth.userData);
+    // if(userData.userId==)
+    // const myPage = route.params?.myPage;
 
     const [name, setName] = useState("Loading...");
     const [time, setTime] = useState(new Date());
@@ -25,6 +28,7 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
     const [categories, setCategories] = useState([]);
     const [selectedNumPartitions, setSelectedNumPartitions] = useState();
     const [isJoined, setIsJoined] = useState(false);
+    const [userId,setUserId]=useState("");
     
 
     const app = initializeApp(firebaseConfig);
@@ -50,8 +54,7 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
                     setLanguage(data.languages || []);
                     setCategories(data.categories || []);
                     setSelectedNumPartitions(data.selectedNumPartitions || 0);
-                  
-
+                    setUserId(data.userID||"");
                     if (data.imageUrl) {
                         setActivityImage({ uri: data.imageUrl });
                     }
@@ -65,6 +68,11 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
 
         fetchActivityData();
     }, [activityId]); 
+   const userData = useSelector(state => state.auth.userData);
+    let myPage=0;
+    if(userData.userId==userId){
+        myPage=1;
+    }else{ myPage=0;}
 
     const handleEditClick = (id) => {
         if (id === "editButton") {

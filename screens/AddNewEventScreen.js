@@ -20,6 +20,7 @@ import {  doc, updateDoc, addDoc,getDoc, collection } from "firebase/firestore";
 import firebaseConfig from "../util/firebaseConfig.json";
 import ImageGenerator from "../components/imagesAndVideo/ImageGenerator";
 import { uploadImageToCloudinary,deleteImageFromCloudinary } from "../components/Cloudinary";
+import { useSelector } from "react-redux";
 
 
 
@@ -40,7 +41,7 @@ const AddNewEventScreen = ({ navigation, route }) => {
   const [generatedImage, setGeneratedImage] = useState(route.params?.activityImage||null);
   
 
-
+  const userData = useSelector(state => state.auth.userData);
 
   const ifGoBack = route.params?.ifGoBack;
 
@@ -165,7 +166,8 @@ const handleSubmit = async () => {
                     ageRange: ages,
                     languages,
                     categories: selectedCategories,
-                    imageUrl: imageUrl // עדכון URL של התמונה החדשה
+                    imageUrl: imageUrl,
+                    userID: userData.userId
                 });
                 alert("Event updated successfully!");
                 navigation.navigate("SearchScreen");
@@ -184,6 +186,7 @@ const handleSubmit = async () => {
                 languages,
                 categories: selectedCategories,
                 imageUrl: imageUrl,
+               userID: userData.userId
             });
             alert("Event created successfully!");
             resetForm();
