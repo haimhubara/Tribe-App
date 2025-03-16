@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { View, Image, StyleSheet, useWindowDimensions, Text, Pressable, Modal } from "react-native";
+import { View, Image, StyleSheet, useWindowDimensions, Text, Pressable, Modal, Touchable, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { GlobalStyles } from "../../constants/styles";
 import { launchCameraAsync, launchImageLibraryAsync, useCameraPermissions, PermissionStatus } from 'expo-image-picker';
-import IconButton from "../buttons/IconButton";
 import { deleteImageFromCloudinary, uploadImageToCloudinary } from "../Cloudinary";
 import { updateLoggedInUserData } from "../../store/authSlice";
 import { updateSignInUserData } from "../../util/actions/AuthAction";
 import { useDispatch, useSelector } from "react-redux";
 import { ActivityIndicator } from "react-native";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 
 
@@ -20,7 +20,8 @@ const SwapImageItem = ({ imageUri , editStyle ,imageId}) => {
      const { width, height } = useWindowDimensions();
      const [modalVisible, setModalVisible] = useState(false);
      const defaultImage = "https://via.placeholder.com/150/FFFFFF?text=No+Image";
-     const [image,setImage] = useState()
+     const [isImageUploded, setIsImageUploaded] = useState(false);
+
      
      const userData = useSelector(state => state.auth.userData);
 
@@ -64,6 +65,7 @@ const SwapImageItem = ({ imageUri , editStyle ,imageId}) => {
         
                 await updateSignInUserData(userData.userId, { images });
                 dispach(updateLoggedInUserData({newData:{ images }}));
+                setIsImageUploaded(true);
             }else{
                 const oldImageUrl = userData.images[imageId];
                 const publicId = oldImageUrl.split('/').pop().split('.')[0];
@@ -73,7 +75,11 @@ const SwapImageItem = ({ imageUri , editStyle ,imageId}) => {
                 images[imageId] = imageCloudinaryUrl;
                 await updateSignInUserData(userData.userId, { images });
                 dispach(updateLoggedInUserData({newData:{ images }}));
+                setIsImageUploaded(true);
             }
+            setTimeout(()=>{
+                setIsImageUploaded(false);
+            },3000);
         } catch (error) {
             console.log(error);
        
@@ -119,7 +125,7 @@ const SwapImageItem = ({ imageUri , editStyle ,imageId}) => {
                 resizeMode="cover"
             />
 
-            <IconButton 
+            {/* <IconButton 
                 iconName="pencil"
                 IconPack={Icon}
                 containerStyle={styles.containerStyle}
@@ -127,17 +133,22 @@ const SwapImageItem = ({ imageUri , editStyle ,imageId}) => {
                 onPress={editPressHandle}
                 iconColor='white'
                 iconSize={22}
-          />
+          /> */}
+          <TouchableOpacity style={[styles.rootIconContainer,editStyle]} onPress={editPressHandle}>
+                <FontAwesome name='pencil' size={18} color={'white'}/>
+          </TouchableOpacity>
 
-         
-                 {/* ActivityIndicator מוצג בזמן טעינה */}
-        {loading && (
-            <ActivityIndicator
-                size={'small'}
-                color={GlobalStyles.colors.mainColor}
-                style={{ marginTop: 10 }}
-            />
-        )}
+         <View  style={{ marginTop: 10 }}>
+              
+            {loading && (
+                <ActivityIndicator
+                    size={'small'}
+                    color={GlobalStyles.colors.mainColor}
+                
+                />
+            )}
+            {isImageUploded && <Text>Image Saved!</Text>}
+        </View>
 
         {/* Modal הצגת אפשרויות */}
         <Modal
@@ -178,6 +189,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        marginBottom:10
     },
     image: {
         borderRadius: 4,  
@@ -190,17 +202,17 @@ const styles = StyleSheet.create({
         shadowRadius: 6,
         elevation: 4,  
     },
-    rootContainer: {
+    rootIconContainer: {
         position: 'absolute',
-        bottom: 3,
-        left: 23,  
+        bottom:-10,
+        right:10,
         flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 10, 
+        backgroundColor:GlobalStyles.colors.mainColorDark,
+        borderRadius:40,
+        padding:16
     },
     containerStyle:{
-        backgroundColor:'#6D7B8D80',
+        backgroundColor:GlobalStyles.colors.mainColor,
         paddingVertical:8,
         paddingHorizontal:8,
   

@@ -1,4 +1,4 @@
-import { View, StyleSheet} from "react-native";
+import { View, StyleSheet,Text} from "react-native";
 import HobbiesPicker from "../HobbiesPicker";
 import SwapImages from "../swapImages/SwapImages";
 import Input from "../Input";
@@ -27,23 +27,34 @@ import { updateLoggedInUserData } from "../../store/authSlice";
 const EditProfile = ({isEdit,setIsEdit}) => {
   const navigation = useNavigation();
   const dispach = useDispatch();
+  const [uploadDataSucced, setUploadDataSucced] = useState(false);
   
   const [isLoading, setIsLoading] = useState(false);
   const userData = useSelector(state => state.auth.userData);
-
+  
+  const firstName =  userData.firstName || "";
+  const lastName =  userData.lastName || "";
+  const userName =  userData.userName || "";
+  const phoneNumber =  userData.phoneNumber || "";
+  const hobbies =  userData.hobbies || [];
+  const languages =  userData.languages || [];
+  const facebook =  userData.facebook || "";
+  const tiktok =  userData.tiktok || "";
+  const instagram =  userData.instagram || "";
+  
   
   
   const initialState = {
     actualValues:{
-      firstName: userData.firstName || "",
-      lastName: userData.lastName || "",
-      userName: userData.userName || "",
-      phoneNumber: userData.phoneNumber || "",
-      hobbies: userData.hobbies || [],
-      languages: userData.languages || [],
-      facebook: userData.facebook || "",
-      tiktok: userData.tiktok || "",
-      instagram: userData.instagram || ""
+      firstName,
+      lastName,
+      userName,
+      phoneNumber,
+      hobbies,
+      languages,
+      facebook,
+      tiktok,
+      instagram,
     },
     values:{
       firstName:undefined,
@@ -78,15 +89,16 @@ const EditProfile = ({isEdit,setIsEdit}) => {
         setIsLoading(true);
         await updateSignInUserData(userData.userId,updatedValues);
         dispach(updateLoggedInUserData({newData:updatedValues}));
-
+        setUploadDataSucced(true);
       } catch (error) {
         
       }
       finally {
           setIsLoading(false)
       }
-  
-      setIsEdit(!isEdit);
+      setTimeout(()=>{
+        setUploadDataSucced(false);
+      },3000);
       const parentNav = navigation.getParent();
       if (parentNav) {
         parentNav.setOptions({ tabBarStyle: { display:'flex' } });
@@ -101,6 +113,21 @@ const EditProfile = ({isEdit,setIsEdit}) => {
       }
     }
 
+    const hasChanges = () => {
+      const currentValues = formValues.actualValues;
+  
+      return (
+          currentValues.firstName != firstName ||
+          currentValues.lastName != lastName ||
+          currentValues.userName != userName ||
+          currentValues.phoneNumber != phoneNumber ||
+          currentValues.hobbies != hobbies ||
+          currentValues.languages != languages ||
+          currentValues.facebook != facebook ||
+          currentValues.tiktok != tiktok ||
+          currentValues.instagram != instagram
+      );
+  }
 
 
   return (
@@ -110,6 +137,11 @@ const EditProfile = ({isEdit,setIsEdit}) => {
          <SwapImages  isEdit={isEdit} imagess={userData.images}/>
         
          <PageContainer>
+          
+          <View style={{marginTop:10}}>
+
+             {uploadDataSucced && <Text>Saved!</Text>}
+          </View>
 
          {isLoading ? 
                   (<ActivityIndicator
@@ -119,13 +151,15 @@ const EditProfile = ({isEdit,setIsEdit}) => {
                   />)
                    :(
                   <View style={{ alignItems: "center" }}>
-                   <SubmitButton 
+                    {formValues.formStatus && hasChanges() && 
+                    <SubmitButton 
                     disabeld={!formValues.formStatus }
                     style={{marginTop:30,marginBottom:20, width:'40%',}}
                     onPress={saveHandler}
                     title="Save" 
                     color={GlobalStyles.colors.mainColor}
                    /> 
+                  }
                    </View>
            
            )}
