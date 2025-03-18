@@ -127,10 +127,12 @@ export const updateSignInUserData = async (userId, newData) => {
 };
 
 const createUser = async(firestore,signUpFormValue,imageUrls,videoUrl,userId) => {
+    const firstLast = `${signUpFormValue['firstName']} ${signUpFormValue['lastName']}`.toLowerCase()
     const userData = {
-        userId:userId,
+        userId,
         firstName: signUpFormValue['firstName'],
         lastName: signUpFormValue['lastName'],
+        firstLast,
         email: signUpFormValue['email'],
         userName: signUpFormValue['userName'],
         phoneNumber: signUpFormValue['phoneNumber'],

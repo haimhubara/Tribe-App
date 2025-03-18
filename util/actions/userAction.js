@@ -1,4 +1,4 @@
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, query, startAt, endAt,getDocs, collection, orderBy } from "firebase/firestore";
 import { getFirebaseApp } from "../firebase";
 
 export const getUserData = async (userId) => {
@@ -18,3 +18,33 @@ export const getUserData = async (userId) => {
         return null;
     }
 };
+
+
+
+export const searchUsers = async (textToSearch) => {
+    const search = textToSearch.toLowerCase();
+    try {
+        const app = getFirebaseApp();
+        const db = getFirestore(app);
+        const usersRef = collection(db, "users");
+
+        const queryRef = query(usersRef,orderBy("firstLast"),startAt(search),endAt(search + "\uf9ff"));
+
+        const snapshot = await getDocs(queryRef);
+
+        if (snapshot.empty) {
+            return [];
+        }
+
+        const users = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+
+        return users;
+        
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}

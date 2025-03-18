@@ -11,7 +11,10 @@ const ImageToShow = ({ imageUrl, imageStyle, rootStyle }) => {
     
       <Pressable onPress={() => setModalVisible(true)}>
         <View style={[styles.imagePreview, imageStyle]}>
-          <Image style={styles.image} source={{ uri: imageUrl }} />
+          <Image 
+            style={styles.image}
+            source={typeof imageUrl === "string" && imageUrl.startsWith("http") ? { uri: imageUrl } : imageUrl} 
+          />
         </View>
       </Pressable>
 
@@ -22,7 +25,7 @@ const ImageToShow = ({ imageUrl, imageStyle, rootStyle }) => {
                   <Ionicons name="arrow-back" size={32} color="black" onPress={() => setModalVisible(false)} />
                    <Text style={styles.modalTitle}>Image Preview</Text>
              </View>
-            <Image style={styles.fullScreenImage} source={{ uri: imageUrl }} />
+            <Image style={styles.fullScreenImage} source={typeof imageUrl === "string" && imageUrl.startsWith("http") ? { uri: imageUrl } : imageUrl} />
           </Pressable>
         </Modal>}
     </View>
