@@ -1,4 +1,4 @@
-import { addDoc, collection, getFirestore } from "firebase/firestore";
+import { getDatabase, ref, push, set } from "firebase/database";
 import { getFirebaseApp } from "../firebase";
 
 export const createChat = async (loggedInUserId, chatData) => {
@@ -15,20 +15,19 @@ export const createChat = async (loggedInUserId, chatData) => {
     };
 
     const app = getFirebaseApp();
-    const db = getFirestore(app);
-    const dbRef = collection(db, "chats");
+    const db = getDatabase(app);
+    const chatsRef = ref(db, "chats");
 
     try {
-        const newChat = await addDoc(dbRef, newChatData);
+        const newChatRef = push(chatsRef);
+        await set(newChatRef, { ...newChatData, id: newChatRef.key });
 
         for (const userId of newChatData.users) {
-            await addDoc(collection(db, "userChats", userId, "chats"), {
-                chatId: newChat.id,
-                // createdAt: new Date().toISOString(),
-            });
+            const userChatRef = ref(db, `userChats/${userId}/${newChatRef.key}`);
+            await set(userChatRef, { chatId: newChatRef.key });
         }
 
-        return newChat.id;
+        return newChatRef.key;
     } catch (error) {
         console.error("Error creating chat:", error);
         throw error;
