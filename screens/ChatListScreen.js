@@ -7,12 +7,14 @@ import { searchUsers } from "../util/actions/userAction";
 import { GlobalStyles } from "../constants/styles";
 
 import defaultImage from "../assets/images/userImage.jpeg"
+import { useSelector } from "react-redux";
 
 
 const ChatListScreen = ({navigation}) => {
     const [search, setSearch] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [noResultsFound, setNoResultsFound] = useState(false);
+    const userData = useSelector(state => state.auth.userData);
    
     const [chatsList,setChatList] = useState([
       {id:1,firstName:'gal',lastName:'lifshitz',imageSource:defaultImage,messageTime:'yesterday',lastMessage:'Hi how are you'},
@@ -24,23 +26,6 @@ const ChatListScreen = ({navigation}) => {
       
     ]);
 
-    // useEffect(()=>{
-    //   const delaySearch = setTimeout( async()=>{
-    //     if(!search || search === ""){
-    //       setChatList();
-    //       setNoResultsFound(false);
-    //       return;
-    //     }
-    //     setIsLoading(true);
-    //     const usersList = await searchUsers(search);
-    //     console.log(usersList);
-    //     setIsLoading(false);
-    //   },500)
-
-    //   return () => clearTimeout(delaySearch)
-    // },[search])
-
-   
     
   return (
 
@@ -104,6 +89,8 @@ const styles = StyleSheet.create({
         margin:16,
         borderRadius: 8,
         borderWidth:0.1,
+        marginBottom:20
+       
        
       },
       notFound:{

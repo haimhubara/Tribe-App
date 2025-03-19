@@ -5,6 +5,8 @@ import UserComponent from "../components/UserComponent";
 import Header from "../components/Header";
 import { useLayoutEffect } from "react";
 
+import defaultImage from "../assets/images/userImage.jpeg"
+
 
 const ParticipantsListScreen = ({navigation}) => {
 
@@ -12,12 +14,12 @@ const ParticipantsListScreen = ({navigation}) => {
     const [isLoading, setIsLoading] = useState(false);
     const [noResultsFound, setNoResultsFound] = useState(false);
     const [friendsList,setfriendsList] = useState([
-      {id:1,firstName:'gal',lastName:'lifshitz',imageSouce:null},
-      {id:2,firstName:'haim',lastName:'hubara',imageSouce:null},
-      {id:3,firstName:'matan',lastName:'yakir',imageSouce:null},
-      {id:4,firstName:'guy',lastName:'avramov',imageSouce:null},
-      {id:5,firstName:'naor',lastName:'zecharia',imageSouce:null},
-      {id:6,firstName:'dani',lastName:'reznik',imageSouce:null}
+      {id:1,firstName:'gal',lastName:'lifshitz',imageSouce:defaultImage},
+      {id:2,firstName:'haim',lastName:'hubara',imageSouce:defaultImage},
+      {id:3,firstName:'matan',lastName:'yakir',imageSouce:defaultImage},
+      {id:4,firstName:'guy',lastName:'avramov',imageSouce:defaultImage},
+      {id:5,firstName:'naor',lastName:'zecharia',imageSouce:defaultImage},
+      {id:6,firstName:'dani',lastName:'reznik',imageSouce:defaultImage}
       
     ]);
 

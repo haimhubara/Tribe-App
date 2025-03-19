@@ -41,6 +41,27 @@ function ProfileStack(){
 }
 
 
+function HomeStack(){
+  return(
+    <Stack.Navigator
+    screenOptions={{
+      cardStyle: {
+        flex: 1
+      },
+      cardStyleInterpolator: ({ current }) => ({
+        cardStyle: {
+          opacity: current.progress,
+        },
+      }),
+    }}>
+       <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+       <Stack.Screen name="ForeignProfileScreen" component={ForeignProfileScreen} options={{ headerShown: false }} />
+    </Stack.Navigator>
+  );
+
+}
+
+
 
 function ChatStack(){
   return(
@@ -82,7 +103,7 @@ function WellcomeWindow() {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
           let iconName;
-          if (route.name === 'Home') {
+          if (route.name === 'HomeStack') {
             iconName = 'home';
           } else if (route.name === 'Search') {
             iconName = 'search';
@@ -103,7 +124,7 @@ function WellcomeWindow() {
         headerShown: false,
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="HomeStack" component={HomeStack} options={{tabBarLabel:"Home"}}/>
       <Tab.Screen name="Search" component={SearchPage} initialParams={{myPage:0}}/>
       <Tab.Screen name="Chats Screen" component={ChatStack} options={{tabBarLabel:"Chats"}}/>
       <Tab.Screen name="New" component={AddActivityPage} />

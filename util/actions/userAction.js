@@ -48,3 +48,30 @@ export const searchUsers = async (textToSearch) => {
         throw error;
     }
 }
+
+
+
+export const getAllUsers = async () => {
+    try {
+        const app = getFirebaseApp();
+        const db = getFirestore(app);
+        const usersRef = collection(db, "users");
+
+        const snapshot = await getDocs(usersRef);
+
+        if (snapshot.empty) {
+            return [];
+        }
+
+        const users = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+
+        return users;
+        
+    } catch (error) {
+        console.error("Error fetching all users:", error);
+        return [];
+    }
+};
