@@ -1,78 +1,132 @@
-import { View,Text,StyleSheet, FlatList } from "react-native"
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { useState } from "react";
+import { View, Text, StyleSheet, FlatList, ActivityIndicator } from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { useState, useEffect } from "react";
+import { doc, getDoc } from "firebase/firestore";
 import FriendRequestComponent from "../components/FriendRequestComponent";
 import Header from "../components/Header";
-import { useLayoutEffect } from "react";
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+import firebaseConfig from "../util/firebaseConfig.json"; // קובץ ההגדרות של Firebase
 
+// אתחול Firestore
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-const RequestsList = ({navigation}) => {
+const RequestsList = ({ navigation, route }) => {
+  const activityId = route.params?.activityId;
+  const [isLoading, setIsLoading] = useState(true);
+  const [usersData, setUsersData] = useState([]);
+  const [activityRequests, setActivityRequests] = useState([]);
 
-  const [search, setSearch] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [noResultsFound, setNoResultsFound] = useState(false);
-    const [friendsList,setfriendsList] = useState([
-      {id:1,firstName:'gal',lastName:'lifshitz',imageSouce:null},
-      {id:2,firstName:'haim',lastName:'hubara',imageSouce:null},
-      {id:3,firstName:'matan',lastName:'yakir',imageSouce:null},
-      {id:4,firstName:'guy',lastName:'avramov',imageSouce:null},
-      {id:5,firstName:'naor',lastName:'zecharia',imageSouce:null},
-      {id:6,firstName:'dani',lastName:'reznik',imageSouce:null}
-      
-    ]);
+  useEffect(() => {
+    const fetchActivityRequests = async () => {
+      if (!activityId) {
+        console.error("No activity ID provided.");
+        setIsLoading(false);
+        return;
+      }
 
-    function backArrowHandle(){
-      navigation.goBack();
+      try {
+        const docRef = doc(db, "activities", activityId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          //console.log("Activity Data:", data);
+
+          setActivityRequests(data.activityRequests || []);
+          await fetchUsersDetails(data.activityRequests || []);
+        } else {
+          console.error("Activity not found.");
+        }
+      } catch (error) {
+        console.error("Error fetching activity data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchActivityRequests();
+  }, [activityId]);
+
+  const fetchUsersDetails = async (userIds) => {
+    if (!userIds.length) {
+      console.warn("No users found in requests. Skipping fetch.");
+      setUsersData([]);
+      return;
     }
 
+    //console.log("Fetching user details for request IDs:", userIds);
+
+    try {
+      const users = [];
+
+      for (const userId of userIds) {
+        const userRef = doc(db, "users", userId);
+        const userSnap = await getDoc(userRef);
+
+        if (userSnap.exists()) {
+          users.push({ id: userId, ...userSnap.data() });
+        } else {
+          console.warn(`User with ID ${userId} not found.`);
+        }
+      }
+
+      //console.log("Fetched Requests Users Data:", users);
+      setUsersData(users);
+    } catch (error) {
+      console.error("Error fetching users data:", error);
+    }
+  };
+
+  function backArrowHandle() {
+    navigation.goBack();
+  }
 
   return (
-
-    
-    <View style={{flex:1}}>
+    <View style={{ flex: 1 }}>
       <View style={styles.root}>
-          <Header title="PersonalActivityProfileScreen" onBackPress={backArrowHandle}/>
+        <Header title="Requests List" onBackPress={backArrowHandle} />
       </View>
-      
-      {
-        <FlatList 
-        data={friendsList}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={(itemData)=>{return (<FriendRequestComponent user={itemData.item} />)}  
-    } />
-      }
-      {
-        !isLoading && !noResultsFound && !friendsList &&
-        (
-            <View style={styles.notFound}>
-                <Ionicons name="people" size={55} color="grey" />
-                <Text style={styles.notFoundText} >Still No Participants</Text>
-            </View>
-        )
-      }
-    </View>
 
-  )
-}
+      {isLoading ? (
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      ) : usersData.length > 0 ? (
+        <FlatList
+          data={usersData} // מציגים רק את הרשימה של בקשות הצטרפות
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => <FriendRequestComponent user={item} activityId={activityId} />}
+        />
+      ) : (
+        <View style={styles.notFound}>
+          <Ionicons name="people" size={55} color="grey" />
+          <Text style={styles.notFoundText}>No Requests Yet</Text>
+        </View>
+      )}
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
-    root: {
-       marginTop:32
-      },
-      notFound:{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
-      },
-      notFoundText:{
-        flex:1,
-        textAlign: 'center',
-        justifyContent:'center',
-        fontSize:16,
-        color:'grey'
-      },
-      inputIOS:{
-        paddingVertical:13
-      }
+  root: {
+    marginTop: 32,
+  },
+  loader: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  notFound: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  notFoundText: {
+    fontSize: 16,
+    color: "grey",
+  },
 });
 
-export default RequestsList
+export default RequestsList;

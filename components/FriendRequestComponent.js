@@ -3,11 +3,18 @@ import { View, Text, Pressable, StyleSheet, TouchableOpacity } from 'react-nativ
 import { GlobalStyles } from '../constants/styles'
 import ImageToShow from './imagesAndVideo/ImageToShow'
 import { useNavigation } from '@react-navigation/native'
+import { initializeApp } from "firebase/app";
+import { getFirestore, doc, getDoc,updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import firebaseConfig from "../util/firebaseConfig.json";
 
-const FriendRequestComponent = ({ user }) => {
+const FriendRequestComponent = ({ user,activityId }) => {
     const navigation = useNavigation();
     const [isFriend, setIsFriend] = useState(false);
     const [isRequestApproved, setIsRequestApproved] = useState(false);
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const myID=user.id;
 
     function openForeignProfileHandle() {
         navigation.navigate("ForeignProfileScreen");
@@ -16,8 +23,38 @@ const FriendRequestComponent = ({ user }) => {
     function handleApproveRequest() {
         setIsFriend(true);
         setIsRequestApproved(true);
+        ApproveRequest();
         // כאן אפשר להוסיף לוגיקה לשליחת אישור לשרת או עדכון מסד הנתונים
     }
+
+    const ApproveRequest = async () => {
+        try {
+          
+            const docRef = doc(db, "activities", activityId);
+            const docSnap = await getDoc(docRef);
+    
+            if (!docSnap.exists()) {
+                console.error("Activity not found");
+                return;
+            }
+    
+            const activityData = docSnap.data();
+            if (!activityData.activityRequests) {
+                await updateDoc(docRef, { activityRequests: [] });
+            }
+    
+                await updateDoc(docRef, {
+                    activityParticipants: arrayUnion(myID),
+                });
+             
+                await updateDoc(docRef, {
+                    activityRequests: arrayRemove(myID),
+                });
+            
+        } catch (e) {
+            console.error("Error updating document:", e);
+        }
+    };
 
     return (
         <Pressable onPress={openForeignProfileHandle}>

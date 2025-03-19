@@ -5,16 +5,13 @@ import { Ionicons } from '@expo/vector-icons';
 import Header from "../components/Header";
 import { GlobalStyles } from "../constants/styles";
 import { initializeApp } from "firebase/app";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc,updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import firebaseConfig from "../util/firebaseConfig.json";
 import Button from "../components/buttons/Button";
 import { useSelector } from "react-redux";
 
 const PersonalActivityProfileScreen = ({ navigation, route }) => {
     const activityId = route.params?.id; 
-    // const userData = useSelector(state => state.auth.userData);
-    // if(userData.userId==)
-    // const myPage = route.params?.myPage;
 
     const [name, setName] = useState("Loading...");
     const [time, setTime] = useState(new Date());
@@ -73,6 +70,7 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
     if(userData.userId==userId){
         myPage=1;
     }else{ myPage=0;}
+    let myID=userData.userId;
 
     const handleEditClick = (id) => {
         if (id === "editButton") {
@@ -82,13 +80,52 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
                 ages, gender, languages, categories, activityImage, selectedNumPartitions,myPage,activityId
             });
         } else if (id === "participantsButton") {
-            navigation.navigate('ParticipantsListScreen');
+            navigation.navigate('ParticipantsListScreen',{activityId});;
         } else if (id === "joinButton") {
             setIsJoined(!isJoined);
+            requestToJoin();
+
         }else if(id==="requestsButton"){
-            navigation.navigate('RequestsList')
+            navigation.navigate('RequestsList', { activityId, isMyPage: 1 });
+
         }
     };
+
+
+    
+
+const requestToJoin = async () => {
+    try {
+      
+        const docRef = doc(db, "activities", activityId);
+        const docSnap = await getDoc(docRef);
+
+        if (!docSnap.exists()) {
+            console.error("Activity not found");
+            return;
+        }
+
+        const activityData = docSnap.data();
+        if (!activityData.activityRequests) {
+            await updateDoc(docRef, { activityRequests: [] });
+        }
+
+        if (!isJoined) {
+            await updateDoc(docRef, {
+                activityRequests: arrayUnion(myID),
+            });
+        } else {
+            await updateDoc(docRef, {
+                activityRequests: arrayRemove(myID),
+            });
+        }
+    } catch (e) {
+        console.error("Error updating document:", e);
+    }
+};
+
+    
+
 
     function getAges() {
       
