@@ -16,7 +16,7 @@ import InputPicker from "../components/InputPicker";
 import TimePicker from "../components/TimePicker";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import {  doc, updateDoc, addDoc,getDoc, collection } from "firebase/firestore"; 
+import {  doc, updateDoc, addDoc,getDoc, collection,arrayUnion } from "firebase/firestore"; 
 import firebaseConfig from "../util/firebaseConfig.json";
 import ImageGenerator from "../components/imagesAndVideo/ImageGenerator";
 import { uploadImageToCloudinary,deleteImageFromCloudinary } from "../components/Cloudinary";
@@ -167,7 +167,8 @@ const handleSubmit = async () => {
                     languages,
                     categories: selectedCategories,
                     imageUrl: imageUrl,
-                    userID: userData.userId
+                    userID: userData.userId,
+                    
                 });
                 alert("Event updated successfully!");
                 navigation.navigate("SearchScreen");
@@ -175,7 +176,7 @@ const handleSubmit = async () => {
                 alert("Error: No activity ID provided.");
             }
         } else {
-            await addDoc(collection(db, "activities"), {
+          const docRef=await addDoc(collection(db, "activities"), {
                 name,
                 description,
                 date: parseDateString(date).toISOString(),
@@ -186,7 +187,12 @@ const handleSubmit = async () => {
                 languages,
                 categories: selectedCategories,
                 imageUrl: imageUrl,
-               userID: userData.userId
+               userID: userData.userId,
+               activityRequests: [],
+               activityParticipants:[],
+            });
+            await updateDoc(docRef, {
+              activityParticipants: arrayUnion(userData.userId),
             });
             alert("Event created successfully!");
             resetForm();
