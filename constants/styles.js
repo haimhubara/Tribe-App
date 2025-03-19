@@ -23,6 +23,7 @@ export const GlobalStyles = {
       nearWhite:'#F0F0F0',
 
       blue:'#3498db',
+      beige:'#FEF5C3',
     nearlyWhite:'#F4F8F7',
     lightGrey:'#bdc3c7',
     gery:'#7f8c8d',

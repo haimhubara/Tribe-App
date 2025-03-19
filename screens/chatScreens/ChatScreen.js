@@ -5,6 +5,9 @@ import Feather from '@expo/vector-icons/Feather';
 
 import backgroundImage from '../../assets/images/droplet.jpeg'
 import { useSelector } from 'react-redux';
+import PageContainer from '../../components/PageContainer';
+import Bubble from '../../components/Bubble';
+import { createChat } from '../../util/actions/chatAction';
 
 
 
@@ -13,6 +16,9 @@ const ChatScreen = ({navigation, route}) => {
   
   const storedUsers = useSelector(state => state.users.storedUsers);
   const userData  = useSelector(state => state.auth.userData);
+
+  const [chatId, setChatId] = useState(route?.params?.chatId);
+  const [messageText, setMessageText, ] = useState('');
 
   const [chatUsers , setChatUsers] = useState([])
   
@@ -37,17 +43,23 @@ const ChatScreen = ({navigation, route}) => {
 
       setChatUsers(chatData.users);
    },[chatUsers]);
-
-   console.log(chatUsers);
       
-    const sendMessage = useCallback( ()=>{
-        setMessageText("");
-    },[messageText])
+   const sendMessage = useCallback(async () => {
+    try {
+        let id = chatId;
+        if (!id) {
+            id = await createChat(userData.userId, route?.params?.navigationProps.newChatData);
+            setChatId(id);
+        }
+    } catch (error) {
+        console.log("Error sending message:", error);
+    }
 
-
+    setMessageText("");
+}, [messageText, chatId]);
   
 
-  const [messageText, setMessageText] = useState('');
+ 
 
 
 
@@ -79,6 +91,13 @@ const ChatScreen = ({navigation, route}) => {
     >
 
         <ImageBackground style={styles.backgroundImage} source={backgroundImage}>
+
+          <PageContainer>
+
+            {
+              !chatId && <Bubble text = "This is a new chat. Say hi!" type="system"/>
+            }
+          </PageContainer>
 
         </ImageBackground>
 
