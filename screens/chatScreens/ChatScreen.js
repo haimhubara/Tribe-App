@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect , useState } from 'react'
+import React, { useCallback, useEffect, useLayoutEffect , useState } from 'react'
 import { View, Text, ImageBackground, StyleSheet, TextInput,Pressable, KeyboardAvoidingView, Platform } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Feather from '@expo/vector-icons/Feather';
@@ -12,10 +12,33 @@ const ChatScreen = ({navigation, route}) => {
   
   
   const storedUsers = useSelector(state => state.users.storedUsers);
-  console.log(storedUsers);
+  const userData  = useSelector(state => state.auth.userData);
+
+  const [chatUsers , setChatUsers] = useState([])
   
   
    const chatData = route?.params?.navigationProps.newChatData
+
+   const getChatTitleFromName = () => {
+      const otherUserId = chatUsers.find(uid => uid !== userData.userId);
+      const otherUserData = storedUsers[otherUserId];
+
+      return  otherUserData && `${otherUserData.firstName} ${otherUserData.lastName}`
+   }
+
+   useEffect(() => {
+      navigation.setOptions({
+        headerTitle: getChatTitleFromName() ? getChatTitleFromName() : ""
+
+      })
+
+
+
+
+      setChatUsers(chatData.users);
+   },[chatUsers]);
+
+   console.log(chatUsers);
       
     const sendMessage = useCallback( ()=>{
         setMessageText("");

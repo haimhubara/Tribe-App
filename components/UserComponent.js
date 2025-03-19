@@ -2,20 +2,28 @@ import { View,Text, Pressable, StyleSheet } from 'react-native'
 import { GlobalStyles } from '../constants/styles'
 import ImageToShow from './imagesAndVideo/ImageToShow'
 import { useNavigation } from '@react-navigation/native'
+import { useSelector } from 'react-redux'
 
 const UserComponent = ({user}) => {
     const navigation = useNavigation();
+
+    const userData = useSelector(state => state.auth.userData);
     
     function openFriendProfileHandle(){
-        navigation.navigate("ForeignProfileScreen",{
-            userId:user.userId
-        });
+
+        if(userData.userId !== user.userId){
+            navigation.navigate("ForeignProfileScreen",{
+                userId:user.userId
+            });
+        }
+        
+       
     }
  
     return (
         <Pressable onPress={openFriendProfileHandle}>
             {({ pressed }) => (
-                <View style={[styles.root, pressed && styles.clicked]}>
+                <View style={[styles.root, pressed && userData.userId !== user.userId && styles.clicked]}>
                    <ImageToShow 
                         imageUrl={user.imageSouce? user.imageSouce :user.images['firstImage']} 
                         imageStyle={[styles.image, { overflow: 'hidden' }]}

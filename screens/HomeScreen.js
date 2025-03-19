@@ -6,15 +6,14 @@ import { getAllUsers } from "../util/actions/userAction";
 import { GlobalStyles } from "../constants/styles";
 import { ActivityIndicator } from "react-native";
 import UserComponent from "../components/UserComponent";
-import { useDispatch, useSelector } from "react-redux";
-import { setStoredUsers } from "../store/userSlice";
+import { useSelector } from "react-redux";
 
 const HomeScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [notUsersFound, setNotUsersFound] = useState(false);
   const [allUsers, setAllUsers] = useState([]);
 
-  const dispath = useDispatch();
+
 
   const userData = useSelector(state => state.auth.userData);
 
@@ -38,9 +37,7 @@ const HomeScreen = () => {
         if (usersArray.length === 0) {
           console.log("No users found.");
         }
-        // else{
-        //   dispath(setStoredUsers({newUsers: usersArray}))
-        // }
+      
     
        
         setIsLoading(false);

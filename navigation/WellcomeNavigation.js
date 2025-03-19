@@ -79,7 +79,7 @@ function ChatStack(){
     }}>
       <Stack.Screen name="Chats" component={ChatListScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Chat" component={ChatScreen} options={({ navigation }) => ({
-      headerTitle: "Chat Screen",
+      headerTitle: "",
       headerShadowVisible: false,
       headerTitleAlign: 'center',
       headerTitleStyle: { fontSize: 28,fontWeight:'bold' },
