@@ -17,7 +17,9 @@ const FriendRequestComponent = ({ user,activityId }) => {
     const myID=user.id;
 
     function openForeignProfileHandle() {
-        navigation.navigate("ForeignProfileScreen");
+        navigation.navigate("ForeignProfileScreen",{
+            userId:user.userId
+        });
     }
 
     function handleApproveRequest() {
@@ -61,7 +63,7 @@ const FriendRequestComponent = ({ user,activityId }) => {
             {({ pressed }) => (
                 <View style={[styles.root, pressed && styles.clicked]}>
                     <ImageToShow 
-                        imageUrl={user.imageSouce} 
+                        imageUrl={user.imageSouce? user.imageSouce :user.images['firstImage']} 
                         imageStyle={styles.imageStyle} 
                     />
                     <View style={styles.textContainer}>

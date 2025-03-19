@@ -12,7 +12,7 @@ const ChatScreen = ({navigation, route}) => {
   
   
   const storedUsers = useSelector(state => state.users.storedUsers);
-  // console.log(storedUsers);
+  console.log(storedUsers);
   
   
    const chatData = route?.params?.navigationProps.newChatData
