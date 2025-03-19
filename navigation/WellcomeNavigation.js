@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -8,10 +8,15 @@ import ChatScreen from '../screens/chatScreens/ChatScreen';
 import ParticipantsListScreen from '../screens/ParticipantsListScreen';
 import ActivityComponent from '../components/ActivityComponent';
 import RequestsList from '../screens/RequestsList';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { getFirebaseApp } from '../util/firebase';
-import { child, getDatabase, onValue, ref } from 'firebase/database';
+import { child, getDatabase, off, onValue, ref } from 'firebase/database';
+import { setChatsData } from '../store/chatSlice';
+import { GlobalStyles } from '../constants/styles';
+import { useState } from 'react';
+import { setStoredUsers } from '../store/userSlice';
+import { doc, getFirestore ,getDoc} from 'firebase/firestore';
 
 
 
@@ -184,21 +189,83 @@ function SearchPage(){
 
 const WellcomeNavigation = () => {
 
+    const dispatch = useDispatch();
+    const [isLoading, setIsLoading] = useState(true);
+
     const userData = useSelector(state => state.auth.userData);
-    const storedUser = useSelector(state => state.users.storedUsers);
+    const storedUsers = useSelector(state => state.users.storedUsers);
 
     useEffect(()=>{
         const app = getFirebaseApp();
         const dbRef = ref(getDatabase(app));
         const userChatRef = child(dbRef,`userChats/${userData.userId}`);
+        const refs = [userChatRef];
 
         onValue(userChatRef, (querySnapshot) => {
             const chatIdsData = querySnapshot.val() || {} ;
             const chatIds = Object.values(chatIdsData);
 
-            console.log(chatIds);
+            const chatsData = {};
+            let chatsFoundCount = 0;
+
+            for (let i = 0; i < chatIds.length; i++) {
+              const chatId = chatIds[i];
+              const chatRef = child(dbRef,`chats/${chatId}`);
+              refs.push(chatRef);
+              
+              onValue(chatRef,(chatSnapshot)=>{
+                chatsFoundCount++;
+                const data = chatSnapshot.val();
+
+                if(data){
+                  data.key = chatSnapshot.key;
+
+                  data.users.forEach(userId => {
+                    if(storedUsers[userId]) return;
+                     const db = getFirestore(app);
+                     const userRef = doc(db, `users/${userId}`);
+                     getDoc(userRef).then((userSnapshot) => {
+                      if (userSnapshot.exists()) {
+                        const userSnapshotData = userSnapshot.data();
+                        dispatch(setStoredUsers({ newUsers : {userSnapshotData} }))
+                      
+                      } else {
+                        console.log("No such user!");
+                      }
+                    }).catch((error) => {
+                      console.error("Error getting user:", error);
+                    });
+                  })
+
+                  chatsData[chatSnapshot.key]  = data;
+                }
+
+                if(chatsFoundCount >= chatIds.length){
+                  dispatch(setChatsData({chatsData}));
+                  setIsLoading(false);
+                }
+              })
+
+              if(chatsFoundCount === 0){
+                setIsLoading(false);
+              }
+            }
+
         })
+
+        return () => {
+          refs.forEach(ref =>  off(ref) );
+         
+        }
     },[]);
+
+
+    if(isLoading){
+        <View style={{justifyContent:'center', alignItems:'center',flex:1}}>
+            <ActivityIndicator size={'large'} color={GlobalStyles.colors.mainColor}/>
+        </View>
+     
+    }
 
 
 

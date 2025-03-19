@@ -7,27 +7,32 @@ import { useNavigation } from '@react-navigation/native';
 const ActiveChats = ({ chats }) => {
   const navigation = useNavigation();
 
-  function openFriendProfileHandle() {
-    navigation.navigate("Chat");
-  }
+   const openFriendProfileHandle = () => {
+      if (chats) {
+        navigation.navigate("Chats Screen", {
+          screen: "Chats",
+          params: {selectedUserId:chats.userId}
+        });
+      }
+    };
 
   return (
     <Pressable onPress={openFriendProfileHandle} accessibilityRole="button">
       {({ pressed }) => (
         <View style={[styles.root, pressed && styles.clicked]}>
           <ImageToShow
-            imageUrl={chats.imageSource}
+              imageUrl={chats.imageSouce? chats.imageSouce :chats.images['firstImage']} 
             imageStyle={[styles.image, { overflow: 'hidden' }]}
           />
           <View style={styles.infoContainer}>
             <Text style={styles.name} numberOfLines={1}>{chats.firstName} {chats.lastName}</Text>
             <Text style={styles.message} numberOfLines={1}></Text>
             <View>
-                <Text style={styles.lastMessage} numberOfLines={1}>{chats.lastMessage}</Text>
+                <Text style={styles.lastMessage} numberOfLines={1}>how are you?</Text>
             </View>
           </View>
           <View style={styles.timeContainer}>
-            <Text style={styles.time} numberOfLines={1}>{chats.messageTime}</Text>
+            <Text style={styles.time} numberOfLines={1}>yesteday</Text>
           </View>
         </View>
       )}
