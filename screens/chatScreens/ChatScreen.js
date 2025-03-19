@@ -4,22 +4,18 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import Feather from '@expo/vector-icons/Feather';
 
 import backgroundImage from '../../assets/images/droplet.jpeg'
+import { useSelector } from 'react-redux';
 
 
 
-const ChatScreen = ({navigation}) => {
-    useLayoutEffect(() => {
-        const parentNav = navigation.getParent();
-        if (parentNav) {
-          parentNav.setOptions({ tabBarStyle: { display: 'none' } });
-        }
-      
-        return () => {
-          if (parentNav) {
-            parentNav.setOptions({ tabBarStyle: { display: 'flex', backgroundColor: '#fff' } });
-          }
-        };
-      }, [navigation]);
+const ChatScreen = ({navigation, route}) => {
+  
+  
+  const storedUsers = useSelector(state => state.users.storedUsers);
+  // console.log(storedUsers);
+  
+  
+   const chatData = route?.params?.navigationProps.newChatData
       
     const sendMessage = useCallback( ()=>{
         setMessageText("");
@@ -29,6 +25,24 @@ const ChatScreen = ({navigation}) => {
   
 
   const [messageText, setMessageText] = useState('');
+
+
+
+
+
+  useLayoutEffect(() => {
+    const parentNav = navigation.getParent();
+    if (parentNav) {
+      parentNav.setOptions({ tabBarStyle: { display: 'none' } });
+    }
+  
+    return () => {
+      if (parentNav) {
+        parentNav.setOptions({ tabBarStyle: { display: 'flex', backgroundColor: '#fff' } });
+      }
+    };
+  }, [navigation]);
+
   return (
    <SafeAreaView 
    edges={['right','left','bottom',]}

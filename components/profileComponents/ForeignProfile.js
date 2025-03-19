@@ -13,6 +13,9 @@ import IconButton from "../buttons/IconButton";
 import { GlobalStyles } from "../../constants/styles";
 import { useRoute } from "@react-navigation/native";
 import { ActivityIndicator } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import { setStoredUsers } from "../../store/userSlice";
 
 
 import defaultImage from "../../assets/images/camera.png"
@@ -21,13 +24,16 @@ import { getUserData } from "../../util/actions/userAction";
 
 
 
-const ForeignProfile = ({startChatHandle,backArrowHandle}) => {
+const ForeignProfile = ({backArrowHandle}) => {
 
   const route = useRoute();
   const [isLoading, setIsLoading] = useState(false);
   const [foreignUser,setForeignUser] = useState({});
+  const dispath = useDispatch();
   
   const { userId } = route?.params || {};
+
+  const navigation = useNavigation();
 
 
   const calculateAge = (dayOfBirth) => {
@@ -37,6 +43,9 @@ const ForeignProfile = ({startChatHandle,backArrowHandle}) => {
     const ageInYears = ageInMilliseconds / (1000 * 60 * 60 * 24 * 365.25);
     return Math.floor(ageInYears).toLocaleString();
   };
+
+  
+ 
 
 
  useEffect(() => {
@@ -57,6 +66,16 @@ const ForeignProfile = ({startChatHandle,backArrowHandle}) => {
    
      fetchUser();
    }, []);
+
+   const startChatHandle = () => {
+    if (userId) {
+      navigation.navigate("Chats Screen", {
+        screen: "Chats",
+        params: {selectedUserId:userId}
+      });
+      dispath(setStoredUsers({newUsers: [foreignUser]}))
+    }
+  };
 
   const [selectedHobbies, setSelectedHobbies] = useState(['Reading', 'Traveling', 'Cooking']);
   const [languages, setLanguages] = useState(["Hebrew","English"]);
@@ -191,9 +210,8 @@ const styles = StyleSheet.create({
    loadingContainer: {
     flex: 1, 
     justifyContent: "center",
-    alignItems: "center",
-    marginTop:10
-  },
+    alignItems: "center", 
+  }
 })
 
 export default ForeignProfile

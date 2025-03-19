@@ -10,22 +10,35 @@ import defaultImage from "../assets/images/userImage.jpeg"
 import { useSelector } from "react-redux";
 
 
-const ChatListScreen = ({navigation}) => {
+const ChatListScreen = ({navigation, route}) => {
     const [search, setSearch] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [noResultsFound, setNoResultsFound] = useState(false);
+    const [noResultsFound, setNoResultsFound] = useState(true);
     const userData = useSelector(state => state.auth.userData);
-   
-    const [chatsList,setChatList] = useState([
-      {id:1,firstName:'gal',lastName:'lifshitz',imageSource:defaultImage,messageTime:'yesterday',lastMessage:'Hi how are you'},
-      {id:2,firstName:'haim',lastName:'hubara',imageSource:defaultImage,messageTime:'yesterday',lastMessage:'Hi how are you'},
-      {id:3,firstName:'matan',lastName:'yakir',imageSource:defaultImage,messageTime:'yesterday',lastMessage:'Hi how are you'},
-      {id:4,firstName:'guy',lastName:'avramov',imageSource:defaultImage,messageTime:'yesterday',lastMessage:'Hi how are you'},
-      {id:5,firstName:'naor',lastName:'zecharia',imageSource:defaultImage,messageTime:'yesterday',lastMessage:'Hi how are you'},
-      {id:6,firstName:'dani',lastName:'reznik',imageSource:defaultImage,messageTime:'yesterday',lastMessage:'Hi how are you'}
-      
-    ]);
+    const { selectedUserId } = route?.params || {};
 
+    const [chatUsers, setChatUsers] = useState([]);
+
+    useEffect(()=>{
+
+      if(!selectedUserId){
+        return
+      }
+
+      const chatUsers = [selectedUserId,userData.userId];
+
+      const navigationProps = {
+        newChatData : { users: chatUsers}
+      }
+
+
+      navigation.navigate("Chat",{
+        navigationProps
+      });
+
+    },[route?.params])
+   
+  
     
   return (
 
@@ -53,13 +66,13 @@ const ChatListScreen = ({navigation}) => {
        </View>
        }
 
-      { !isLoading &&
+      {/* { !isLoading &&
         <FlatList 
         data={chatsList}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => <ActiveChats chats={item} />}
      />
-     }
+     } */}
 
 
       {
@@ -76,40 +89,34 @@ const ChatListScreen = ({navigation}) => {
   )
 }
 const styles = StyleSheet.create({
-      text:{
-        textAlign:'center',
-        fontSize:32,
-        fontWeight:'bold',
-      },
-      searchContainer:{
-        flexDirection:'row',
-        alignItems:'center',
-        backgroundColor:'#ededed',
-        padding:2,
-        margin:16,
-        borderRadius: 8,
-        borderWidth:0.1,
-        marginBottom:20
-       
-       
-      },
-      notFound:{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
-      },
-      notFoundText:{
-        flex:1,
-        textAlign: 'center',
-        justifyContent:'center',
-        fontSize:16,
-        color:'grey'
-      },
-      inputIOS:{
-        paddingVertical:13
-      }
-
-     
+  text: {
+    textAlign: 'center',
+    fontSize: 32,
+    fontWeight: 'bold',
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ededed',
+    padding: 2,
+    margin: 16,
+    borderRadius: 8,
+    borderWidth: 0.1,
+    marginBottom: 20,
+  },
+  notFound: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',    
+  },
+  notFoundText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: 'grey',
+  },
+  inputIOS: {
+    paddingVertical: 13,
+  },
 });
 
 

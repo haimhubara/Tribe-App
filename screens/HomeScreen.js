@@ -6,12 +6,15 @@ import { getAllUsers } from "../util/actions/userAction";
 import { GlobalStyles } from "../constants/styles";
 import { ActivityIndicator } from "react-native";
 import UserComponent from "../components/UserComponent";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setStoredUsers } from "../store/userSlice";
 
 const HomeScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [notUsersFound, setNotUsersFound] = useState(false);
   const [allUsers, setAllUsers] = useState([]);
+
+  const dispath = useDispatch();
 
   const userData = useSelector(state => state.auth.userData);
 
@@ -22,7 +25,6 @@ const HomeScreen = () => {
 
   }
 
-
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -30,8 +32,17 @@ const HomeScreen = () => {
         
         const allUsersFetched = await getAllUsers();
         const usersArray = Object.values(allUsersFetched).filter(user => user.userId !== userData.userId);
-  
         setAllUsers(usersArray);
+  
+      
+        if (usersArray.length === 0) {
+          console.log("No users found.");
+        }
+        // else{
+        //   dispath(setStoredUsers({newUsers: usersArray}))
+        // }
+    
+       
         setIsLoading(false);
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -41,7 +52,6 @@ const HomeScreen = () => {
   
     fetchUsers();
   }, []);
-  
 
   return (
     <View style={styles.root}>
