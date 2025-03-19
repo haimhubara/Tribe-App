@@ -8,6 +8,10 @@ import ChatScreen from '../screens/chatScreens/ChatScreen';
 import ParticipantsListScreen from '../screens/ParticipantsListScreen';
 import ActivityComponent from '../components/ActivityComponent';
 import RequestsList from '../screens/RequestsList';
+import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { getFirebaseApp } from '../util/firebase';
+import { child, getDatabase, onValue, ref } from 'firebase/database';
 
 
 
@@ -179,6 +183,25 @@ function SearchPage(){
 
 
 const WellcomeNavigation = () => {
+
+    const userData = useSelector(state => state.auth.userData);
+    const storedUser = useSelector(state => state.users.storedUsers);
+
+    useEffect(()=>{
+        const app = getFirebaseApp();
+        const dbRef = ref(getDatabase(app));
+        const userChatRef = child(dbRef,`userChats/${userData.userId}`);
+
+        onValue(userChatRef, (querySnapshot) => {
+            const chatIdsData = querySnapshot.val() || {} ;
+            const chatIds = Object.values(chatIdsData);
+
+            console.log(chatIds);
+        })
+    },[]);
+
+
+
   return (
     <Stack.Navigator 
         screenOptions={{
