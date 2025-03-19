@@ -3,8 +3,12 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState, useEffect } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import FriendRequestComponent from "../components/FriendRequestComponent";
-import Header from "../components/Header";
 import UserComponent from "../components/UserComponent";
+import Header from "../components/Header";
+import { useLayoutEffect } from "react";
+
+import defaultImage from "../assets/images/userImage.jpeg"
+
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import firebaseConfig from "../util/firebaseConfig.json"; // קובץ ההגדרות של Firebase

@@ -7,22 +7,18 @@ const UserComponent = ({user}) => {
     const navigation = useNavigation();
     
     function openFriendProfileHandle(){
-        navigation.navigate("ForeignProfileScreen");
+        navigation.navigate("ForeignProfileScreen",{
+            userId:user.userId
+        });
     }
  
     return (
         <Pressable onPress={openFriendProfileHandle}>
             {({ pressed }) => (
                 <View style={[styles.root, pressed && styles.clicked]}>
-                    <ImageToShow 
-                        imageUrl={user.imageSouce} 
-                        imageStyle={{ 
-                            marginLeft: 10, 
-                            width: 80, 
-                            height: 80, 
-                            borderRadius: 40, 
-                            backgroundColor: GlobalStyles.colors.nearWhite 
-                        }} 
+                   <ImageToShow 
+                        imageUrl={user.imageSouce? user.imageSouce :user.images['firstImage']} 
+                        imageStyle={[styles.image, { overflow: 'hidden' }]}
                     />
                     <View style={styles.textContainer}>
                         <Text style={styles.text} numberOfLines={1}>{user.firstName}</Text>
@@ -70,6 +66,13 @@ const styles = StyleSheet.create({
     clicked:{
          backgroundColor: '#d1d1d1'
     },
+    image:{
+        marginLeft: 10, 
+        width: 80, 
+        height: 80, 
+        borderRadius: 40, 
+        backgroundColor: GlobalStyles.colors.nearWhite 
+    }
 
 });
 

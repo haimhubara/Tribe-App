@@ -17,7 +17,7 @@ const ActiveChats = ({ chats }) => {
         <View style={[styles.root, pressed && styles.clicked]}>
           <ImageToShow
             imageUrl={chats.imageSource}
-            imageStyle={styles.image}
+            imageStyle={[styles.image, { overflow: 'hidden' }]}
           />
           <View style={styles.infoContainer}>
             <Text style={styles.name} numberOfLines={1}>{chats.firstName} {chats.lastName}</Text>
@@ -31,6 +31,7 @@ const ActiveChats = ({ chats }) => {
           </View>
         </View>
       )}
+     
     </Pressable>
   );
 }
@@ -38,22 +39,15 @@ const ActiveChats = ({ chats }) => {
 const styles = StyleSheet.create({
   root: {
     flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 0.1,
-    backgroundColor: '#ededed',
-    borderColor: 'grey',
-    marginHorizontal: 16,
-    marginVertical: 8,
-    borderRadius: 8,
-    padding: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 5,
+    paddingVertical:7,
+    borderBottomColor:GlobalStyles.colors.lightGrey,
+    borderBottomWidth:0.2,
+    alignItems:'center',
+    minHeight:50
+   
   },
   image: {
-    marginLeft: 8,
+    marginLeft:10,
     width: 60,
     height: 60,
     borderRadius: 30,
@@ -65,29 +59,34 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   name: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 4,
+    fontSize: 17,
+    fontWeight: 'medium',
+    color:GlobalStyles.colors.textColor,
+    letterSpacing:0.3,
   },
   message: {
-    fontSize: 14,
-    color: 'grey',
+    fontFamily:'regular',
+    color: GlobalStyles.colors.gery,
+    letterSpacing:0.3
   },
   timeContainer: {
     alignItems: 'flex-end',
-    paddingRight: 10,
   },
   time: {
     fontSize: 12,
-    color: 'grey',
+    color: GlobalStyles.colors.gery,
+    letterSpacing:0.3,
+    marginRight:10
   },
   clicked: {
-    backgroundColor: '#d1d1d1',
+    backgroundColor: "#e6e6e6",
   },
   lastMessage:{
     fontSize: 14,
-    color: '#555',
+    color:GlobalStyles.colors.gery,
+    fontFamily:'regular',
     fontStyle: 'italic',
+    letterSpacing:0.3,
     marginTop: 4,
 
   }
