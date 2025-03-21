@@ -2,12 +2,8 @@ import { View, Text, StyleSheet, FlatList, ActivityIndicator } from "react-nativ
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState, useEffect } from "react";
 import { doc, getDoc } from "firebase/firestore";
-import FriendRequestComponent from "../components/FriendRequestComponent";
-import UserComponent from "../components/UserComponent";
 import Header from "../components/Header";
-import { useLayoutEffect } from "react";
-
-import defaultImage from "../assets/images/userImage.jpeg"
+import ParticipantComponent from "../components/ParticipantComponent";
 
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
@@ -18,10 +14,22 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 const ParticipantsListScreen = ({ navigation, route }) => {
+  const myPage = route.params?.myPage; 
   const activityId = route.params?.activityId;
   const [isLoading, setIsLoading] = useState(true);
   const [usersData, setUsersData] = useState([]);
   const [activityParticipants, setActivityParticipants] = useState([]);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const refreshList = () => {
+    setRefreshKey((prevKey) => prevKey + 1);
+  };
+
+  const onUserRemoved = (userID) => {
+    setUsersData((prevUsers) => prevUsers.filter((user) => user.id !== userID));
+    setActivityParticipants((prevParticipants) => prevParticipants.filter((id) => id !== userID));
+    refreshList();
+  };
 
   useEffect(() => {
     const fetchActivityParticipants = async () => {
@@ -37,7 +45,6 @@ const ParticipantsListScreen = ({ navigation, route }) => {
 
         if (docSnap.exists()) {
           const data = docSnap.data();
-
           setActivityParticipants(data.activityParticipants || []);
           await fetchUsersDetails(data.activityParticipants || []);
         } else {
@@ -51,19 +58,17 @@ const ParticipantsListScreen = ({ navigation, route }) => {
     };
 
     fetchActivityParticipants();
-  }, [activityId]);
+  }, [activityId, refreshKey]); // מאזין לשינוי ומרענן את הנתונים
 
   const fetchUsersDetails = async (userIds) => {
     if (!userIds.length) {
-      console.warn("No users found in requests. Skipping fetch.");
+      console.warn("No users found. Skipping fetch.");
       setUsersData([]);
       return;
     }
 
-
     try {
       const users = [];
-
       for (const userId of userIds) {
         const userRef = doc(db, "users", userId);
         const userSnap = await getDoc(userRef);
@@ -75,7 +80,6 @@ const ParticipantsListScreen = ({ navigation, route }) => {
         }
       }
 
-      //console.log("Fetched Requests Users Data:", users);
       setUsersData(users);
     } catch (error) {
       console.error("Error fetching users data:", error);
@@ -89,7 +93,7 @@ const ParticipantsListScreen = ({ navigation, route }) => {
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.root}>
-        <Header title="Requests List" onBackPress={backArrowHandle} />
+        <Header title="Participants List" onBackPress={backArrowHandle} />
       </View>
 
       {isLoading ? (
@@ -100,12 +104,20 @@ const ParticipantsListScreen = ({ navigation, route }) => {
         <FlatList
           data={usersData} 
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <UserComponent user={item} />}
+          renderItem={({ item }) => (
+            <ParticipantComponent 
+              user={item} 
+              myPage={myPage} 
+              activityId={activityId}
+              onUserRemoved={onUserRemoved} // מעביר את הפונקציה
+            />
+          )}
+          extraData={refreshKey} // גורם לרענון הרשימה
         />
       ) : (
         <View style={styles.notFound}>
           <Ionicons name="people" size={55} color="grey" />
-          <Text style={styles.notFoundText}>No Requests Yet</Text>
+          <Text style={styles.notFoundText}>No Participants Yet</Text>
         </View>
       )}
     </View>

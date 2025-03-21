@@ -26,6 +26,8 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
     const [selectedNumPartitions, setSelectedNumPartitions] = useState();
     const [isJoined, setIsJoined] = useState(false);
     const [userId,setUserId]=useState("");
+    const [isPending, setIsPending] = useState(false);
+    const [isParticipant, setIsParticipant] = useState(false);///
     
 
     const app = initializeApp(firebaseConfig);
@@ -55,6 +57,8 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
                     if (data.imageUrl) {
                         setActivityImage({ uri: data.imageUrl });
                     }
+                    setIsPending(data.activityRequests?.includes(myID));
+                    setIsParticipant(data.activityParticipants?.includes(myID));///
                 } else {
                     console.error("No such document!");
                 }
@@ -80,7 +84,7 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
                 ages, gender, languages, categories, activityImage, selectedNumPartitions,myPage,activityId
             });
         } else if (id === "participantsButton") {
-            navigation.navigate('ParticipantsListScreen',{activityId});;
+            navigation.navigate('ParticipantsListScreen',{activityId , myPage});;
         } else if (id === "joinButton") {
             setIsJoined(!isJoined);
             requestToJoin();
@@ -114,10 +118,12 @@ const requestToJoin = async () => {
             await updateDoc(docRef, {
                 activityRequests: arrayUnion(myID),
             });
+            setIsPending(true);///
         } else {
             await updateDoc(docRef, {
                 activityRequests: arrayRemove(myID),
             });
+            setIsPending(false);///
         }
     } catch (e) {
         console.error("Error updating document:", e);
@@ -179,17 +185,24 @@ const requestToJoin = async () => {
                         </View>
                     )}
 
-
                     {myPage !== 1 && (
                         <TouchableOpacity
                             onPress={() => handleEditClick("joinButton")}
-                            style={[styles.joinButton, isJoined && styles.joinedButton]}
+                            style={[
+                                styles.joinButton, 
+                                isParticipant ? styles.participantButton : isPending ? styles.joinedButton : null
+                            ]}
+                            disabled={isParticipant} // אם המשתמש כבר בפעילות, הכפתור לא יהיה לחיץ
                         >
-                            <Ionicons name={isJoined ? "time-outline" : "flame-outline"} style={styles.joinButtonIcon} />
-                            <Text style={styles.joinButtonText}>{isJoined ? "Pending" : "Tribe Us!"}</Text>
+                            <Ionicons 
+                                name={isParticipant ? "checkmark-circle-outline" : isPending ? "time-outline" : "flame-outline"} 
+                                style={styles.joinButtonIcon} 
+                            />
+                            <Text style={styles.joinButtonText}>
+                                {isParticipant ? "U ARE IN!" : isPending ? "Pending" : "Tribe Us!"}
+                            </Text>
                         </TouchableOpacity>
                     )}
-                    
                 </View>
             </ScrollView>
         </SafeAreaView>
