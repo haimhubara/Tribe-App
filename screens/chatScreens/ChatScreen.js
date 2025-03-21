@@ -13,8 +13,8 @@ import { createChat } from '../../util/actions/chatAction';
 
 const ChatScreen = ({navigation, route}) => {
   
-  
   const storedUsers = useSelector(state => state.users.storedUsers);
+
   const userData  = useSelector(state => state.auth.userData);
 
   const [chatId, setChatId] = useState(route?.params?.chatId);
@@ -23,10 +23,11 @@ const ChatScreen = ({navigation, route}) => {
   const [chatUsers , setChatUsers] = useState([])
   
   
-   const chatData = route?.params?.navigationProps.newChatData
+   const chatData = route?.params?.chatUsers
+  //  console.log(chatData);
 
    const getChatTitleFromName = () => {
-      const otherUserId = chatUsers.find(uid => uid !== userData.userId);
+      const otherUserId = route?.params?.selectedUserId
       const otherUserData = storedUsers[otherUserId];
 
       return  otherUserData && `${otherUserData.firstName} ${otherUserData.lastName}`
@@ -41,14 +42,14 @@ const ChatScreen = ({navigation, route}) => {
 
 
 
-      setChatUsers(chatData.users);
+      setChatUsers(chatData);
    },[chatUsers]);
       
    const sendMessage = useCallback(async () => {
     try {
         let id = chatId;
-        if (!id) {
-            id = await createChat(userData.userId, route?.params?.navigationProps.newChatData);
+        if (!chatId) {
+            id = await createChat(userData.userId, route?.params?.chatUsers);
             setChatId(id);
         }
     } catch (error) {
@@ -56,7 +57,7 @@ const ChatScreen = ({navigation, route}) => {
     }
 
     setMessageText("");
-}, [messageText, chatId]);
+}, [messageText,chatId]);
   
 
  

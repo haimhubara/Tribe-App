@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { ActivityIndicator, View,Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -8,10 +8,16 @@ import ChatScreen from '../screens/chatScreens/ChatScreen';
 import ParticipantsListScreen from '../screens/ParticipantsListScreen';
 import ActivityComponent from '../components/ActivityComponent';
 import RequestsList from '../screens/RequestsList';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { getFirebaseApp } from '../util/firebase';
-import { child, getDatabase, onValue, ref } from 'firebase/database';
+import { child, getDatabase, off, onValue, ref } from 'firebase/database';
+import { setChatsData } from '../store/chatSlice';
+import { GlobalStyles } from '../constants/styles';
+import { useState } from 'react';
+import { setStoredUsers } from '../store/userSlice';
+import { getUserData } from '../util/actions/userAction';
+
 
 
 
@@ -86,13 +92,17 @@ function ChatStack(){
       headerTitle: "",
       headerShadowVisible: false,
       headerTitleAlign: 'center',
-      headerTitleStyle: { fontSize: 28,fontWeight:'bold' },
+      headerTitleStyle: { fontSize: 24,fontFamily:'medium', letterSpacing:0.3 },
       headerLeft: () => (
-        <View style={{width:40}}>
-          <Ionicons name="arrow-back" size={32}  color="black"  style={{ marginLeft: 15 }} 
-            onPress={() => navigation.goBack()} 
+        <View style={{ flexDirection: "row", alignItems: "center", marginLeft: 10 }}>
+          <Ionicons
+            name="arrow-back"
+            size={32}
+            color="black"
+            onPress={() => navigation.goBack()}
           />
-        </View>
+          <Text style={{ fontSize: 14, marginLeft: 2,letterSpacing:0.3,fontFamily:'medium', }}>Chats</Text>
+      </View>
       ),
     })} 
   />
@@ -184,21 +194,90 @@ function SearchPage(){
 
 const WellcomeNavigation = () => {
 
+    const dispatch = useDispatch();
+    const [isLoading, setIsLoading] = useState(true);
+
     const userData = useSelector(state => state.auth.userData);
-    const storedUser = useSelector(state => state.users.storedUsers);
+    const storedUsers = useSelector(state => state.users.storedUsers);
 
-    useEffect(()=>{
-        const app = getFirebaseApp();
-        const dbRef = ref(getDatabase(app));
-        const userChatRef = child(dbRef,`userChats/${userData.userId}`);
+    useEffect(() => {
+      const app = getFirebaseApp();
+      const dbRef = ref(getDatabase(app));
+      const userChatRef = child(dbRef, `userChats/${userData.userId}`);
+  
+      const unsubscribeUserChat = onValue(userChatRef, async (querySnapshot) => {
+          const chatIdsData = querySnapshot.val() || {};
+          const chatIds = Object.values(chatIdsData);
+  
+          if (chatIds.length === 0) {
+              setIsLoading(false);
+              return;
+          }
+  
+          const chatsData = {};
+          let chatsFoundCount = 0;
+          const unsubscribers = [];
+  
+          for (const chatId of chatIds) {
+              const chatRef = child(dbRef, `chats/${chatId}`);
+              
+              const unsubscribeChat = onValue(chatRef, async (chatSnapshot) => {
+                  chatsFoundCount++;
+                  const data = chatSnapshot.val();
+  
+                  if (data) {
+                      data.key = chatSnapshot.key;
+  
+                      // קבלת משתמשים חסרים
+                      const missingUsers = data.users.filter(userId => 
+                          !storedUsers[userId] && userId !== userData.userId
+                      );
+  
+                      if (missingUsers.length > 0) {
+                          const fetchedUsers = await Promise.all(
+                              missingUsers.map(userId => getUserData(userId))
+                          );
+  
+                          const newUsers = {};
+                          fetchedUsers.forEach(user => {
+                              if (user) newUsers[user.userId] = user;
+                          });
+  
+                          dispatch(setStoredUsers({ newUsers }));
+                      }
+  
+                      chatsData[chatSnapshot.key] = data;
+                  }
+  
+                  if (chatsFoundCount >= chatIds.length) {
+                      dispatch(setChatsData({ chatsData }));
+                      setIsLoading(false);
+                  }
+              });
+  
+              unsubscribers.push(unsubscribeChat);
+          }
+  
+          return () => {
+              unsubscribeUserChat();
+              unsubscribers.forEach(unsub => unsub());
+          };
+      });
+  
+      return () => {
+          unsubscribeUserChat();
+      };
+  }, [userData.userId, dispatch, storedUsers]);
+  
+  
 
-        onValue(userChatRef, (querySnapshot) => {
-            const chatIdsData = querySnapshot.val() || {} ;
-            const chatIds = Object.values(chatIdsData);
 
-            console.log(chatIds);
-        })
-    },[]);
+    if(isLoading){
+        <View style={{justifyContent:'center', alignItems:'center',flex:1}}>
+            <ActivityIndicator size={'large'} color={GlobalStyles.colors.mainColor}/>
+        </View>
+     
+    }
 
 
 

@@ -8,16 +8,41 @@ import { GlobalStyles } from "../constants/styles";
 
 import defaultImage from "../assets/images/userImage.jpeg"
 import { useSelector } from "react-redux";
+import { createSelector } from 'reselect';
 
 
 const ChatListScreen = ({navigation, route}) => {
     const [search, setSearch] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [noResultsFound, setNoResultsFound] = useState(true);
+
     const userData = useSelector(state => state.auth.userData);
+    const storedUsers = useSelector(state => state.users.storedUsers);
+
+    
+
+    
     const { selectedUserId } = route?.params || {};
 
-    const [chatUsers, setChatUsers] = useState([]);
+
+
+   
+    const getChats = createSelector(
+      state => state.chats.chatsData, 
+      chatsData => Object.values(chatsData).sort((a,b)=>{
+        return new Date(b.updatedAt) - new Date(a.updatedAt);
+      }) 
+    );
+
+    const userChats = useSelector(getChats);
+    for (let i = 0; i < userChats.length; i++) {
+      const key = userChats[i].key;
+      const users = userChats[i].users
+    }
+
+    
+   
+     
 
     useEffect(()=>{
 
@@ -26,14 +51,17 @@ const ChatListScreen = ({navigation, route}) => {
       }
 
       const chatUsers = [selectedUserId,userData.userId];
+      // console.log(chatUsers);
 
-      const navigationProps = {
-        newChatData : { users: chatUsers}
-      }
+      // const navigationProps = {
+      //   newChatData : { users: chatUsers}
+      // }
 
 
       navigation.navigate("Chat",{
-        navigationProps
+        selectedUserId,
+        chatUsers,
+        chatId:route?.params?.chatId
       });
 
     },[route?.params])
@@ -46,7 +74,7 @@ const ChatListScreen = ({navigation, route}) => {
     <SafeAreaView style={{flex:1}}>
       
       <View style={styles.root}>
-          <Text  style={styles.text}>Chat List</Text>
+          <Text  style={styles.text}>Chats</Text>
       </View>
       
       <View style={[styles.searchContainer, Platform.OS === 'ios' && styles.inputIOS,Platform.OS==='web' &&{padding:10}]}>
@@ -66,17 +94,39 @@ const ChatListScreen = ({navigation, route}) => {
        </View>
        }
 
-      {/* { !isLoading &&
+      { !isLoading && userChats.length !== 0 &&
         <FlatList 
-        data={chatsList}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <ActiveChats chats={item} />}
+        data={userChats}
+        keyExtractor={(item) => item.key}
+
+        renderItem={(itemData) => {
+          const chatData = itemData.item;
+          const chatId = chatData.key;
+          const otherUserId = chatData.users.find(uid => uid !== userData.userId)
+          const otherUser = storedUsers[otherUserId];
+          if(!otherUser){
+            return;
+          }
+       
+          return <ActiveChats chats={otherUser}
+          startChatHandle={()=> {
+            navigation.navigate("Chats Screen",{
+              screen: "Chat",
+              params: { chatId:chatId,
+                selectedUserId:otherUserId,
+              }
+            })
+          }}
+          
+          />
+         
+        }}
      />
-     } */}
+     }
 
 
       {
-        !isLoading && noResultsFound &&
+        !isLoading &&  userChats.length === 0 &&
         (
             <View style={styles.notFound}>
                 <Ionicons name="people" size={55} color="grey" />
@@ -90,9 +140,12 @@ const ChatListScreen = ({navigation, route}) => {
 }
 const styles = StyleSheet.create({
   text: {
-    textAlign: 'center',
     fontSize: 32,
-    fontWeight: 'bold',
+    textAlign: "center",
+    justifyContent:'center',
+    fontFamily:'bold',
+    letterSpacing:0.3,
+    color:GlobalStyles.colors.textColor,
   },
   searchContainer: {
     flexDirection: 'row',

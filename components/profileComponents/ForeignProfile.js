@@ -14,10 +14,9 @@ import { GlobalStyles } from "../../constants/styles";
 import { useRoute } from "@react-navigation/native";
 import { ActivityIndicator } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setStoredUsers } from "../../store/userSlice";
-
-
+import { createSelector } from 'reselect';
 import defaultImage from "../../assets/images/camera.png"
 import { getUserData } from "../../util/actions/userAction";
 
@@ -28,10 +27,41 @@ const ForeignProfile = ({backArrowHandle}) => {
 
   const route = useRoute();
   const [isLoading, setIsLoading] = useState(false);
+  const [chatId, setChatId] = useState('');
+
+  const getChats = createSelector(
+    state => state.chats.chatsData, 
+    chatsData => Object.values(chatsData).sort((a,b)=>{
+      return new Date(b.updatedAt) - new Date(a.updatedAt);
+    }) 
+  );
+
+  const { userId } = route?.params || {};
+
+  const userChats = useSelector(getChats);
   const [foreignUser,setForeignUser] = useState({});
+  const userData = useSelector(state => state.auth.userData);
+  const storedUsers = useSelector(state => state.users.storedUsers);
+
+
+  useEffect(() => {
+    for (let i = 0; i < userChats.length; i++) {
+      const key = userChats[i].key;
+      const users = userChats[i].users;
+      const otherUserId = users.find(uid => uid !== userData.userId);
+  
+      if (otherUserId === userId && key !== chatId) { 
+        setChatId(key);
+        break; // ברגע שמצאנו את ה-chat המתאים, אפשר לעצור את הלולאה
+      }
+    }
+  }, [userId, userChats, chatId]); // הוספת chatId כדי למנוע עדכון מיותר
+  
+
+ 
   const dispath = useDispatch();
   
-  const { userId } = route?.params || {};
+ 
 
   const navigation = useNavigation();
 
@@ -71,9 +101,14 @@ const ForeignProfile = ({backArrowHandle}) => {
     if (userId) {
       navigation.navigate("Chats Screen", {
         screen: "Chats",
-        params: {selectedUserId:userId}
+        params: {
+          selectedUserId:userId,
+          chatUsers:[userData.userId,userId],
+          chatId:chatId
+        }
       });
-      dispath(setStoredUsers({newUsers: [foreignUser]}))
+      dispath(setStoredUsers({newUsers: foreignUser}))
+      
     }
   };
 

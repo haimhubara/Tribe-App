@@ -3,9 +3,13 @@ import { getFirebaseApp } from "../firebase";
 
 export const createChat = async (loggedInUserId, chatData) => {
 
+    const covertChatData = {
+        users:chatData
+    }
+
 
     const newChatData = {
-        ...chatData,
+        ...covertChatData,
         createdBy: loggedInUserId,
         updatedBy: loggedInUserId,
         createdAt: new Date().toISOString(),
