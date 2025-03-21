@@ -18,6 +18,10 @@ const ChatListScreen = ({navigation, route}) => {
 
     const userData = useSelector(state => state.auth.userData);
     const storedUsers = useSelector(state => state.users.storedUsers);
+
+    
+
+    
     const { selectedUserId } = route?.params || {};
 
 
@@ -31,6 +35,13 @@ const ChatListScreen = ({navigation, route}) => {
     );
 
     const userChats = useSelector(getChats);
+    for (let i = 0; i < userChats.length; i++) {
+      const key = userChats[i].key;
+      const users = userChats[i].users
+    }
+
+    
+   
      
 
     useEffect(()=>{
@@ -40,14 +51,17 @@ const ChatListScreen = ({navigation, route}) => {
       }
 
       const chatUsers = [selectedUserId,userData.userId];
+      // console.log(chatUsers);
 
-      const navigationProps = {
-        newChatData : { users: chatUsers}
-      }
+      // const navigationProps = {
+      //   newChatData : { users: chatUsers}
+      // }
 
 
       navigation.navigate("Chat",{
-        navigationProps
+        selectedUserId,
+        chatUsers,
+        chatId:route?.params?.chatId
       });
 
     },[route?.params])
@@ -87,16 +101,25 @@ const ChatListScreen = ({navigation, route}) => {
 
         renderItem={(itemData) => {
           const chatData = itemData.item;
+          const chatId = chatData.key;
           const otherUserId = chatData.users.find(uid => uid !== userData.userId)
           const otherUser = storedUsers[otherUserId];
-
-          if(!otherUser) return;
-
-
-
-
-
-          return <ActiveChats chats={otherUser}/>
+          if(!otherUser){
+            return;
+          }
+       
+          return <ActiveChats chats={otherUser}
+          startChatHandle={()=> {
+            navigation.navigate("Chats Screen",{
+              screen: "Chat",
+              params: { chatId:chatId,
+                selectedUserId:otherUserId,
+              }
+            })
+          }}
+          
+          />
+         
         }}
      />
      }

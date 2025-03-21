@@ -1,4 +1,4 @@
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, View,Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -16,7 +16,8 @@ import { setChatsData } from '../store/chatSlice';
 import { GlobalStyles } from '../constants/styles';
 import { useState } from 'react';
 import { setStoredUsers } from '../store/userSlice';
-import { doc, getFirestore ,getDoc} from 'firebase/firestore';
+import { getUserData } from '../util/actions/userAction';
+
 
 
 
@@ -91,13 +92,17 @@ function ChatStack(){
       headerTitle: "",
       headerShadowVisible: false,
       headerTitleAlign: 'center',
-      headerTitleStyle: { fontSize: 28,fontWeight:'bold' },
+      headerTitleStyle: { fontSize: 24,fontFamily:'medium', letterSpacing:0.3 },
       headerLeft: () => (
-        <View style={{width:40}}>
-          <Ionicons name="arrow-back" size={32}  color="black"  style={{ marginLeft: 15 }} 
-            onPress={() => navigation.goBack()} 
+        <View style={{ flexDirection: "row", alignItems: "center", marginLeft: 10 }}>
+          <Ionicons
+            name="arrow-back"
+            size={32}
+            color="black"
+            onPress={() => navigation.goBack()}
           />
-        </View>
+          <Text style={{ fontSize: 14, marginLeft: 2,letterSpacing:0.3,fontFamily:'medium', }}>Chats</Text>
+      </View>
       ),
     })} 
   />
@@ -195,69 +200,76 @@ const WellcomeNavigation = () => {
     const userData = useSelector(state => state.auth.userData);
     const storedUsers = useSelector(state => state.users.storedUsers);
 
-    useEffect(()=>{
-        const app = getFirebaseApp();
-        const dbRef = ref(getDatabase(app));
-        const userChatRef = child(dbRef,`userChats/${userData.userId}`);
-        const refs = [userChatRef];
-
-        onValue(userChatRef, (querySnapshot) => {
-            const chatIdsData = querySnapshot.val() || {} ;
-            const chatIds = Object.values(chatIdsData);
-
-            const chatsData = {};
-            let chatsFoundCount = 0;
-
-            for (let i = 0; i < chatIds.length; i++) {
-              const chatId = chatIds[i];
-              const chatRef = child(dbRef,`chats/${chatId}`);
-              refs.push(chatRef);
+    useEffect(() => {
+      const app = getFirebaseApp();
+      const dbRef = ref(getDatabase(app));
+      const userChatRef = child(dbRef, `userChats/${userData.userId}`);
+  
+      const unsubscribeUserChat = onValue(userChatRef, async (querySnapshot) => {
+          const chatIdsData = querySnapshot.val() || {};
+          const chatIds = Object.values(chatIdsData);
+  
+          if (chatIds.length === 0) {
+              setIsLoading(false);
+              return;
+          }
+  
+          const chatsData = {};
+          let chatsFoundCount = 0;
+          const unsubscribers = [];
+  
+          for (const chatId of chatIds) {
+              const chatRef = child(dbRef, `chats/${chatId}`);
               
-              onValue(chatRef,(chatSnapshot)=>{
-                chatsFoundCount++;
-                const data = chatSnapshot.val();
-
-                if(data){
-                  data.key = chatSnapshot.key;
-
-                  data.users.forEach(userId => {
-                    if(storedUsers[userId]) return;
-                     const db = getFirestore(app);
-                     const userRef = doc(db, `users/${userId}`);
-                     getDoc(userRef).then((userSnapshot) => {
-                      if (userSnapshot.exists()) {
-                        const userSnapshotData = userSnapshot.data();
-                        dispatch(setStoredUsers({ newUsers : {userSnapshotData} }))
-                      
-                      } else {
-                        console.log("No such user!");
+              const unsubscribeChat = onValue(chatRef, async (chatSnapshot) => {
+                  chatsFoundCount++;
+                  const data = chatSnapshot.val();
+  
+                  if (data) {
+                      data.key = chatSnapshot.key;
+  
+                      // קבלת משתמשים חסרים
+                      const missingUsers = data.users.filter(userId => 
+                          !storedUsers[userId] && userId !== userData.userId
+                      );
+  
+                      if (missingUsers.length > 0) {
+                          const fetchedUsers = await Promise.all(
+                              missingUsers.map(userId => getUserData(userId))
+                          );
+  
+                          const newUsers = {};
+                          fetchedUsers.forEach(user => {
+                              if (user) newUsers[user.userId] = user;
+                          });
+  
+                          dispatch(setStoredUsers({ newUsers }));
                       }
-                    }).catch((error) => {
-                      console.error("Error getting user:", error);
-                    });
-                  })
-
-                  chatsData[chatSnapshot.key]  = data;
-                }
-
-                if(chatsFoundCount >= chatIds.length){
-                  dispatch(setChatsData({chatsData}));
-                  setIsLoading(false);
-                }
-              })
-
-              if(chatsFoundCount === 0){
-                setIsLoading(false);
-              }
-            }
-
-        })
-
-        return () => {
-          refs.forEach(ref =>  off(ref) );
-         
-        }
-    },[]);
+  
+                      chatsData[chatSnapshot.key] = data;
+                  }
+  
+                  if (chatsFoundCount >= chatIds.length) {
+                      dispatch(setChatsData({ chatsData }));
+                      setIsLoading(false);
+                  }
+              });
+  
+              unsubscribers.push(unsubscribeChat);
+          }
+  
+          return () => {
+              unsubscribeUserChat();
+              unsubscribers.forEach(unsub => unsub());
+          };
+      });
+  
+      return () => {
+          unsubscribeUserChat();
+      };
+  }, [userData.userId, dispatch, storedUsers]);
+  
+  
 
 
     if(isLoading){

@@ -2,28 +2,21 @@ import { createSlice } from '@reduxjs/toolkit';
 
 
 const userSlice = createSlice({
-    name:'users',
+    name: 'users',
     initialState: {
-        storedUsers:{}
+        storedUsers: {}
     },
-    reducers:{
+    reducers: {
         setStoredUsers: (state, action) => {
-           const newUsers = action.payload.newUsers;
-           const existingUsers = state.storedUsers;
-           const usersArray = Object.values(newUsers);
-           for(let i = 0; i<usersArray.length; i++){
-            const userData = usersArray[i];
-            existingUsers[userData.userId] = userData;
-           }
-
-
-           state.storedUsers = existingUsers;
-
-        
+            const newUsers = action.payload.newUsers;
+            
+            for (const userId in newUsers) {
+                state.storedUsers[userId] = newUsers[userId];
+            }
         }
     }
-})
+});
+
 
 export const { setStoredUsers } = userSlice.actions;
-
-export default userSlice.reducer; 
+export default userSlice.reducer;

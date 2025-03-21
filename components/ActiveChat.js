@@ -4,20 +4,11 @@ import { GlobalStyles } from '../constants/styles';
 import ImageToShow from './imagesAndVideo/ImageToShow';
 import { useNavigation } from '@react-navigation/native';
 
-const ActiveChats = ({ chats }) => {
+const ActiveChats = ({ chats,startChatHandle }) => {
   const navigation = useNavigation();
 
-   const openFriendProfileHandle = () => {
-      if (chats) {
-        navigation.navigate("Chats Screen", {
-          screen: "Chats",
-          params: {selectedUserId:chats.userId}
-        });
-      }
-    };
-
   return (
-    <Pressable onPress={openFriendProfileHandle} accessibilityRole="button">
+    <Pressable onPress={startChatHandle} accessibilityRole="button">
       {({ pressed }) => (
         <View style={[styles.root, pressed && styles.clicked]}>
           <ImageToShow
