@@ -7,7 +7,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, updateDoc, arrayRemove } from "firebase/firestore";
 import firebaseConfig from "../util/firebaseConfig.json";
-import { useState } from 'react';
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -40,19 +39,22 @@ const ParticipantComponent = ({ user, myPage, activityId, onUserRemoved }) => {
     return (
         <Pressable onPress={openFriendProfileHandle}>
             {({ pressed }) => (
-                <View style={[styles.root, pressed && userData.userId !== user.userId && styles.clicked]}>
+                <View style={[styles.root, pressed && userData.userId !== user.userId && styles.pressed]}>
                     <ImageToShow 
                         imageUrl={user.imageSouce ? user.imageSouce : user.images['firstImage']} 
-                        imageStyle={[styles.image, { overflow: 'hidden' }]}
+                        imageStyle={styles.imageStyle}
                     />
                     <View style={styles.textContainer}>
-                        <Text style={styles.text} numberOfLines={1}>{user.firstName}</Text>
-                        <Text style={styles.text} numberOfLines={1}>{user.lastName}</Text>
+                        <Text style={styles.firstName} numberOfLines={1}>{user.firstName}</Text>
+                        <Text style={styles.lastName} numberOfLines={1}>{user.lastName}</Text>
                     </View>
-                    {myPage === 1 && user.userId !== userData.userId && ( // מונע הסרת עצמך
+
+                    {myPage === 1 && user.userId !== userData.userId ? (
                         <TouchableOpacity style={styles.removeButton} onPress={() => onRemove(user.userId)}>
-                            <Ionicons name="close-circle" size={26} color="red" />
+                            <Ionicons name="close" size={20} color="#fff" />
                         </TouchableOpacity>
+                    ) : (
+                        <View style={styles.removeButtonPlaceholder} />
                     )}
                 </View>
             )}
@@ -63,46 +65,62 @@ const ParticipantComponent = ({ user, myPage, activityId, onUserRemoved }) => {
 const styles = StyleSheet.create({
     root: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
-        borderWidth: 0.1,
-        backgroundColor: '#ededed',
-        borderColor: 'grey',
+        backgroundColor: '#f8f8f8',
+        borderRadius: 12,
         marginHorizontal: 16,
         marginVertical: 8,
-        borderRadius: 8,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 5,
-        elevation: 5,
-        paddingRight: 10,
+        paddingVertical: 12,
+        paddingHorizontal: 14,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+        elevation: 2,
+    },
+    pressed: {
+        backgroundColor: '#e2e2e2',
     },
     textContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginLeft: 10,
+        flex: 1,
+        marginLeft: 14,
     },
-    text: {
-        fontSize: 16,
-        margin: 2,
-        fontFamily: 'bold',
-        letterSpacing: 0.3,
+    firstName: {
+        fontSize: 17,
+        fontWeight: '600',
         color: GlobalStyles.colors.textColor,
+        letterSpacing: 0.3,
     },
-    clicked: {
-        backgroundColor: '#d1d1d1',
+    lastName: {
+        fontSize: 15,
+        fontWeight: '400',
+        color: '#666',
+        marginTop: 2,
     },
-    image: {
-        marginLeft: 10,
-        width: 80,
-        height: 80,
-        borderRadius: 40,
+    imageStyle: {
+        width: 60,
+        height: 60,
+        borderRadius: 30,
         backgroundColor: GlobalStyles.colors.nearWhite,
     },
     removeButton: {
-        padding: 5,
+        backgroundColor: '#ff4d4d',
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginLeft: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.15,
+        shadowRadius: 2,
+        elevation: 2,
+    },
+    removeButtonPlaceholder: {
+        width: 36,
+        height: 36,
+        marginLeft: 10,
     },
 });
 
