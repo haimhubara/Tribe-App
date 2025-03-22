@@ -24,7 +24,7 @@ const ChatScreen = ({navigation, route}) => {
   
   
    const chatData = route?.params?.chatUsers
-  //  console.log(chatData);
+ 
 
    const getChatTitleFromName = () => {
       const otherUserId = route?.params?.selectedUserId

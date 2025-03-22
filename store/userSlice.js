@@ -4,19 +4,18 @@ import { createSlice } from '@reduxjs/toolkit';
 const userSlice = createSlice({
     name: 'users',
     initialState: {
-        storedUsers: {}  // עדיין נשאר כאובייקט
+        storedUsers: {}
     },
     reducers: {
         setStoredUsers: (state, action) => {
             const newUsers = action.payload.newUsers;
             
-            newUsers.forEach(user => {
-                state.storedUsers[user.userId] = user; // שומר לפי userId
-            });
+            for (const userId in newUsers) {
+                state.storedUsers[userId] = newUsers[userId];
+            }
         }
     }
 });
-
 
 
 export const { setStoredUsers } = userSlice.actions;

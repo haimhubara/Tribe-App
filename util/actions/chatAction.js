@@ -28,3 +28,8 @@ export const createChat = async (loggedInUserId, chatData) => {
     return newChat.key;
 
 };
+
+
+export const sendTextMessage = () => {
+
+}
