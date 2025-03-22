@@ -4,7 +4,7 @@ import { GlobalStyles } from '../constants/styles';
 import ImageToShow from './imagesAndVideo/ImageToShow';
 import { useNavigation } from '@react-navigation/native';
 
-const ActiveChats = ({ chats,startChatHandle }) => {
+const ActiveChats = ({ firstName, lastName, lastMessage, imageSource, startChatHandle }) => {
   const navigation = useNavigation();
 
   return (
@@ -12,14 +12,14 @@ const ActiveChats = ({ chats,startChatHandle }) => {
       {({ pressed }) => (
         <View style={[styles.root, pressed && styles.clicked]}>
           <ImageToShow
-              imageUrl={chats.imageSouce? chats.imageSouce :chats.images['firstImage']} 
-            imageStyle={[styles.image, { overflow: 'hidden' }]}
+              imageUrl={imageSource? imageSource : null} 
+             imageStyle={[styles.image, { overflow: 'hidden' }]}
           />
           <View style={styles.infoContainer}>
-            <Text style={styles.name} numberOfLines={1}>{chats.firstName} {chats.lastName}</Text>
+            <Text style={styles.name} numberOfLines={1}>{firstName} {lastName}</Text>
             <Text style={styles.message} numberOfLines={1}></Text>
             <View>
-                <Text style={styles.lastMessage} numberOfLines={1}>how are you?</Text>
+                <Text style={styles.lastMessage} numberOfLines={1}>{lastMessage}</Text>
             </View>
           </View>
           <View style={styles.timeContainer}>

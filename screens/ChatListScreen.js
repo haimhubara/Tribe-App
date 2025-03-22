@@ -19,6 +19,7 @@ const ChatListScreen = ({navigation, route}) => {
     const userData = useSelector(state => state.auth.userData);
     const storedUsers = useSelector(state => state.users.storedUsers);
 
+
     
 
     
@@ -65,6 +66,7 @@ const ChatListScreen = ({navigation, route}) => {
       });
 
     },[route?.params])
+
    
   
     
@@ -108,16 +110,20 @@ const ChatListScreen = ({navigation, route}) => {
             return;
           }
        
-          return <ActiveChats chats={otherUser}
-          startChatHandle={()=> {
-            navigation.navigate("Chats Screen",{
-              screen: "Chat",
-              params: { chatId:chatId,
-                selectedUserId:otherUserId,
-              }
-            })
-          }}
-          
+          return <ActiveChats 
+            imageSource={otherUser.images['firstImage']}
+             firstName={otherUser.firstName}
+             lastName={otherUser.lastName}
+             lastMessage={chatData.latestMessageText || "New chat"}
+              startChatHandle={()=> {
+                navigation.navigate("Chats Screen",{
+                  screen: "Chat",
+                  params: { chatId:chatId,
+                    selectedUserId:otherUserId,
+                  }
+                })
+              }}
+              
           />
          
         }}

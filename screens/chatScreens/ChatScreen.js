@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect , useState } from 'react'
-import { View, Text, ImageBackground, StyleSheet, TextInput,Pressable, KeyboardAvoidingView, Platform } from 'react-native'
+import { View, Text, ImageBackground, StyleSheet, TextInput,Pressable, KeyboardAvoidingView, Platform, FlatList } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Feather from '@expo/vector-icons/Feather';
 
@@ -7,24 +7,45 @@ import backgroundImage from '../../assets/images/droplet.jpeg'
 import { useSelector } from 'react-redux';
 import PageContainer from '../../components/PageContainer';
 import Bubble from '../../components/Bubble';
-import { createChat } from '../../util/actions/chatAction';
+import { createChat, sendTextMessage } from '../../util/actions/chatAction';
+import { createSelector } from '@reduxjs/toolkit';
 
 
 
 const ChatScreen = ({navigation, route}) => {
   
   const storedUsers = useSelector(state => state.users.storedUsers);
-
+  
   const userData  = useSelector(state => state.auth.userData);
-
+  
   const [chatId, setChatId] = useState(route?.params?.chatId);
   const [messageText, setMessageText, ] = useState('');
-
+  
   const [chatUsers , setChatUsers] = useState([])
   
+  const [errorBannerText, setErrorBannerText] = useState('');
   
-   const chatData = route?.params?.chatUsers
- 
+  
+  const chatData = route?.params?.chatUsers
+  
+  const getMessagesData = (state, chatId) => state.messages.messagesData[chatId] || {};
+
+  const getChatMessages = createSelector(
+    [getMessagesData],
+    (chatMessagesData) => {
+      const messageList = [];
+      for (const key in chatMessagesData) {
+        const message = chatMessagesData[key];
+        messageList.push({
+          key,
+          ...message
+        });
+      }
+      return messageList;
+    }
+  );
+  const chatMessages = useSelector(state => getChatMessages(state, chatId));
+  
 
    const getChatTitleFromName = () => {
       const otherUserId = route?.params?.selectedUserId
@@ -51,11 +72,18 @@ const ChatScreen = ({navigation, route}) => {
             id = await createChat(userData.userId, route?.params?.chatUsers);
             setChatId(id);
         }
+        await sendTextMessage(chatId,userData.userId,messageText);
+
+        setMessageText("");
+
     } catch (error) {
         console.log("Error sending message:", error);
+        setErrorBannerText("Message failed to send");
+        setTimeout(()=>{
+          setErrorBannerText("");
+        },5000);
     }
 
-    setMessageText("");
 }, [messageText,chatId]);
   
 
@@ -97,6 +125,26 @@ const ChatScreen = ({navigation, route}) => {
             {
               !chatId && <Bubble text = "This is a new chat. Say hi!" type="system"/>
             }
+
+            {
+              errorBannerText !=="" && <Bubble text={errorBannerText} type="error"/>
+            }
+
+            {
+              chatId && 
+              <FlatList
+              data={chatMessages}
+              renderItem={(itemData)=>{
+                  const message = itemData.item;
+                  const isOwnMessage = message.sentBy === userData.userId;
+                  const messageType = isOwnMessage ? "myMessage" : "theirMessage"
+
+
+                  return <Bubble text={message.text}  type={messageType}/>
+              }}
+              />
+            }
+
           </PageContainer>
 
         </ImageBackground>

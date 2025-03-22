@@ -17,6 +17,7 @@ import { GlobalStyles } from '../constants/styles';
 import { useState } from 'react';
 import { setStoredUsers } from '../store/userSlice';
 import { getUserData } from '../util/actions/userAction';
+import { setChatMessages } from '../store/messagesSlice';
 
 
 
@@ -199,21 +200,20 @@ const WellcomeNavigation = () => {
 
     const userData = useSelector(state => state.auth.userData);
     const storedUsers = useSelector(state => state.users.storedUsers);
-
     useEffect(() => {
       const app = getFirebaseApp();
       const dbRef = ref(getDatabase(app));
       const userChatRef = child(dbRef, `userChats/${userData.userId}`);
-  
+    
       const unsubscribeUserChat = onValue(userChatRef, async (querySnapshot) => {
           const chatIdsData = querySnapshot.val() || {};
           const chatIds = Object.values(chatIdsData);
-  
+      
           if (chatIds.length === 0) {
               setIsLoading(false);
               return;
           }
-  
+      
           const chatsData = {};
           let chatsFoundCount = 0;
           const unsubscribers = [];
@@ -224,31 +224,30 @@ const WellcomeNavigation = () => {
               const unsubscribeChat = onValue(chatRef, async (chatSnapshot) => {
                   chatsFoundCount++;
                   const data = chatSnapshot.val();
-  
+      
                   if (data) {
                       data.key = chatSnapshot.key;
-  
-                      // קבלת משתמשים חסרים
-                      const missingUsers = data.users.filter(userId => 
+      
+                      const missingUsers = data.users.filter(userId =>
                           !storedUsers[userId] && userId !== userData.userId
                       );
-  
+      
                       if (missingUsers.length > 0) {
                           const fetchedUsers = await Promise.all(
                               missingUsers.map(userId => getUserData(userId))
                           );
-  
+      
                           const newUsers = {};
                           fetchedUsers.forEach(user => {
                               if (user) newUsers[user.userId] = user;
                           });
-  
+      
                           dispatch(setStoredUsers({ newUsers }));
                       }
-  
+      
                       chatsData[chatSnapshot.key] = data;
                   }
-  
+      
                   if (chatsFoundCount >= chatIds.length) {
                       dispatch(setChatsData({ chatsData }));
                       setIsLoading(false);
@@ -256,6 +255,16 @@ const WellcomeNavigation = () => {
               });
   
               unsubscribers.push(unsubscribeChat);
+  
+              const messagesRef = child(dbRef, `messages/${chatId}`);
+              const unsubscribeMessages = onValue(messagesRef, (messagesSnapshot) => {
+                  if (messagesSnapshot.exists()) {
+                      const messagesData = messagesSnapshot.val();
+                      dispatch(setChatMessages({ chatId, messagesData }));
+                  }
+              });
+  
+              unsubscribers.push(unsubscribeMessages);
           }
   
           return () => {
