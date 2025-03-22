@@ -74,7 +74,7 @@ const ForeignProfile = ({ backArrowHandle }) => {
         screen: "Chats",
         params: { selectedUserId: userId, chatUsers: [userData.userId, userId], chatId },
       });
-      dispatch(setStoredUsers({ newUsers: foreignUser }));
+      dispatch(setStoredUsers({ newUsers: [foreignUser] }));
     }
   };
 

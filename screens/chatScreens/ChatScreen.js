@@ -28,9 +28,8 @@ const ChatScreen = ({navigation, route}) => {
 
    const getChatTitleFromName = () => {
       const otherUserId = route?.params?.selectedUserId
-      const otherUserData = storedUsers[otherUserId];
-
-      return  otherUserData && `${otherUserData.firstName} ${otherUserData.lastName}`
+      const otherUser = storedUsers[otherUserId];
+      return  otherUser && `${otherUser.firstName} ${otherUser.lastName}`
    }
 
    useEffect(() => {
