@@ -14,6 +14,8 @@ import { createChat, sendTextMessage } from '../../util/actions/chatAction';
 const ChatScreen = ({navigation, route}) => {
   
   const storedUsers = useSelector(state => state.users.storedUsers);
+
+ 
   
   const userData  = useSelector(state => state.auth.userData);
   
@@ -168,7 +170,9 @@ const ChatScreen = ({navigation, route}) => {
              style={styles.textBox}
              onChangeText={(text)=>setMessageText(text)}
              value={messageText}
-             onSubmitEditing={sendMessage}
+             multiline={true}
+             maxLength={200}
+            
               />
 
             { messageText === "" && 
