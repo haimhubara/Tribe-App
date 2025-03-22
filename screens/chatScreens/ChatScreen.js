@@ -2,10 +2,8 @@ import React, { useCallback, useEffect, useLayoutEffect , useState } from 'react
 import { View, Text, ImageBackground, StyleSheet, TextInput,Pressable, KeyboardAvoidingView, Platform, FlatList } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Feather from '@expo/vector-icons/Feather';
-
 import backgroundImage from '../../assets/images/droplet.jpeg'
 import { useSelector } from 'react-redux';
-import PageContainer from '../../components/PageContainer';
 import Bubble from '../../components/Bubble';
 import { createChat, sendTextMessage } from '../../util/actions/chatAction';
 
@@ -127,7 +125,6 @@ const ChatScreen = ({navigation, route}) => {
 
         <ImageBackground style={styles.backgroundImage} source={backgroundImage}>
 
-          <PageContainer>
 
             {
               !chatId && <Bubble text = "This is a new chat. Say hi!" type="system"/>
@@ -152,8 +149,6 @@ const ChatScreen = ({navigation, route}) => {
               }}
               />
             }
-
-          </PageContainer>
 
         </ImageBackground>
 

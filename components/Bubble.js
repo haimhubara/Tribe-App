@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { GlobalStyles } from '../constants/styles'
+import PageContainer from './PageContainer'
 
 const Bubble = ({text, type}) => {
 
@@ -43,11 +44,13 @@ const Bubble = ({text, type}) => {
     }
 
   return (
+    <PageContainer>
     <View style={wrappreStyle}>
         <View style={bubbleStyle}>
             <Text style={textStyle}>{text}</Text>
         </View>
     </View>
+    </PageContainer>
   )
 }
 
