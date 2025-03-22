@@ -68,14 +68,14 @@ const ForeignProfile = ({ backArrowHandle }) => {
     return Math.floor((now - birth) / (1000 * 60 * 60 * 24 * 365.25));
   };
 
-  const startChatHandle = async() => {
+  const startChatHandle = () => {
     if (userId) {
       navigation.navigate("Chats Screen", {
         screen: "Chats",
         params: { selectedUserId: userId, chatUsers: [userData.userId, userId], chatId },
       });
       const newUsers = { [foreignUser.userId]: foreignUser };
-      await dispatch(setStoredUsers({ newUsers }));
+      dispatch(setStoredUsers({ newUsers }));
     }
   };
 

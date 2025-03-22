@@ -18,7 +18,7 @@ export const createChat = async (loggedInUserId, chatData) => {
 
     const app = getFirebaseApp();
     const dbRef = ref(getDatabase(app));
-    const newChat = await push(child(dbRef, 'chats'),newChatData );
+    const newChat = await push(child(dbRef, 'chats/'),newChatData );
 
     const chatUsers = newChatData.users;
     for (let i = 0; i < chatUsers.length; i++) {

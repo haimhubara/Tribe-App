@@ -8,7 +8,6 @@ import { useSelector } from 'react-redux';
 import PageContainer from '../../components/PageContainer';
 import Bubble from '../../components/Bubble';
 import { createChat, sendTextMessage } from '../../util/actions/chatAction';
-import { createSelector } from '@reduxjs/toolkit';
 
 
 
@@ -26,25 +25,25 @@ const ChatScreen = ({navigation, route}) => {
   const [errorBannerText, setErrorBannerText] = useState('');
   
   
-  const chatData = route?.params?.chatUsers
-  
-  const getMessagesData = (state, chatId) => state.messages.messagesData[chatId] || {};
+  const chatData = route?.params?.chatUsers;
 
-  const getChatMessages = createSelector(
-    [getMessagesData],
-    (chatMessagesData) => {
-      const messageList = [];
-      for (const key in chatMessagesData) {
-        const message = chatMessagesData[key];
-        messageList.push({
-          key,
-          ...message
-        });
-      }
-      return messageList;
+  const emptyArray = [];
+  
+  const chatMessages = useSelector(state => {
+    if (!chatId) return emptyArray;
+    const chatMessagesData = state.messages.messagesData[chatId];
+    if (!chatMessagesData) return emptyArray;
+  
+    const messageList = emptyArray;
+    for (const key in chatMessagesData) {
+      const message = chatMessagesData[key];
+      messageList.push({
+        key,
+        ...message
+      });
     }
-  );
-  const chatMessages = useSelector(state => getChatMessages(state, chatId));
+    return messageList;
+  });
   
 
    const getChatTitleFromName = () => {
@@ -71,8 +70,12 @@ const ChatScreen = ({navigation, route}) => {
         if (!chatId) {
             id = await createChat(userData.userId, route?.params?.chatUsers);
             setChatId(id);
+            
         }
-        await sendTextMessage(chatId,userData.userId,messageText);
+     
+
+        await sendTextMessage(id,userData.userId,messageText);
+        
 
         setMessageText("");
 
@@ -84,7 +87,7 @@ const ChatScreen = ({navigation, route}) => {
         },5000);
     }
 
-}, [messageText,chatId]);
+}, [messageText,chatId,setMessageText]);
   
 
  
@@ -131,9 +134,10 @@ const ChatScreen = ({navigation, route}) => {
             }
 
             {
-              chatId && 
+            
               <FlatList
               data={chatMessages}
+              keyExtractor={(item, index) => index.toString()}
               renderItem={(itemData)=>{
                   const message = itemData.item;
                   const isOwnMessage = message.sentBy === userData.userId;

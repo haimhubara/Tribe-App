@@ -197,9 +197,11 @@ const WellcomeNavigation = () => {
 
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(true);
+    const chatsData = useSelector(state => state.chats.chatsData);
 
     const userData = useSelector(state => state.auth.userData);
     const storedUsers = useSelector(state => state.users.storedUsers);
+
     useEffect(() => {
       const app = getFirebaseApp();
       const dbRef = ref(getDatabase(app));
@@ -209,11 +211,6 @@ const WellcomeNavigation = () => {
           const chatIdsData = querySnapshot.val() || {};
           const chatIds = Object.values(chatIdsData);
       
-          if (chatIds.length === 0) {
-              setIsLoading(false);
-              return;
-          }
-      
           const chatsData = {};
           let chatsFoundCount = 0;
           const unsubscribers = [];
@@ -221,9 +218,11 @@ const WellcomeNavigation = () => {
           for (const chatId of chatIds) {
               const chatRef = child(dbRef, `chats/${chatId}`);
               
+              
               const unsubscribeChat = onValue(chatRef, async (chatSnapshot) => {
                   chatsFoundCount++;
                   const data = chatSnapshot.val();
+                 
       
                   if (data) {
                       data.key = chatSnapshot.key;
@@ -265,6 +264,11 @@ const WellcomeNavigation = () => {
               });
   
               unsubscribers.push(unsubscribeMessages);
+
+              if (chatIds.length === 0) {
+                setIsLoading(false);
+                return;
+            }
           }
   
           return () => {

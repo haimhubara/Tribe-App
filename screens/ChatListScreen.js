@@ -9,6 +9,7 @@ import { GlobalStyles } from "../constants/styles";
 import defaultImage from "../assets/images/userImage.jpeg"
 import { useSelector } from "react-redux";
 import { createSelector } from 'reselect';
+import { useFocusEffect } from "@react-navigation/native";
 
 
 const ChatListScreen = ({navigation, route}) => {
@@ -18,6 +19,7 @@ const ChatListScreen = ({navigation, route}) => {
 
     const userData = useSelector(state => state.auth.userData);
     const storedUsers = useSelector(state => state.users.storedUsers);
+    
 
 
     
@@ -36,15 +38,11 @@ const ChatListScreen = ({navigation, route}) => {
     );
 
     const userChats = useSelector(getChats);
-    for (let i = 0; i < userChats.length; i++) {
-      const key = userChats[i].key;
-      const users = userChats[i].users
-    }
+
 
     
    
      
-
     useEffect(()=>{
 
       if(!selectedUserId){
@@ -65,7 +63,7 @@ const ChatListScreen = ({navigation, route}) => {
         chatId:route?.params?.chatId
       });
 
-    },[route?.params])
+    },[route?.params,userChats])
 
    
   
@@ -103,6 +101,7 @@ const ChatListScreen = ({navigation, route}) => {
 
         renderItem={(itemData) => {
           const chatData = itemData.item;
+
           const chatId = chatData.key;
           const otherUserId = chatData.users.find(uid => uid !== userData.userId)
           const otherUser = storedUsers[otherUserId];
@@ -120,6 +119,7 @@ const ChatListScreen = ({navigation, route}) => {
                   screen: "Chat",
                   params: { chatId:chatId,
                     selectedUserId:otherUserId,
+                    chatUsers:[otherUserId,userChats.userId]
                   }
                 })
               }}

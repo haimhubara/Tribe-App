@@ -7,8 +7,13 @@ const messagesSlice = createSlice({
   },
   reducers: {
       setChatMessages: (state, action) => {
-          const { chatId, messagesData } = action.payload;
-          state.messagesData[chatId] = messagesData; // עדכון ההודעות עבור ה-chatId הספציפי
+        const existingMessages = state.messagesData;
+
+        const { chatId, messagesData } = action.payload;
+
+        existingMessages[chatId] = messagesData;
+
+        state.messagesData = existingMessages;
       }
   }
 });
