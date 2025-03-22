@@ -63,7 +63,7 @@ const ChatListScreen = ({navigation, route}) => {
         chatId:route?.params?.chatId
       });
 
-    },[route?.params,userChats])
+    },[route?.params])
 
    
   

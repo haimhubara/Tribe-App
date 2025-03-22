@@ -211,6 +211,11 @@ const WellcomeNavigation = () => {
           const chatIdsData = querySnapshot.val() || {};
           const chatIds = Object.values(chatIdsData);
       
+          if (chatIds.length === 0) {
+              setIsLoading(false);
+              return;
+          }
+      
           const chatsData = {};
           let chatsFoundCount = 0;
           const unsubscribers = [];
@@ -264,11 +269,6 @@ const WellcomeNavigation = () => {
               });
   
               unsubscribers.push(unsubscribeMessages);
-
-              if (chatIds.length === 0) {
-                setIsLoading(false);
-                return;
-            }
           }
   
           return () => {
@@ -280,7 +280,7 @@ const WellcomeNavigation = () => {
       return () => {
           unsubscribeUserChat();
       };
-  }, [userData.userId, dispatch, storedUsers]);
+  }, []);
   
   
 

@@ -73,8 +73,10 @@ const ChatScreen = ({navigation, route}) => {
             
         }
      
+        if(messageText !== ""){
+          await sendTextMessage(id,userData.userId,messageText);
 
-        await sendTextMessage(id,userData.userId,messageText);
+        }
         
 
         setMessageText("");
@@ -87,7 +89,7 @@ const ChatScreen = ({navigation, route}) => {
         },5000);
     }
 
-}, [messageText,chatId,setMessageText]);
+}, [messageText,chatId]);
   
 
  
