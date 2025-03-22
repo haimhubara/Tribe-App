@@ -62,7 +62,6 @@ const ParticipantsListScreen = ({ navigation, route }) => {
 
   const fetchUsersDetails = async (userIds) => {
     if (!userIds.length) {
-      console.warn("No users found. Skipping fetch.");
       setUsersData([]);
       return;
     }

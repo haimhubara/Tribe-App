@@ -1,4 +1,4 @@
-import { View, Text, Pressable, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Pressable, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { GlobalStyles } from '../constants/styles';
 import ImageToShow from './imagesAndVideo/ImageToShow';
 import { useNavigation } from '@react-navigation/native';
@@ -23,14 +23,38 @@ const ParticipantComponent = ({ user, myPage, activityId, onUserRemoved }) => {
         }
     }
 
+    // ✅ פופאפ אישור
+    const confirmRemove = (userID) => {
+        Alert.alert(
+            "Remove Participant",
+            "Are you sure you want to remove this participant?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                {
+                    text: "Yes, Remove",
+                    style: "destructive",
+                    onPress: () => onRemove(userID)
+                }
+            ]
+        );
+    };
+
     const onRemove = async (userID) => {
         try {
             const docRef = doc(db, "activities", activityId);
             await updateDoc(docRef, {
                 activityParticipants: arrayRemove(userID),
             });
+            await updateDoc(doc(db, "users", userID), {
+                activities: arrayRemove(activityId),
+            });
 
-            onUserRemoved(userID);
+            if (onUserRemoved) {
+                onUserRemoved(userID); // עדכון חיצוני אם צריך
+            }
         } catch (e) {
             console.error("Error updating document:", e);
         }
@@ -50,7 +74,7 @@ const ParticipantComponent = ({ user, myPage, activityId, onUserRemoved }) => {
                     </View>
 
                     {myPage === 1 && user.userId !== userData.userId ? (
-                        <TouchableOpacity style={styles.removeButton} onPress={() => onRemove(user.userId)}>
+                        <TouchableOpacity style={styles.removeButton} onPress={() => confirmRemove(user.userId)}>
                             <Ionicons name="close" size={20} color="#fff" />
                         </TouchableOpacity>
                     ) : (

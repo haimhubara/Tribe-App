@@ -51,12 +51,10 @@ const RequestsList = ({ navigation, route }) => {
 
   const fetchUsersDetails = async (userIds) => {
     if (!userIds.length) {
-      console.warn("No users found in requests. Skipping fetch.");
       setUsersData([]);
       return;
     }
 
-    //console.log("Fetching user details for request IDs:", userIds);
 
     try {
       const users = [];
@@ -72,7 +70,6 @@ const RequestsList = ({ navigation, route }) => {
         }
       }
 
-      //console.log("Fetched Requests Users Data:", users);
       setUsersData(users);
     } catch (error) {
       console.error("Error fetching users data:", error);

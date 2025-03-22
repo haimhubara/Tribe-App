@@ -194,6 +194,11 @@ const handleSubmit = async () => {
             await updateDoc(docRef, {
               activityParticipants: arrayUnion(userData.userId),
             });
+
+            await updateDoc(doc(db, "users", userData.userId), {
+              activities: arrayUnion(docRef.id),
+            });
+
             alert("Event created successfully!");
             resetForm();
             navigation.navigate("Search");

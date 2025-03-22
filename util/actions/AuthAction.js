@@ -145,7 +145,8 @@ const createUser = async(firestore,signUpFormValue,imageUrls,videoUrl,userId) =>
         instagram: signUpFormValue['instagram'],
         tiktok: signUpFormValue['tiktok'],
         images: imageUrls,
-        videoUrl:videoUrl
+        videoUrl:videoUrl,
+        activities:[]
     }
     const userRef = doc(collection(firestore, "users"), userId);
     await setDoc(userRef, userData);

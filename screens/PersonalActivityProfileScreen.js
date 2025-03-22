@@ -9,6 +9,8 @@ import { getFirestore, doc, getDoc,updateDoc, arrayUnion, arrayRemove } from "fi
 import firebaseConfig from "../util/firebaseConfig.json";
 import Button from "../components/buttons/Button";
 import { useSelector } from "react-redux";
+import { Alert } from 'react-native';
+
 
 const PersonalActivityProfileScreen = ({ navigation, route }) => {
     const activityId = route.params?.id; 
@@ -95,6 +97,35 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
         }
     };
 
+    const leaveActivity = async () => {
+        try {
+            const activityRef = doc(db, "activities", activityId);
+            await updateDoc(activityRef, {
+                activityParticipants: arrayRemove(myID),
+            });
+    
+            const userRef = doc(db, "users", myID);
+            await updateDoc(userRef, {
+                activities: arrayRemove(activityId),
+            });
+    
+            setIsParticipant(false);
+        } catch (e) {
+            console.error("Error leaving activity:", e);
+        }
+    };
+    
+    const confirmLeave = () => {
+        Alert.alert(
+            "Leave Activity",
+            "Are you sure you want to leave this activity?",
+            [
+                { text: "Cancel", style: "cancel" },
+                { text: "Yes", style: "destructive", onPress: leaveActivity }
+            ]
+        );
+    };
+    
 
     
 
@@ -190,21 +221,27 @@ const requestToJoin = async () => {
 
                     {myPage !== 1 && (
                         <TouchableOpacity
-                            onPress={() => handleEditClick("joinButton")}
-                            style={[
-                                styles.joinButton, 
-                                isParticipant ? styles.participantButton : isPending ? styles.joinedButton : null
-                            ]}
-                            disabled={isParticipant} // אם המשתמש כבר בפעילות, הכפתור לא יהיה לחיץ
-                        >
-                            <Ionicons 
-                                name={isParticipant ? "checkmark-circle-outline" : isPending ? "time-outline" : "flame-outline"} 
-                                style={styles.joinButtonIcon} 
-                            />
-                            <Text style={styles.joinButtonText}>
-                                {isParticipant ? "U ARE IN!" : isPending ? "Pending" : "Tribe Us!"}
-                            </Text>
-                        </TouchableOpacity>
+                        onPress={() => {
+                          if (isParticipant) {
+                            confirmLeave(); // ❗ אם כבר משתתף – בקשת יציאה
+                          } else {
+                            handleEditClick("joinButton"); // אחרת – הצטרפות רגילה
+                          }
+                        }}
+                        style={[
+                          styles.joinButton,
+                          isParticipant ? styles.participantButton : isPending ? styles.joinedButton : null
+                        ]}
+                      >
+                        <Ionicons
+                          name={isParticipant ? "checkmark-circle-outline" : isPending ? "time-outline" : "flame-outline"}
+                          style={styles.joinButtonIcon}
+                        />
+                        <Text style={styles.joinButtonText}>
+                          {isParticipant ? "U ARE IN!" : isPending ? "Pending" : "Tribe Us!"}
+                        </Text>
+                      </TouchableOpacity>
+                      
                     )}
                 </View>
             </ScrollView>
