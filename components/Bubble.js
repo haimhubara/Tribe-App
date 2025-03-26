@@ -61,7 +61,8 @@ const styles = StyleSheet.create({
     },
     text:{
         fontFamily:'regular',
-        letterSpacing:0.3
+        letterSpacing:0.3,
+        color:GlobalStyles.colors.textColor,
         
     },
     container:{
