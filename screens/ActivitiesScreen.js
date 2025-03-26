@@ -1,43 +1,73 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { FlatList, StyleSheet, View, Text, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
-import { getActivityData } from '../util/actions/activityAction';
+import { FlatList, StyleSheet, View, Text, TouchableOpacity, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { GlobalStyles } from '../constants/styles';
 import { useSelector } from 'react-redux';
-import ActivityComponent from '../components/ActivityComponent';
 import Feather from '@expo/vector-icons/Feather';
+
+import { initializeApp } from 'firebase/app';
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
+import firebaseConfig from '../util/firebaseConfig.json';
+
+import { getActivityData } from '../util/actions/activityAction';
+import ActivityComponent from '../components/ActivityComponent';
+import { GlobalStyles } from '../constants/styles';
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 const ActivitiesScreen = ({ navigation }) => {
   const [activitiesData, setActivitiesData] = useState([]);
-  const userData = useSelector(state => state.auth.userData);
-  const [isLoading, setIsLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const userData = useSelector(state => state.auth.userData);
 
-  const fetchActivities = async () => {
-    setIsLoading(true);
-    const activities = [];
-    for (let i = 0; i < userData.activities.length; i++) {
-      const activityId = userData.activities[i];
-      const activityData = await getActivityData(activityId);
-      if (activityData) {  
-        activities.push(activityData);  
+  const fetchUserActivities = useCallback(async () => {
+    try {
+      if (!userData?.userId) {
+        console.log(userData);
+        console.warn("No user ID found.");
+        return;
       }
+
+      const userRef = doc(db, "users", userData.userId);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        console.warn("User not found in Firestore.");
+        setActivitiesData([]);
+        return;
+      }
+
+      const updatedUserData = userSnap.data();
+      const activityIds = Array.isArray(updatedUserData.activities) ? updatedUserData.activities : [];
+
+      const fetchedActivities = [];
+
+      for (let activityId of activityIds) {
+        try {
+          const activityData = await getActivityData(activityId);
+          if (activityData) {
+            fetchedActivities.push(activityData);
+          }
+        } catch (err) {
+          console.error("Error fetching activity:", activityId, err);
+        }
+      }
+
+      setActivitiesData(fetchedActivities);
+    } catch (error) {
+      console.error("Error fetching user activities:", error);
     }
-    setActivitiesData(activities);
-    setIsLoading(false);
-  };
+  }, [userData.userId]);
 
   useEffect(() => {
-    fetchActivities();
-  }, [userData.activities]);
+    fetchUserActivities();
+  }, [fetchUserActivities]);
 
   const onRefresh = useCallback(async () => {
-    setIsLoading(true);
     setRefreshing(true);
-    await fetchActivities();
+    await fetchUserActivities();
     setRefreshing(false);
-    setIsLoading(false);
-  }, [userData.activities]);
+  }, [fetchUserActivities]);
 
   const isoToDateString = (isoString) => {
     if (!isoString) return null;
@@ -63,17 +93,12 @@ const ActivitiesScreen = ({ navigation }) => {
         >
           <Feather name="plus" size={28} color="white" />
         </TouchableOpacity>
-
       </View>
-      {isLoading && (  
-        <View style={{ flex: 1, justifyContent: "center", alignItems: 'center' }}>
-          <ActivityIndicator size="large" color={GlobalStyles.colors.mainColor} />
-        </View>
-      )}
-      {!isLoading && activitiesData.length !== 0 && (
+
+      {activitiesData.length > 0 ? (
         <FlatList
           data={activitiesData}
-          keyExtractor={(item) => item.id.toString()} 
+          keyExtractor={(item) => item.id.toString()}
           renderItem={(itemData) => (
             <TouchableOpacity onPress={() => {
               navigation.navigate('PersonalActivityProfileScreen', { id: itemData.item.id });
@@ -86,16 +111,19 @@ const ActivitiesScreen = ({ navigation }) => {
                 distance={itemData.item.distance}
                 date={isoToDateString(itemData.item.date)}
                 time={isoToTimeString(itemData.item.time)}
-                imageUrl={itemData.item.imageUrl} 
+                imageUrl={itemData.item.imageUrl}
               />
             </TouchableOpacity>
           )}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[GlobalStyles.colors.mainColor]} />
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[GlobalStyles.colors.mainColor]}
+            />
           }
         />
-      )}
-      {!isLoading && activitiesData.length === 0 && (
+      ) : (
         <View style={styles.notFound}>
           <Feather name="activity" size={55} color="grey" />
           <Text style={styles.notFoundText}>You don't participate in activities yet</Text>
@@ -122,7 +150,6 @@ const styles = StyleSheet.create({
   },
   notFound: {
     flex: 1,
-    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -133,7 +160,7 @@ const styles = StyleSheet.create({
   },
   floatingButton: {
     position: 'absolute',
-    top: 20,
+    top: 40,
     right: 20,
     width: 50,
     height: 50,
@@ -142,13 +169,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 100,
-    elevation: 5, // לאנדרואיד
+    elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 3,
   },
-  
 });
 
 export default ActivitiesScreen;
