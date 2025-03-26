@@ -166,6 +166,8 @@ function MyActivities(){
       }),
     }}>
           <Tab.Screen name="ActivitiesScreen" component={ActivitiesScreen}  options={{tabBarLabel:"My Activities",headerShown: false }} />
+          <Stack.Screen name="AddNewEventScreen" component={AddNewEventScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="SearchScreen" component={SearchScreen} options={{ headerShown: false }}  />
           <Stack.Screen name="PersonalActivityProfileScreen" component={PersonalActivityProfileScreen} options={{ headerShown: false }} />
           <Stack.Screen name="ParticipantsListScreen" component={ParticipantsListScreen} options={{ headerShown: false }} />
           <Stack.Screen name="ForeignProfileScreen" component={ForeignProfileScreen} options={{ headerShown: false }} />
