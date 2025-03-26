@@ -1,6 +1,7 @@
 import { ActivityIndicator, View,Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import Feather from '@expo/vector-icons/Feather';
 import { createStackNavigator } from '@react-navigation/stack';
 import { HomeScreen, ProfileScreen, ChatListScreen, SearchScreen, AddNewEventScreen,PersonalActivityProfileScreen } from '../screens';
 import ForeignProfileScreen from '../screens/proflieScreens/ForeignProfileScreen';
@@ -18,6 +19,9 @@ import { useState } from 'react';
 import { setStoredUsers } from '../store/userSlice';
 import { getUserData } from '../util/actions/userAction';
 import { setChatMessages } from '../store/messagesSlice';
+import ActivitiesScreen from '../screens/ActivitiesScreen';
+
+
 
 
 
@@ -126,8 +130,8 @@ function WellcomeWindow() {
             iconName = 'chatbubble-ellipses-outline';
           } else if (route.name === 'Profile Screen') {
             iconName = 'person';
-          } else if (route.name === 'New') {
-            iconName = 'add-circle-outline';
+          } else if (route.name === 'MyActivities') {
+            return <Feather name="activity" size={24} color="black" />
           }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
@@ -142,13 +146,13 @@ function WellcomeWindow() {
       <Tab.Screen name="HomeStack" component={HomeStack} options={{tabBarLabel:"Home"}}/>
       <Tab.Screen name="Search" component={SearchPage} initialParams={{myPage:0}}/>
       <Tab.Screen name="Chats Screen" component={ChatStack} options={{tabBarLabel:"Chats"}}/>
-      <Tab.Screen name="New" component={AddActivityPage} />
+      <Tab.Screen name="MyActivities" component={MyActivities}  options={{tabBarLabel:"My Activities"}} />
       <Tab.Screen name="Profile Screen" component={ProfileStack} options={{tabBarLabel:"Profile"}}/>
      
     </Tab.Navigator>
   );
 }
-function AddActivityPage(){
+function MyActivities(){
   return(
     <Stack.Navigator
     screenOptions={{
@@ -161,8 +165,11 @@ function AddActivityPage(){
         },
       }),
     }}>
-        <Stack.Screen name="AddNewEventScreen" component={AddNewEventScreen} options={{ headerShown: false }}  />
-        <Stack.Screen name="Search" component={SearchPage} options={{ headerShown: false }}  />
+          <Tab.Screen name="ActivitiesScreen" component={ActivitiesScreen}  options={{tabBarLabel:"My Activities",headerShown: false }} />
+          <Stack.Screen name="PersonalActivityProfileScreen" component={PersonalActivityProfileScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="ParticipantsListScreen" component={ParticipantsListScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="ForeignProfileScreen" component={ForeignProfileScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="RequestsList" component={RequestsList} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
