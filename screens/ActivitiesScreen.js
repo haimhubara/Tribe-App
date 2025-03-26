@@ -32,9 +32,11 @@ const ActivitiesScreen = ({ navigation }) => {
   }, [userData.activities]);
 
   const onRefresh = useCallback(async () => {
+    setIsLoading(true);
     setRefreshing(true);
     await fetchActivities();
     setRefreshing(false);
+    setIsLoading(false);
   }, [userData.activities]);
 
   const isoToDateString = (isoString) => {
@@ -56,7 +58,7 @@ const ActivitiesScreen = ({ navigation }) => {
       <View style={styles.header}>
         <Text style={styles.text}>My Activities</Text>
       </View>
-      {isLoading && !refreshing && (  
+      {isLoading && (  
         <View style={{ flex: 1, justifyContent: "center", alignItems: 'center' }}>
           <ActivityIndicator size="large" color={GlobalStyles.colors.mainColor} />
         </View>
