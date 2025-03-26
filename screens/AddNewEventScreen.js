@@ -197,7 +197,7 @@ const handleSubmit = async () => {
 
             await updateDoc(doc(db, "users", userData.userId), {
               activities: arrayUnion(docRef.id),
-            });
+              });
 
             alert("Event created successfully!");
             resetForm();

@@ -57,6 +57,13 @@ const ActivitiesScreen = ({ navigation }) => {
     <SafeAreaView style={styles.root} edges={['top', 'left', 'right']}>
       <View style={styles.header}>
         <Text style={styles.text}>My Activities</Text>
+        <TouchableOpacity 
+          style={styles.floatingButton} 
+          onPress={() => navigation.navigate('AddNewEventScreen')}
+        >
+          <Feather name="plus" size={28} color="white" />
+        </TouchableOpacity>
+
       </View>
       {isLoading && (  
         <View style={{ flex: 1, justifyContent: "center", alignItems: 'center' }}>
@@ -75,7 +82,7 @@ const ActivitiesScreen = ({ navigation }) => {
                 id={itemData.item.id}
                 name={itemData.item.name}
                 description={itemData.item.description}
-                participants={itemData.item.selectedNumPartitions}
+                participants={itemData.item.activityParticipants?.length || 1}
                 distance={itemData.item.distance}
                 date={isoToDateString(itemData.item.date)}
                 time={isoToTimeString(itemData.item.time)}
@@ -124,6 +131,24 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'grey',
   },
+  floatingButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: GlobalStyles.colors.mainColor,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 100,
+    elevation: 5, // לאנדרואיד
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+  },
+  
 });
 
 export default ActivitiesScreen;

@@ -3,11 +3,11 @@ import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from '@expo/vector-icons';
 import Header from "../components/Header";
-import { GlobalStyles } from "../constants/styles";
+//import { GlobalStyles } from "../constants/styles";
 import { initializeApp } from "firebase/app";
-import { getFirestore, doc, getDoc,updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import { getFirestore, doc, getDoc, updateDoc, deleteDoc,arrayUnion, arrayRemove, getDocs, collection } from "firebase/firestore";
 import firebaseConfig from "../util/firebaseConfig.json";
-import Button from "../components/buttons/Button";
+//import Button from "../components/buttons/Button";
 import { useSelector } from "react-redux";
 import { Alert } from 'react-native';
 
@@ -127,41 +127,88 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
     };
     
 
-    
-
-const requestToJoin = async () => {
-    try {
+    const deleteActivity = async () => {
+        try {
+          const activityRef = doc(db, "activities", activityId);
+          const activitySnap = await getDoc(activityRef);
       
-        const docRef = doc(db, "activities", activityId);
-        const docSnap = await getDoc(docRef);
-
-        if (!docSnap.exists()) {
+          if (!activitySnap.exists()) {
             console.error("Activity not found");
             return;
-        }
-
-        const activityData = docSnap.data();
-        if (!activityData.activityRequests) {
-            await updateDoc(docRef, { activityRequests: [] });
-        }
-
-        if (!isJoined) {
-            await updateDoc(docRef, {
-                activityRequests: arrayUnion(myID),
+          }
+      
+          const activityData = activitySnap.data();
+          const allUserIds = [
+            ...(activityData.activityParticipants || []),
+            ...(activityData.activityRequests || [])
+          ];
+      
+          
+          for (const userId of allUserIds) {
+            const userRef = doc(db, "users", userId);
+            await updateDoc(userRef, {
+              activities: arrayRemove(activityId)
             });
-            setIsPending(true);///
-        } else {
-            await updateDoc(docRef, {
-                activityRequests: arrayRemove(myID),
-            });
-            setIsPending(false);///
+          }
+      
+          
+          await deleteDoc(activityRef);
+      
+          // ניווט חזרה למסך החיפוש או אחר
+          Alert.alert("Deleted", "Activity deleted successfully.");
+          navigation.navigate("SearchScreen");
+      
+        } catch (error) {
+          console.error("Error deleting activity:", error);
+          Alert.alert("Error", "Something went wrong while deleting the activity.");
         }
-    } catch (e) {
-        console.error("Error updating document:", e);
-    }
-};
+      };
+      
+      const confirmDelete = () => {
+        Alert.alert(
+          "Delete Activity",
+          "Are you sure you want to delete this activity?",
+          [
+            { text: "Cancel", style: "cancel" },
+            { text: "Delete", style: "destructive", onPress: deleteActivity }
+          ]
+        );
+      };
+      
 
-    
+    const requestToJoin = async () => {
+        try {
+        
+            const docRef = doc(db, "activities", activityId);
+            const docSnap = await getDoc(docRef);
+
+            if (!docSnap.exists()) {
+                console.error("Activity not found");
+                return;
+            }
+
+            const activityData = docSnap.data();
+            if (!activityData.activityRequests) {
+                await updateDoc(docRef, { activityRequests: [] });
+            }
+
+            if (!isJoined) {
+                await updateDoc(docRef, {
+                    activityRequests: arrayUnion(myID),
+                });
+                setIsPending(true);///
+            } else {
+                await updateDoc(docRef, {
+                    activityRequests: arrayRemove(myID),
+                });
+                setIsPending(false);///
+            }
+        } catch (e) {
+            console.error("Error updating document:", e);
+        }
+    };
+
+        
 
 
     function getAges() {
@@ -202,30 +249,29 @@ const requestToJoin = async () => {
                         ))}
                     </View>
                     {myPage !== 0 && (
-                        <View style={styles.buttonRow}>
-                            <TouchableOpacity
-                                onPress={() => handleEditClick("editButton")}
-                                style={styles.editButton}
-                            >
-                                <Text style={styles.editButtonText}>Edit Event</Text>
-                            </TouchableOpacity>
+                    <View style={styles.buttonRow}>
+                        <TouchableOpacity onPress={() => handleEditClick("editButton")} style={styles.editButton}>
+                        <Text style={styles.editButtonText}>Edit Event</Text>
+                        </TouchableOpacity>
 
-                            <TouchableOpacity
-                                style={styles.requestsButton}
-                                onPress={() => handleEditClick("requestsButton")}
-                            >
-                                <Text style={styles.requestsButtonText}>Requests</Text>
-                            </TouchableOpacity>
-                        </View>
+                        <TouchableOpacity style={styles.requestsButton} onPress={() => handleEditClick("requestsButton")}>
+                        <Text style={styles.requestsButtonText}>Requests</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.deleteButton} onPress={confirmDelete}>
+                        <Text style={styles.deleteButtonText}>Delete</Text>
+                        </TouchableOpacity>
+                    </View>
                     )}
+
 
                     {myPage !== 1 && (
                         <TouchableOpacity
                         onPress={() => {
                           if (isParticipant) {
-                            confirmLeave(); // ❗ אם כבר משתתף – בקשת יציאה
+                            confirmLeave(); 
                           } else {
-                            handleEditClick("joinButton"); // אחרת – הצטרפות רגילה
+                            handleEditClick("joinButton");
                           }
                         }}
                         style={[
@@ -283,11 +329,9 @@ const styles = StyleSheet.create({
     editButton: {
         backgroundColor: "#4A90E2",
         paddingVertical: 12,
-        paddingHorizontal: 12,
+        paddingHorizontal: 18,
         borderRadius: 5,
-        marginLeft:-35,
         alignItems: "center",
-        flex: 1,
         marginHorizontal: 5,
     },
     editButtonText: {
@@ -315,28 +359,43 @@ const styles = StyleSheet.create({
     icon: { fontSize: 30, color: "#4A90E2" },
     joinedButton: { backgroundColor: "grey" },
     buttonRow: {
-        flexDirection: "row", 
-        justifyContent: "space-evenly", 
+        flexDirection: "row",
+        justifyContent: "center",
         alignItems: "center",
-        width: "90%",
-        paddingHorizontal: 20, 
-        marginTop: 15, 
+        width: "100%",
+        paddingHorizontal: 20,
+        marginTop: 15,
+        gap: 10,
+        flexWrap: "wrap" 
     },
     requestsButton: {
         backgroundColor: "#FF5722",
         paddingVertical: 12,
-        paddingHorizontal: 10,
+        paddingHorizontal: 18,
         borderRadius: 5,
-        marginRight:-35,
         alignItems: "center",
-        flex: 1,
         marginHorizontal: 5,
     },
+    
     requestsButtonText: {
         color: "white",
         fontSize: 16,
         fontWeight: "bold",
     },
+    deleteButton: {
+        backgroundColor: "#D32F2F",
+        paddingVertical: 12,
+        paddingHorizontal: 18,
+        borderRadius: 5,
+        alignItems: "center",
+        marginHorizontal: 5,
+    },
+      deleteButtonText: {
+        color: "white",
+        fontSize: 16,
+        fontWeight: "bold",
+      },
+      
 
 });
 
