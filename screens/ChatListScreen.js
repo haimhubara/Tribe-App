@@ -114,6 +114,7 @@ const ChatListScreen = ({navigation, route}) => {
              firstName={otherUser.firstName}
              lastName={otherUser.lastName}
              lastMessage={chatData.latestMessageText || "New chat"}
+             updatedAt={chatData.updatedAt}
               startChatHandle={()=> {
                 navigation.navigate("Chats Screen",{
                   screen: "Chat",

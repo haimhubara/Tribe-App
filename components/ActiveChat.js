@@ -4,8 +4,15 @@ import { GlobalStyles } from '../constants/styles';
 import ImageToShow from './imagesAndVideo/ImageToShow';
 import { useNavigation } from '@react-navigation/native';
 
-const ActiveChats = ({ firstName, lastName, lastMessage, imageSource, startChatHandle }) => {
+const ActiveChats = ({ firstName, lastName, lastMessage, imageSource, startChatHandle,updatedAt }) => {
   const navigation = useNavigation();
+
+  const date = new Date(updatedAt);
+  const formattedDate = date.toLocaleDateString("he-IL", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  });
 
   return (
     <Pressable onPress={startChatHandle} accessibilityRole="button">
@@ -23,7 +30,7 @@ const ActiveChats = ({ firstName, lastName, lastMessage, imageSource, startChatH
             </View>
           </View>
           <View style={styles.timeContainer}>
-            <Text style={styles.time} numberOfLines={1}>yesteday</Text>
+            <Text style={styles.time} numberOfLines={1}>{formattedDate}</Text>
           </View>
         </View>
       )}
