@@ -71,12 +71,14 @@ const Map = ({ setIsPickingOnMap, setLocation }) => {
     
     return (
         <View style={styles.container}>
-             <TouchableOpacity
-                onPress={() => setIsPickingOnMap(false)}
-                style={styles.backButton}
-            >
-                <Ionicons name="close" size={24} color="black" />
-            </TouchableOpacity>
+            <View style={{marginTop:30}}>
+                <TouchableOpacity
+                    onPress={() => setIsPickingOnMap(false)}
+                    style={styles.backButton}
+                >
+                    <Ionicons name="close" size={24} color="black" />
+                </TouchableOpacity>
+            </View>
 
              <Search search={search} setSearch={setSearch} onSubmitHandle={searchLocation}   />
            

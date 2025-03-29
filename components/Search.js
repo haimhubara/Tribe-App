@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
         alignItems:'center',
         backgroundColor:'#ededed',
         padding:2,
-        margin:16,
+        margin:5,
         borderRadius: 8,
         borderWidth:0.1,
          // Shadow for iOS
