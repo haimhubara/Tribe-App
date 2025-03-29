@@ -4,7 +4,6 @@ import IconButton from './buttons/IconButton';
 import Feather from '@expo/vector-icons/Feather';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { GlobalStyles } from '../constants/styles';
-import Search from './Search';
 import Map from './Location/Map';
 import { getCurrentPositionAsync, requestForegroundPermissionsAsync, Accuracy, reverseGeocodeAsync, geocodeAsync } from 'expo-location';
 
@@ -30,12 +29,6 @@ const LocationPicker = ({ inputChangeHandler }) => {
     requestPermissions();
   }, []);
 
-  useEffect(() => {
-    if (location) {
-      inputChangeHandler("location",location);
-    }
-  }, [location]);
-
   const getLocationHandler = async () => {
     try {
       setIsLoading(true);
@@ -60,6 +53,7 @@ const LocationPicker = ({ inputChangeHandler }) => {
       Alert.alert("Please select location", "Please select a location before confirming.");
       return;
     }
+    inputChangeHandler("location",location);
     setModalVisible(false);
   };
 

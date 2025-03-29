@@ -58,10 +58,11 @@ const HomeScreen = () => {
   const inputChangeHandler = useCallback((id,location) => {
     if(id === "location"){
       setPickedLocation(location);
+      console.log(location);
+   
     }
   
-  },[])
-  console.log(pickedLocation);
+  },[]);
   return (
     <View style={styles.root}>
        <Header title="Participants" onBackPress={backArrowHandle}/>
