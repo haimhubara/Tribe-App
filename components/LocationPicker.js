@@ -1,194 +1,219 @@
-import { useState, useEffect } from 'react';
-import { Platform, View, StyleSheet, TextInput, Modal, TouchableOpacity, Text } from 'react-native';
-import * as Device from 'expo-device';
-import * as Location from 'expo-location';
-import MapView, { Marker } from 'react-native-maps';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import Input from './Input';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Alert, Modal, TouchableOpacity } from 'react-native';
+import IconButton from './buttons/IconButton';
+import Feather from '@expo/vector-icons/Feather';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { GlobalStyles } from '../constants/styles';
+import Search from './Search';
+import Map from './Location/Map';
+import { getCurrentPositionAsync, requestForegroundPermissionsAsync, Accuracy, reverseGeocodeAsync, geocodeAsync } from 'expo-location';
 
-export default function LocationPicker() {
+import MapView, { Marker } from 'react-native-maps';
+import { ActivityIndicator } from 'react-native-paper';
+import Input from './Input';
+import Entypo from '@expo/vector-icons/Entypo';
+
+const LocationPicker = ({ inputChangeHandler }) => {
+  
   const [location, setLocation] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
-  const [selectedLocation, setSelectedLocation] = useState(null);
-  const [address, setAddress] = useState('');
-  const [region, setRegion] = useState(null);
-  const [isModalVisible, setModalVisible] = useState(false); // Modal visibility state
+  const [isPickingOnMap, setIsPickingOnMap] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
-    async function getCurrentLocation() {
-      if (Platform.OS === 'android' && !Device.isDevice) {
-        setErrorMsg('Oops, this will not work on Snack in an Android Emulator. Try it on your device!');
-        return;
+    const requestPermissions = async () => {
+      const { status } = await requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Denied', 'You need to enable location permissions to use this feature.');
       }
-      try {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          setErrorMsg('Permission to access location was denied');
-          return;
-        }
-
-        let location = await Location.getCurrentPositionAsync({});
-        setLocation(location);
-        setRegion({
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        });
-
-        getAddressFromCoordinates(location.coords.latitude, location.coords.longitude);
-      } catch (error) {
-        setErrorMsg('Failed to retrieve location');
-      }
-    }
-
-    getCurrentLocation();
+    };
+    requestPermissions();
   }, []);
 
-  const handleMapPress = async (e) => {
-    const newLocation = e.nativeEvent.coordinate;
-    setSelectedLocation(newLocation);
-    getAddressFromCoordinates(newLocation.latitude, newLocation.longitude);
-  };
+  useEffect(() => {
+    if (location) {
+      inputChangeHandler("location",location);
+    }
+  }, [location]);
 
-  const searchLocation = async (address) => {
+  const getLocationHandler = async () => {
     try {
-      const geocodedLocation = await Location.geocodeAsync(address);
-      if (geocodedLocation.length > 0) {
-        const { latitude, longitude } = geocodedLocation[0];
-        setSelectedLocation({ latitude, longitude });
+      setIsLoading(true);
+      const locationResult = await getCurrentPositionAsync({ accuracy: Accuracy.Lowest });
+      const { latitude, longitude } = locationResult.coords;
 
-        setRegion({
-          latitude,
-          longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        });
+      const addressData = await reverseGeocodeAsync({ latitude, longitude });
 
-        getAddressFromCoordinates(latitude, longitude);
-        setErrorMsg(''); // Clear the error message if valid
-      } else {
-        setErrorMsg('Address not found. Please enter a valid address.');
-        setAddress(''); // Clear the address field if invalid
-      }
+      const address = addressData.length > 0 ? addressData[0].formattedAddress || addressData[0].name : "Unknown address";
+
+      setLocation({ latitude, longitude, address });
+      setIsLoading(false);
+      setTimeout(() => setIsPickingOnMap(false), 300);
     } catch (error) {
-      console.error('Error geocoding address:', error);
-      setErrorMsg('There was an error while searching for the address. Please try again.');
-      setAddress(''); // Clear the address field if error occurs
+      setIsLoading(false);
+      Alert.alert("Error", "Could not fetch location. Make sure GPS is enabled.");
     }
   };
 
-  const getAddressFromCoordinates = async (latitude, longitude) => {
-    try {
-      const reverseGeocodedLocation = await Location.reverseGeocodeAsync({ latitude, longitude });
-
-      if (reverseGeocodedLocation.length > 0) {
-        const { street, city, region, country, streetNumber } = reverseGeocodedLocation[0];
-
-        // Create a full address with street number if available
-        const formattedAddress = `${street || ''} ${streetNumber || ''}, ${city || ''}, ${region || ''}, ${country || ''}`;
-
-        setAddress(formattedAddress); // Update the address with street number
-      }
-    } catch (error) {
-      console.error('Error reverse geocoding location:', error);
+  const confirmHandle = () => {
+    if (!location) {
+      Alert.alert("Please select location", "Please select a location before confirming.");
+      return;
     }
+    setModalVisible(false);
   };
+
 
   return (
-    <View style={styles.container}>
-      {/* Clicking Output opens the modal */}
+    <>
       <TouchableOpacity onPress={() => setModalVisible(true)}>
         <Input
-          inputOption={{ editable: false, multiline: true }}
-          id="address"
-          label="Select Address"
-          iconName="location-outline"
-          value={address}
-          IconPack={Ionicons}
+          label="Address"
+          IconPack={Entypo}
+          iconName="location-pin"
+          value={location ? location.address : 'Select Location'}
+          inputOption={{ editable: false,multiline:true }}
+          
         />
       </TouchableOpacity>
 
-      {/* Modal for map and search box */}
-      <Modal visible={isModalVisible} animationType="slide">
-        <View style={styles.modalContainer}>
-          {/* Close button */}
-          <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
-            <Ionicons name="close" size={24} color="black" />
-          </TouchableOpacity>
-
-          <View style={styles.searchContainer}>
-            <Ionicons name="search" size={16} color="grey" style={styles.searchIcon} />
-            <TextInput
-              style={{ flex: 1, marginRight: 10 }}
-              placeholder="Enter address"
-              onChangeText={(text) => setAddress(text)}
-              onSubmitEditing={() => { searchLocation(address) }}
-              returnKeyType="search"
-              value={address} // Bind the value of TextInput to the address state
-            />
+      <Modal visible={modalVisible} animationType="slide">
+        {isPickingOnMap ? (
+          <View style={styles.container}>
+            <Map setIsPickingOnMap={setIsPickingOnMap} setLocation={setLocation} location={location} />
           </View>
+        ) : (
+          <View style={styles.container}>
+             
+            <View style={styles.mapPreview}>
+              {isLoading ? (
+                <ActivityIndicator size="large" color="white" />
+              ) : location ? (
+                <>
+                
+                  <MapView
+                    key={location?.latitude}
+                    style={styles.map}
+                    region={{
+                      latitude: location.latitude,
+                      longitude: location.longitude,
+                      latitudeDelta: 0.01,
+                      longitudeDelta: 0.01,
+                    }}
+                  >
+                    <Marker coordinate={location} title="Your Location" />
+                  </MapView>
 
-          {/* Display error message if any */}
-          {errorMsg && <Text style={styles.errorText}>{errorMsg}</Text>}
-
-          {location && region && (
-            <MapView style={styles.map} region={region} onPress={handleMapPress}>
-              <Marker
-                coordinate={{
-                  latitude: location.coords.latitude,
-                  longitude: location.coords.longitude,
-                }}
+                  {/* Address Display */}
+                  {location.address && (
+                    <View style={styles.addressContainer}>
+                      <Text style={styles.addressText}>{location.address}</Text>
+                    </View>
+                  )}
+                </>
+                
+                
+              ) : (
+                <Text style={styles.noLocationText}>No location selected</Text>
+              )}
+            </View>
+            <View style={styles.actions}>
+              <IconButton
+                iconName="map-pin"
+                IconPack={Feather}
+                information="Current Location"
+                onPress={getLocationHandler}
+                containerStyle={{ backgroundColor: GlobalStyles.colors.mainColorDark }}
+                iconColor="white"
+                informationStyle={{ color: 'white' }}
               />
-              {selectedLocation && <Marker coordinate={selectedLocation} />}
-            </MapView>
-          )}
-        </View>
+              <IconButton
+                iconName="map"
+                IconPack={Feather}
+                information="Pick on Map"
+                onPress={() => setIsPickingOnMap(true)}
+                containerStyle={{ backgroundColor: GlobalStyles.colors.mainColorDark }}
+                iconColor="white"
+                informationStyle={{ color: 'white' }}
+              />
+            </View>
+            <View style={{ justifyContent: 'center', alignItems: 'center', marginVertical: 10 }}>
+              <IconButton
+                iconName="checkcircleo"
+                IconPack={AntDesign}
+                information="Confirm"
+                onPress={confirmHandle}
+                containerStyle={{ backgroundColor: GlobalStyles.colors.primary, width: '40%' }}
+                iconColor="white"
+                informationStyle={{ color: 'white' }}
+              />
+            </View>
+          </View>
+        )}
       </Modal>
-    </View>
+    </>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    padding: 20,
+    justifyContent: 'flex-start',
   },
-  modalContainer: {
+  mapPreview: {
+    marginVertical: '2%',
+    width: '100%',
     flex: 1,
-    padding: 20,
-    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: GlobalStyles.colors.mainColor,
+    borderRadius: 4,
   },
-  closeButton: {
-    alignSelf: 'flex-end',
-    padding: 10,
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginVertical: '2%',
   },
   map: {
     width: '100%',
-    height: 400,
-    marginTop: 20,
+    height: '100%',
   },
-  searchContainer: {
-    flexDirection: 'row',
+  noLocationText: {
+    color: 'white',
+  },
+  iconButtonContainer: {
+    backgroundColor: GlobalStyles.colors.mainColorDark,
+    paddingVertical: '3%',
+    paddingHorizontal: '5%',
+    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#ededed',
+    borderRadius: 4,
+  },
+  confirmButtonContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: '3%',
+  },
+  confirmButton: {
+    backgroundColor: GlobalStyles.colors.primary,
+    width: '40%',
+  },
+  addressContainer: {
+    position: 'absolute',
+    bottom: 60,
+    left: 10,
+    right: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
     padding: 10,
-    borderRadius: 8,
-    borderWidth: 0.1,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 5,
-    marginVertical: 20,
-  },
-  searchIcon: {
-    marginLeft: 8,
-  },
-  errorText: {
-    color: 'red',
+    borderRadius: 5,
+    zIndex: 2,
+},
+addressText: {
+    fontSize: 14,
+    color: 'black',
     textAlign: 'center',
-    marginVertical: 10,
-  },
+},
 });
+
+export default LocationPicker;

@@ -4,7 +4,17 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from 'react';
 import { View, TextInput } from 'react-native';
 
-const Search = ({search, setSearch}) => {
+const Search = ({search, setSearch, onSubmitHandle }) => {
+
+
+
+  const onSearchSubmit = () => {
+    // אם יש handleSearch, מפעילים את הפונקציה
+    if (onSubmitHandle) {
+      onSubmitHandle(search);
+    }
+ 
+  };
 
     
 
@@ -18,6 +28,7 @@ const Search = ({search, setSearch}) => {
         autoCorrect={false}
         autoCapitalize="none"
         autoComplete="off" 
+        onSubmitEditing={onSearchSubmit}
         />
     </View>
   )

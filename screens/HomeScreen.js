@@ -1,4 +1,4 @@
-import { useEffect,useState } from "react";
+import { useCallback, useEffect,useState } from "react";
 import { Text, View, StyleSheet , FlatList} from "react-native"
 import Header from "../components/Header";
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -7,11 +7,16 @@ import { GlobalStyles } from "../constants/styles";
 import { ActivityIndicator } from "react-native";
 import UserComponent from "../components/UserComponent";
 import { useSelector } from "react-redux";
+import LocationPicker from "../components/LocationPicker";
+import PageContainer from "../components/PageContainer";
 
 const HomeScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [notUsersFound, setNotUsersFound] = useState(false);
   const [allUsers, setAllUsers] = useState([]);
+
+  const [pickedLocation, setPickedLocation] = useState();
+  
 
 
 
@@ -50,9 +55,22 @@ const HomeScreen = () => {
     fetchUsers();
   }, []);
 
+  const inputChangeHandler = useCallback((id,location) => {
+    if(id === "location"){
+      setPickedLocation(location);
+    }
+  
+  },[])
+  console.log(pickedLocation);
   return (
     <View style={styles.root}>
        <Header title="Participants" onBackPress={backArrowHandle}/>
+       
+          <PageContainer>
+             <LocationPicker  inputChangeHandler={inputChangeHandler}/>
+           </PageContainer>
+     
+    
 
 
        {
@@ -78,7 +96,7 @@ const HomeScreen = () => {
         keyExtractor={(item) => item.userId} 
         renderItem={({ item }) => <UserComponent user={item} />}
       />
-    )}
+    )} 
     </View>
   )
 }

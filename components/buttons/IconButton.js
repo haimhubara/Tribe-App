@@ -2,12 +2,12 @@ import React from 'react'
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
 import { GlobalStyles } from '../../constants/styles'
 
-const IconButton = ({ iconName, IconPack, onPress, iconColor,iconSize,rootStyle ,containerStyle,information }) => {
+const IconButton = ({ iconName, IconPack, onPress, iconColor,iconSize,rootStyle ,containerStyle,information,informationStyle }) => {
   return (
      <TouchableOpacity onPress={onPress} style={[styles.root,rootStyle]}>
            <View style={[styles.icnContainer,containerStyle]}>
               {IconPack && <IconPack color={iconColor || GlobalStyles.colors.textColor} style={styles.icon} name={iconName} size={iconSize || 24} />}
-               <Text style={styles.buttonInformation}>{information}</Text>
+               <Text style={[styles.buttonInformation,informationStyle]}>{information}</Text>
            </View>
     </TouchableOpacity>
   )

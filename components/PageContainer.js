@@ -12,7 +12,6 @@ const PageContainer = ({children,style,bool}) => {
 const styles = StyleSheet.create({
     root:{
         paddingHorizontal:20,
-        flex:1,
         backgroundColor:'none'
      
     }
