@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { Alert, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import { Alert, TouchableOpacity, View, Text, StyleSheet, Platform } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import IconButton from '../buttons/IconButton';
@@ -71,7 +71,7 @@ const Map = ({ setIsPickingOnMap, setLocation }) => {
     
     return (
         <View style={styles.container}>
-            <View style={{marginTop:30}}>
+            <View style={Platform.OS==="ios"?{marginTop:30} :{}}>
                 <TouchableOpacity
                     onPress={() => setIsPickingOnMap(false)}
                     style={styles.backButton}
@@ -110,7 +110,7 @@ const Map = ({ setIsPickingOnMap, setLocation }) => {
                 </View>
             )}
 
-            <View style={{ alignItems: 'center', marginTop: 10 }}>
+            <View style={{ alignItems: 'center',}}>
                 <IconButton
                     information="Save"
                     iconName="save"
@@ -120,7 +120,7 @@ const Map = ({ setIsPickingOnMap, setLocation }) => {
                         backgroundColor: GlobalStyles.colors.mainColorDark,
                         width: '30%',
                         position: 'absolute',
-                        bottom: 150, 
+                        bottom: 110, 
                         left: "0%",  
                         transform: [{ translateX: '-50%' }], 
                         zIndex: 9999,  
