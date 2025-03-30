@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert, Modal, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Alert, Modal, TouchableOpacity, Pressable } from 'react-native';
 import IconButton from './buttons/IconButton';
 import Feather from '@expo/vector-icons/Feather';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -11,6 +11,7 @@ import MapView, { Marker } from 'react-native-maps';
 import { ActivityIndicator } from 'react-native-paper';
 import Input from './Input';
 import Entypo from '@expo/vector-icons/Entypo';
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 const LocationPicker = ({ inputChangeHandler }) => {
   
@@ -57,6 +58,10 @@ const LocationPicker = ({ inputChangeHandler }) => {
     setModalVisible(false);
   };
 
+  const onBackPress = () => {
+    setModalVisible(false);
+  }
+
 
   return (
     <>
@@ -72,6 +77,11 @@ const LocationPicker = ({ inputChangeHandler }) => {
       </TouchableOpacity>
 
       <Modal visible={modalVisible} animationType="slide">
+        {!isPickingOnMap && 
+        <Pressable onPress={onBackPress} style={styles.iconContainer}>
+          <Ionicons name="arrow-back" size={32} color="black" />
+        </Pressable>
+        }
         {isPickingOnMap ? (
           <View style={styles.container}>
             <Map setIsPickingOnMap={setIsPickingOnMap} setLocation={setLocation} location={location} />
@@ -207,6 +217,12 @@ addressText: {
     fontSize: 14,
     color: 'black',
     textAlign: 'center',
+},
+iconContainer: {
+  width: 40,
+  alignItems: "flex-start",
+  marginLeft:8,
+  marginTop:4
 },
 });
 
