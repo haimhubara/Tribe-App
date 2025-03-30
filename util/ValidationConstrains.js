@@ -172,3 +172,11 @@ export const validateImage = (inputId, inputValue) => {
     ? undefined
     : 'Image is required';
 };
+
+
+export const validateLocation = (inputId, inputValue) => {
+  const constraints = {
+    presence: { allowEmpty: false },
+  };
+  return validate({ [inputId]: inputValue }, { [inputId]: constraints });
+}

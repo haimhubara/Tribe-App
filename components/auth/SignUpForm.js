@@ -12,6 +12,7 @@ import DatePicker from '../DatePicker';
 import { StyleSheet, Text } from 'react-native';
 import HobbiesPicker from '../HobbiesPicker';
 import { validateInput } from '../../util/actions/FormActions';
+import LocationPicker from '../LocationPicker';
 
 
 const SignUpForm = ({setNext,formValues,dispachFormValues, setFormUseStateValue}) => {
@@ -160,6 +161,7 @@ const SignUpForm = ({setNext,formValues,dispachFormValues, setFormUseStateValue}
           onInputChange={inputChangeHandler} 
           error={formValues.values['date']}
         />
+        <LocationPicker inputChangeHandler={inputChangeHandler}/>
 
 
         <Input 

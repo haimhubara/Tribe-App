@@ -1,4 +1,4 @@
-import { validateEmail,validateString,validatePassword,validatephoneNumber, validateConfirmPassword,validateDate,validateHobbies,validateLanguages,validateGenderAndReligion, validateLink,validateImage } from "../ValidationConstrains"
+import { validateEmail,validateString,validatePassword,validatephoneNumber, validateConfirmPassword,validateDate,validateHobbies,validateLanguages,validateGenderAndReligion, validateLink,validateImage,validateLocation } from "../ValidationConstrains"
 
 export const validateInput = (inputId, inputValue, passwordValue = '') => {
   if (inputId === 'firstName' || inputId === 'lastName' || inputId === 'userName') {
@@ -33,6 +33,9 @@ export const validateInput = (inputId, inputValue, passwordValue = '') => {
   }
   else if (inputId === "firstImage" || inputId === 'secondImage' || inputId ==='thirdImage'|| inputId === 'fourthImage' || inputId ==='fiveImage' || inputId ==='sixImage') {
     return validateImage(inputId ,inputValue);
+  }
+  else if (inputId === "location") {
+    return validateLocation(inputId, inputValue);
   }
 
 

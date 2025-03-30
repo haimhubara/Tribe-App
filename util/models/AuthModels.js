@@ -14,7 +14,8 @@ export const initialState = {
       languages:[],
       facebook:"",
       tiktok:"",
-      instagram:""
+      instagram:"",
+      location:""
     },
     values:{
       firstName:false,
@@ -31,7 +32,8 @@ export const initialState = {
       languages:false,
       facebook:undefined,
       tiktok:undefined,
-      instagram:undefined
+      instagram:undefined,
+      location:false
       
     },
     formStatus:false 
