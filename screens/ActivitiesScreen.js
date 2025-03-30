@@ -112,6 +112,7 @@ const ActivitiesScreen = ({ navigation }) => {
                 date={isoToDateString(itemData.item.date)}
                 time={isoToTimeString(itemData.item.time)}
                 imageUrl={itemData.item.imageUrl}
+                location={itemData.item.location}
               />
             </TouchableOpacity>
           )}

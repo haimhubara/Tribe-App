@@ -48,7 +48,7 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
                     setName(data.name || "Unnamed Activity");
                     setDate(data.date ? new Date(data.date) : new Date());
                     setTime(data.time ? new Date(data.time) : new Date());
-                    setLocation(data.location || "Unknown");
+                    setLocation(data.location!=null ? data.location.address : "Unknown");
                     setDescription(data.description || "No description available.");
                     setAges(data.ages);
                     setGender(data.gender || "Any");

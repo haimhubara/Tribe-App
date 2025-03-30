@@ -82,6 +82,7 @@ const SearchScreen = ({ navigation }) => {
                     filters.selectedLanguages.some(language => activity.languages.includes(language))
                 );
             }
+            //console.log(fetchedActivities);
 
             setActivities(fetchedActivities);
         } catch (error) {
@@ -134,6 +135,7 @@ const SearchScreen = ({ navigation }) => {
                                 date={isoToDateString(activity.date)}
                                 time={isoToTimeString(activity.time)}
                                 imageUrl={activity.imageUrl} 
+                                location={activity.location}
                             />
                         </TouchableOpacity>
                     ))}

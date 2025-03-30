@@ -5,7 +5,10 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 const ActivityComponent = ({ imageUrl, name, description, participants, distance, date, id, time, location }) => {
     const [secureImageUrl, setSecureImageUrl] = useState(null);
     const defaultImage = require("../assets/icon.png");
-
+    if(location!=null){
+        console.log(location.address);
+    }
+    
     useEffect(() => {
         if (imageUrl) {
             const updatedUrl = imageUrl.startsWith("http://") ? imageUrl.replace("http://", "https://") : imageUrl;
@@ -24,7 +27,7 @@ const ActivityComponent = ({ imageUrl, name, description, participants, distance
                 <Text style={styles.activityTitle}>{name || "Activity Name"}</Text>
                 <Text style={styles.activityTime}>{date || "NN-NN-NNNN"}</Text>
                 <Text style={styles.activityTime}>{time || "00:00 - 00:00"}</Text>
-                <Text style={styles.activityLocation}>@ {location || "Unknown Location"}</Text>
+                <Text style={styles.activityLocation}>{location!=null ? location.address : "@Unknown Location"}</Text>
             </View>
             <View style={styles.participantsWrapper}>
                 <Icon name="users" size={20} color="#fff" style={styles.participantsIcon} />

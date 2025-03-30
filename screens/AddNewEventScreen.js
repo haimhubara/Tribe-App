@@ -21,6 +21,7 @@ import firebaseConfig from "../util/firebaseConfig.json";
 import ImageGenerator from "../components/imagesAndVideo/ImageGenerator";
 import { uploadImageToCloudinary,deleteImageFromCloudinary } from "../components/Cloudinary";
 import { useSelector } from "react-redux";
+import LocationPicker from "../components/LocationPicker";
 
 
 
@@ -39,6 +40,7 @@ const AddNewEventScreen = ({ navigation, route }) => {
   const [time, setTime] = useState(route.params?.time ? new Date(route.params.time) : null);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
   const [generatedImage, setGeneratedImage] = useState(route.params?.activityImage||null);
+  const [location,setLocation]=useState(route.params?.location||null);
   
 
   const userData = useSelector(state => state.auth.userData);
@@ -80,6 +82,8 @@ const AddNewEventScreen = ({ navigation, route }) => {
       setSelectedCategories(text);
     }else if(id==="image"){
       setGeneratedImage(text);
+    }else if(id==="location"){
+      setLocation(text);
     }
   };
 
@@ -119,6 +123,7 @@ const AddNewEventScreen = ({ navigation, route }) => {
     setAges(defaultState.ages);
     setLanguage(defaultState.languages);
     setSelectedCategories(defaultState.selectedCategories);
+    setLocation(null);
   };
  
 
@@ -126,7 +131,7 @@ const handleSubmit = async () => {
     if (name == null || description == null || date == null || time == null) {
         alert("You Missed Something");
         return;
-    } else if ((selectedCategories == "") || (languages == "")) {
+    } else if ((selectedCategories == "") || (languages == "")||(location== null)) {
         alert("You Missed Something");
         return;
     }
@@ -168,6 +173,7 @@ const handleSubmit = async () => {
                     categories: selectedCategories,
                     imageUrl: imageUrl,
                     userID: userData.userId,
+                    location:location,
                     
                 });
                 alert("Event updated successfully!");
@@ -187,9 +193,11 @@ const handleSubmit = async () => {
                 languages,
                 categories: selectedCategories,
                 imageUrl: imageUrl,
-               userID: userData.userId,
-               activityRequests: [],
-               activityParticipants:[],
+                userID: userData.userId,
+                activityRequests: [],
+                activityParticipants:[],
+                location:location,
+
             });
             await updateDoc(docRef, {
               activityParticipants: arrayUnion(userData.userId),
@@ -278,7 +286,9 @@ const handleSubmit = async () => {
                   IconPack={AntDesign}
                   onInuptChange={onInuptChange}
                 />
-
+                <LocationPicker
+                  inputChangeHandler={onInuptChange}
+                />
                 <InputPicker
                   label="Number Of Partitions:"
                   iconName="numeric"
