@@ -54,6 +54,7 @@ const Map = ({ setIsPickingOnMap, setLocation }) => {
             const { latitude, longitude } = geocodedLocation[0];
             const addressData = await reverseGeocodeAsync({ latitude, longitude });
             const addressResult = addressData.length > 0 ? addressData[0].formattedAddress || addressData[0].name : "Unknown address";
+            console.log(addressData);
             setAddress(addressResult);
             
        
@@ -73,21 +74,67 @@ const Map = ({ setIsPickingOnMap, setLocation }) => {
         const lat = event.nativeEvent.coordinate.latitude;
         const lng = event.nativeEvent.coordinate.longitude;
         setSelectedLocation({ lat, lng });
-
+    
         // Fetch the address for the selected location
         const addressData = await reverseGeocodeAsync({ latitude: lat, longitude: lng });
-        let address = "Unknown address";
-        for(let item of addressData ){
-          address = `${item.name}, ${item.city}, ${item.country} `
-         }
-        
-         if(addressData.length < 0 ){
-          address = "Unknown address";
-          return;
-         }
-         setAddress(address);
-       
+    
+        if (!addressData || addressData.length === 0) {
+            setAddress("Unknown address");
+            return;
+        }
+    
+        const item = addressData[0]; 
+    
+        const name = item.name || "";
+        const city = item.city || "";
+        const country = item.country || "";
+    
+        const address = [name, city, country].filter(Boolean).join(", "); // מסיר ערכים ריקים
+    
+        setAddress(address || "Unknown address");
     };
+
+    const searchLocationIOS = async (searchTerm) => {
+        try {
+            setIsLoading(true);
+            const geocodedLocation = await geocodeAsync(searchTerm);
+    
+            if (!geocodedLocation || geocodedLocation.length === 0) {
+                setAddress("Location not found");
+                setIsLoading(false);
+                return;
+            }
+    
+            const { latitude, longitude } = geocodedLocation[0];
+            const addressData = await reverseGeocodeAsync({ latitude, longitude });
+    
+            if (!addressData || addressData.length === 0) {
+                setAddress("Unknown address");
+                setIsLoading(false);
+                return;
+            }
+    
+            const item = addressData[0]; 
+            
+            // אם city לא קיים, נשתמש בשדות חלופיים כמו subregion או district
+            const name = item.name || "";
+            const city = item.city || item.subregion || item.district || "";
+            const country = item.country || "";
+    
+            const address = [name, city, country].filter(Boolean).join(", ");
+    
+            setAddress(address || "Unknown address");
+            setSelectedLocation({ lat: latitude, lng: longitude });
+            setLocation({ latitude, longitude, address });
+    
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    
+    
 
     
     return (
@@ -101,7 +148,7 @@ const Map = ({ setIsPickingOnMap, setLocation }) => {
                 </TouchableOpacity>
             </View>
 
-             <Search search={search} setSearch={setSearch} onSubmitHandle={searchLocation}   />
+             <Search search={search} setSearch={setSearch} onSubmitHandle={Platform.OS === "android" ? searchLocation : searchLocationIOS}   />
            
            
             <MapView
