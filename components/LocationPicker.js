@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert, Modal, TouchableOpacity, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Alert, Modal, TouchableOpacity, Pressable, Platform } from 'react-native';
 import IconButton from './buttons/IconButton';
 import Feather from '@expo/vector-icons/Feather';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -35,7 +35,7 @@ const LocationPicker = ({ inputChangeHandler }) => {
       setIsLoading(true);
       const locationResult = await getCurrentPositionAsync({ accuracy: Accuracy.Lowest });
       const { latitude, longitude } = locationResult.coords;
-
+      
       const addressData = await reverseGeocodeAsync({ latitude, longitude });
 
       const address = addressData.length > 0 ? addressData[0].formattedAddress || addressData[0].name : "Unknown address";
@@ -61,6 +61,35 @@ const LocationPicker = ({ inputChangeHandler }) => {
   const onBackPress = () => {
     setModalVisible(false);
   }
+
+  const getLocationHandlerIOS = async() => {
+    try {
+      setIsLoading(true);
+      const locationResult = await getCurrentPositionAsync({ accuracy: Accuracy.Lowest });
+      const { latitude, longitude } = locationResult.coords;
+      
+      const addressData = await reverseGeocodeAsync({ latitude, longitude });
+      let address = "Unknown address";
+     
+      for(let item of addressData ){
+          address = `${item.name} ${item.streetNumber}  ${item.city}, ${item.country }  `
+      }
+      if(addressData.length<0){
+        address = "Unknown address";
+        return;
+      }
+
+     
+
+      setLocation({ latitude, longitude, address });
+      setIsLoading(false);
+      setTimeout(() => setIsPickingOnMap(false), 300);
+    } catch (error) {
+      setIsLoading(false);
+      Alert.alert("Error", "Could not fetch location. Make sure GPS is enabled.");
+    }
+  };
+ 
 
 
   return (
@@ -126,7 +155,7 @@ const LocationPicker = ({ inputChangeHandler }) => {
                 iconName="map-pin"
                 IconPack={Feather}
                 information="Current Location"
-                onPress={getLocationHandler}
+                onPress={ Platform.OS === "android" ? getLocationHandler : getLocationHandlerIOS }
                 containerStyle={{ backgroundColor: GlobalStyles.colors.mainColorDark }}
                 iconColor="white"
                 informationStyle={{ color: 'white' }}
@@ -222,7 +251,7 @@ iconContainer: {
   width: 40,
   alignItems: "flex-start",
   marginLeft:8,
-  marginTop:4
+  marginTop: Platform.OS === "ios" ? 34 :4
 },
 });
 

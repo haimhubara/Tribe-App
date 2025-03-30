@@ -69,6 +69,27 @@ const Map = ({ setIsPickingOnMap, setLocation }) => {
         }
     };
     
+    const selectLocationHandlerIOS = async (event) => {
+        const lat = event.nativeEvent.coordinate.latitude;
+        const lng = event.nativeEvent.coordinate.longitude;
+        setSelectedLocation({ lat, lng });
+
+        // Fetch the address for the selected location
+        const addressData = await reverseGeocodeAsync({ latitude: lat, longitude: lng });
+        let address = "Unknown address";
+        for(let item of addressData ){
+          address = `${item.name}, ${item.city}, ${item.country} `
+         }
+        
+         if(addressData.length < 0 ){
+          address = "Unknown address";
+          return;
+         }
+         setAddress(address);
+       
+    };
+
+    
     return (
         <View style={styles.container}>
             <View style={Platform.OS==="ios"?{marginTop:30} :{}}>
@@ -91,7 +112,7 @@ const Map = ({ setIsPickingOnMap, setLocation }) => {
                     longitudeDelta: 0.0421,
                 } : region}
                 style={styles.map}
-                onPress={selectLocationHandler}
+                onPress={Platform.OS==="android" ? selectLocationHandler : selectLocationHandlerIOS }
             >
                 {selectedLocation && (
                     <Marker
@@ -120,7 +141,7 @@ const Map = ({ setIsPickingOnMap, setLocation }) => {
                         backgroundColor: GlobalStyles.colors.mainColorDark,
                         width: '30%',
                         position: 'absolute',
-                        bottom: 110, 
+                        bottom: Platform.OS === "android" ? 110 : 120, 
                         left: "0%",  
                         transform: [{ translateX: '-50%' }], 
                         zIndex: 9999,  
@@ -147,7 +168,7 @@ const styles = StyleSheet.create({
     },
     addressContainer: {
         position: 'absolute',
-        bottom: 60,
+        bottom:  Platform.OS === "android" ? 60 : 70,
         left: 10,
         right: 10,
         backgroundColor: 'rgba(255, 255, 255, 0.7)',
