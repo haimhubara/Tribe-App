@@ -10,11 +10,15 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Checkbox } from 'react-native-paper'; 
 import { GlobalStyles } from '../constants/styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import LocationPicker from './LocationPicker';
+import { useSelector } from "react-redux";
 
 
 const SIDEBAR_WIDTH = 280;
 
 const Sidebar = ({ applyFilters }) => {
+    const userData = useSelector(state => state.auth.userData);
+
     const [isSidebarVisible, setIsSidebarVisible] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
     const sidebarPosition = useRef(new Animated.Value(-SIDEBAR_WIDTH)).current;
@@ -29,6 +33,8 @@ const Sidebar = ({ applyFilters }) => {
     const [selectedLanguages,setSelectedLanguages]=useState([]);
     const [isCategoriesExpanded, setIsCategoriesExpanded] = useState(false);
     const [isLanguagesExpanded, setIsLanguagesExpanded] = useState(false);
+    const [sort,setSort]=useState("Date");
+    const [location, setLocation] = useState(userData?.location || null);
 
     const categories = [
         { title: 'Time Details', items: ['Date', 'Time'] },
@@ -137,11 +143,14 @@ const Sidebar = ({ applyFilters }) => {
         setSelectedNumPartitions(text);
       }else if(id==="gender"){
         setSelectedGender(text);
+      }else if(id==="sort"){
+        setSort(text);
+      }else if(id==="location"){
+        setLocation(text);
       }
     };
 
     function handleApplyClick(){
-      
       applyFilters({
         dateStart,
         dateEnd,
@@ -151,7 +160,9 @@ const Sidebar = ({ applyFilters }) => {
         selectedLanguages,
         ages,
         timeStart,
-        timeEnd
+        timeEnd,
+        sort,
+        location
     });
     }
     const handleClearClick = () => {
@@ -182,14 +193,25 @@ const Sidebar = ({ applyFilters }) => {
     const renderCategoryContent = (category) => {
         switch (category.title) {
             case 'Time Details':
-                return (
+                return (                   
                     <View>
+                        <InputPicker
+                                label="Sort By:"
+                                iconName="sort-ascending"
+                                IconPack={MaterialCommunityIcons}
+                                options={[{ label: "Date", value: "Date" }, { label: "Location", value: "Location" }]}
+                                selectedValue={sort}
+                                onInuptChange={onInputChange}
+                                id="sort"
+                                onValueChange={setSort} />
+                        <LocationPicker inputChangeHandler={onInputChange}/>
                         <DatePicker label="Start From:" date={dateStart} setDate={setDateStart} iconName="calendar" IconPack={FontAwesome} onInputChange={onInputChange} id="dateStart"/>
                         <DatePicker label="End In:" date={dateEnd} setDate={setDateEnd} iconName="calendar" IconPack={FontAwesome} onInputChange={onInputChange} id="dateEnd" />
                         <View style={styles.components}>
                             <TimePicker label="Start From:" time={timeStart} setTime={setTimeStart} iconName="clockcircleo" IconPack={AntDesign} onInuptChange={onInputChange} id="timeStart"/>
                         </View>
                         <TimePicker label="End In:" time={timeEnd} setTime={setTimeEnd} iconName="clockcircleo" IconPack={AntDesign} onInuptChange={onInputChange} id="timeEnd"/>
+                        
                     </View>
                 );
             case 'Participant Details':
@@ -217,7 +239,7 @@ const Sidebar = ({ applyFilters }) => {
                                 id="gender"
                                 onValueChange={setSelectedGender} />
                         </View>
-
+                        
                         
                         <View style={styles.components} id="categories">
                             <TouchableOpacity onPress={() => setIsCategoriesExpanded(!isCategoriesExpanded)}>

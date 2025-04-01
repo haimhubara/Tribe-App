@@ -5,9 +5,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 const ActivityComponent = ({ imageUrl, name, description, participants, distance, date, id, time, location }) => {
     const [secureImageUrl, setSecureImageUrl] = useState(null);
     const defaultImage = require("../assets/icon.png");
-    if(location!=null){
-        console.log(location.address);
-    }
+   
     
     useEffect(() => {
         if (imageUrl) {

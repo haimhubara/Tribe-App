@@ -146,7 +146,7 @@ function WellcomeWindow() {
       <Tab.Screen name="HomeStack" component={HomeStack} options={{tabBarLabel:"Home"}}/>
       <Tab.Screen name="Search" component={SearchPage} initialParams={{myPage:0}}/>
       <Tab.Screen name="Chats Screen" component={ChatStack} options={{tabBarLabel:"Chats"}}/>
-      <Tab.Screen name="MyActivities" component={MyActivities}  options={{tabBarLabel:"My Activities"}} />
+      <Tab.Screen name="MyActivities" component={MyActivities}  options={{tabBarLabel:"My Tribes"}} />
       <Tab.Screen name="Profile Screen" component={ProfileStack} options={{tabBarLabel:"Profile"}}/>
      
     </Tab.Navigator>

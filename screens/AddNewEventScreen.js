@@ -30,16 +30,16 @@ import LocationPicker from "../components/LocationPicker";
 const AddNewEventScreen = ({ navigation, route }) => {
   const [name, setName] = useState(route.params?.name||null );
   const [description, setDescription] = useState(route.params?.description ||null);
-  const [date, setDate] = useState(route.params?.date ? new Date(route.params.date) : null);
+  const [date, setDate] = useState(null);
   const [selectedNumPartitions, setSelectedNumPartitions] = useState(route.params?.selectedNumPartitions||1);
   const [isPartitionsVisible, setPartitionsVisible] = useState(false);
   const [selectedGender, setSelectedGender] = useState(route.params?.gender||"Any");
   const [ages, setAges] = useState(route.params?.ages|| [18, 35] );
   const [languages, setLanguage] = useState(route.params?.languages||"");
   const [selectedCategories, setSelectedCategories] = useState(route.params?.categories||"");
-  const [time, setTime] = useState(route.params?.time ? new Date(route.params.time) : null);
+  const [time, setTime] = useState(null);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
-  const [generatedImage, setGeneratedImage] = useState(route.params?.activityImage||null);
+  const [generatedImage, setGeneratedImage] = useState(null);
   const [location,setLocation]=useState(route.params?.location||null);
   
 
@@ -131,7 +131,7 @@ const handleSubmit = async () => {
     if (name == null || description == null || date == null || time == null) {
         alert("You Missed Something");
         return;
-    } else if ((selectedCategories == "") || (languages == "")||(location== null)) {
+    } else if ((selectedCategories == "") || (languages == "")||(location== null)||(generatedImage==null)) {
         alert("You Missed Something");
         return;
     }

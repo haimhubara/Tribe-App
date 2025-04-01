@@ -22,6 +22,24 @@ const SearchScreen = ({ navigation }) => {
         navigation.navigate('PersonalActivityProfileScreen', { id: id });
     };
 
+    function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+        const R = 6371; // רדיוס כדור הארץ בק"מ
+        const dLat = deg2rad(lat2 - lat1);
+        const dLon = deg2rad(lon2 - lon1);
+        const a = 
+          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+          Math.sin(dLon / 2) * Math.sin(dLon / 2);
+          
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c; // המרחק בק"מ
+      }
+      
+      function deg2rad(deg) {
+        return deg * (Math.PI / 180);
+      }
+      
+
     const isoToDateString = (isoString) => {
         if (!isoString) return null; // אם אין ערך, החזר null
         const date = new Date(isoString);
@@ -45,6 +63,35 @@ const SearchScreen = ({ navigation }) => {
                 ...doc.data(),
                 imageUrl: doc.data().imageUrl || null, // שמירת כתובת התמונה אם קיימת
             }));
+
+            fetchedActivities = fetchedActivities.map(activity => {
+                let distance = null;
+            
+                const hasLocation =
+                    filters.location &&
+                    typeof filters.location.latitude === 'number' &&
+                    typeof filters.location.longitude === 'number';
+            
+                const hasActivityLocation =
+                    activity.location &&
+                    typeof activity.location.latitude === 'number' &&
+                    typeof activity.location.longitude === 'number';
+            
+                if (hasLocation && hasActivityLocation) {
+                    distance = getDistanceFromLatLonInKm(
+                        filters.location.latitude,
+                        filters.location.longitude,
+                        activity.location.latitude,
+                        activity.location.longitude
+                    );
+                }
+            
+                return { ...activity, distance };
+            });
+            
+            
+            
+            
 
             // סינון לפי חיפוש
             if (searchTerm) {
@@ -123,8 +170,21 @@ const SearchScreen = ({ navigation }) => {
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
             >
                 {activities
-                    .sort((a, b) => a.distance - b.distance)
-                    .map((activity, index) => (
+                    
+                    .slice()
+                    .sort((a, b) => {
+
+                        if (filters.sort === 'Date') {
+                            return new Date(a.date) - new Date(b.date);
+                        } else if (filters.sort === 'Location') {
+                            return a.distance - b.distance;
+                        } else {
+                            //console.log("no sort");
+                            return 0;
+                        }
+                    })
+                        .map((activity, index) => (
+                     
                         <TouchableOpacity key={index} onPress={() => handleActivityPress(activity, activity.id)}>
                             <ActivityComponent
                                 id={activity.id}
@@ -203,223 +263,3 @@ const styles = StyleSheet.create({
 });
 
 export default SearchScreen;
-
-// import React, { useState, useEffect, useCallback } from 'react';
-// import {
-//   View,
-//   StyleSheet,
-//   ScrollView,
-//   TextInput,
-//   TouchableOpacity,
-//   RefreshControl,
-//   Modal,
-//   Pressable
-// } from 'react-native';
-// import ActivityComponent from '../components/ActivityComponent';
-// import { SafeAreaView } from 'react-native-safe-area-context';
-// import Ionicons from '@expo/vector-icons/Ionicons';
-// import Sidebar from '../components/Sidebar';
-// import { initializeApp } from "firebase/app";
-// import { getFirestore, collection, getDocs } from "firebase/firestore";
-// import firebaseConfig from "../util/firebaseConfig.json";
-
-// const SearchScreen = ({ navigation }) => {
-//   const [search, setSearch] = useState('');
-//   const [activities, setActivities] = useState([]);
-//   const [refreshing, setRefreshing] = useState(false);
-//   const [sidebarVisible, setSidebarVisible] = useState(false);
-//   const [filters, setFilters] = useState({});
-
-//   const app = initializeApp(firebaseConfig);
-//   const db = getFirestore(app);
-
-//   const handleActivityPress = (activityData, id) => {
-//     navigation.navigate('PersonalActivityProfileScreen', { activity: activityData, myPage: 1, id: id });
-//   };
-
-//   const isoToDateString = (isoString) => {
-//     if (!isoString) return null;
-//     const date = new Date(isoString);
-//     if (isNaN(date.getTime())) return null;
-//     return date.toISOString().split('T')[0];
-//   };
-
-//   const isoToTimeString = (isoString) => {
-//     if (!isoString) return null;
-//     const date = new Date(isoString);
-//     if (isNaN(date.getTime())) return null;
-//     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-//   };
-
-//   const fetchActivities = useCallback(async (filters = {}, searchTerm = '') => {
-//     setRefreshing(true);
-//     try {
-//       const querySnapshot = await getDocs(collection(db, "activities"));
-//       let fetchedActivities = querySnapshot.docs.map(doc => ({
-//         id: doc.id,
-//         ...doc.data(),
-//         imageUrl: doc.data().imageUrl || null,
-//       }));
-
-//       if (searchTerm) {
-//         fetchedActivities = fetchedActivities.filter(activity =>
-//           activity.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-//           activity.description.toLowerCase().includes(searchTerm.toLowerCase())
-//         );
-//       }
-
-//       if (filters.dateStart || filters.dateEnd) {
-//         fetchedActivities = fetchedActivities.filter(activity => {
-//           const activityDate = new Date(activity.date);
-//           return (!filters.dateStart || activityDate >= new Date(filters.dateStart)) &&
-//             (!filters.dateEnd || activityDate <= new Date(filters.dateEnd));
-//         });
-//       }
-
-//       if (filters.selectedGender && filters.selectedGender !== "Any") {
-//         fetchedActivities = fetchedActivities.filter(activity => activity.gender === filters.selectedGender);
-//       }
-
-//       if (filters.selectedNumPartitions > 1) {
-//         fetchedActivities = fetchedActivities.filter(activity => activity.selectedNumPartitions >= filters.selectedNumPartitions);
-//       }
-
-//       if (Array.isArray(filters.selectedCategories) && filters.selectedCategories.length > 0) {
-//         fetchedActivities = fetchedActivities.filter(activity =>
-//           filters.selectedCategories.some(category => activity.categories.includes(category))
-//         );
-//       }
-
-//       if (Array.isArray(filters.selectedLanguages) && filters.selectedLanguages.length > 0) {
-//         fetchedActivities = fetchedActivities.filter(activity =>
-//           filters.selectedLanguages.some(language => activity.languages.includes(language))
-//         );
-//       }
-
-//       setActivities(fetchedActivities);
-//     } catch (error) {
-//       console.error("Error fetching activities:", error);
-//     }
-//     setRefreshing(false);
-//   }, [db]);
-
-//   useEffect(() => {
-//     fetchActivities(filters, search);
-//   }, [search, fetchActivities, filters]);
-
-//   const onRefresh = useCallback(() => {
-//     fetchActivities(filters, search);
-//   }, [fetchActivities, filters, search]);
-
-//   return (
-//     <SafeAreaView edges={['top', 'left', 'right']} style={styles.container}>
-//       <View style={styles.absoluteHeaderContainer}>
-//         <Sidebar applyFilters={setFilters} />
-//         <View style={styles.searchContainer}>
-//           <Ionicons name="search" size={16} color="grey" style={styles.searchIcon} />
-//           <TextInput
-//             placeholder="Search"
-//             style={{ flex: 1, marginRight: 10 }}
-//             onChangeText={setSearch}
-//             value={search}
-//             autoCorrect={false}
-//             autoCapitalize="none"
-//             autoComplete="off"
-//           />
-//         </View>
-//       </View>
-
-//       <ScrollView
-//         contentContainerStyle={styles.scrollContainer}
-//         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-//         style={styles.scrollWithPadding}
-//       >
-//         <View style={{ marginTop: 60 }}>
-//           {activities
-//             .sort((a, b) => a.distance - b.distance)
-//             .map((activity, index) => (
-//               <TouchableOpacity key={index} onPress={() => handleActivityPress(activity, activity.id)}>
-//                 <ActivityComponent
-//                   id={activity.id}
-//                   name={activity.name}
-//                   description={activity.description}
-//                   participants={activity.activityParticipants?.length || 1}
-//                   distance={activity.distance}
-//                   date={isoToDateString(activity.date)}
-//                   time={isoToTimeString(activity.time)}
-//                   imageUrl={activity.imageUrl}
-//                 />
-//               </TouchableOpacity>
-//             ))}
-//         </View>
-//       </ScrollView>
-
-//       <Modal visible={sidebarVisible} animationType="slide" transparent>
-//         <Pressable style={styles.modalOverlay} onPress={() => setSidebarVisible(false)} />
-//         <View style={styles.sidebarContainer}>
-//           <Sidebar closeSidebar={() => setSidebarVisible(false)} />
-//         </View>
-//       </Modal>
-//     </SafeAreaView>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#fff',
-//   },
-//   absoluteHeaderContainer: {
-//     position: 'absolute',
-//     top: 45,
-//     left: 10,
-//     right: 10,
-//     zIndex: 10,
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     gap: 10,
-//   },
-//   searchContainer: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     backgroundColor: '#ededed',
-//     padding: 2,
-//     borderRadius: 8,
-//     borderWidth: 0.1,
-//     shadowColor: "#000",
-//     shadowOffset: { width: 0, height: 2 },
-//     shadowOpacity: 0.2,
-//     shadowRadius: 5,
-//     elevation: 5,
-//     flex: 1,
-//     height: 40,
-//   },
-//   searchIcon: {
-//     marginLeft: 8,
-//   },
-//   scrollContainer: {
-//     paddingBottom: 30,
-//   },
-//   scrollWithPadding: {
-//     flex: 1,
-//   },
-//   modalOverlay: {
-//     flex: 1,
-//     backgroundColor: 'rgba(0,0,0,0.5)',
-//   },
-//   sidebarContainer: {
-//     position: 'absolute',
-//     top: 0,
-//     left: 0,
-//     width: '75%',
-//     height: '100%',
-//     backgroundColor: 'white',
-//     shadowColor: "#000",
-//     shadowOffset: { width: 0, height: 2 },
-//     shadowOpacity: 0.5,
-//     shadowRadius: 10,
-//     elevation: 5,
-//   },
-// });
-
-// export default SearchScreen;
