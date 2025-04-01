@@ -31,6 +31,7 @@
     "expo-camera": "~16.0.17",
     "expo-font": "~13.0.4",
     "expo-image-picker": "~16.0.6",
+    "expo-location": "~18.0.8",
     "expo-media-library": "~17.0.6",
     "expo-splash-screen": "~0.29.22",
     "expo-status-bar": "~2.0.1",
@@ -41,6 +42,7 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-native": "^0.76.7",
+    "react-native-animatable": "^1.4.0",
     "react-native-checkbox-group": "^1.0.3",
     "react-native-crypto": "^2.2.0",
     "react-native-gesture-handler": "^2.24.0",
@@ -58,8 +60,7 @@
     "react-native-ui-datepicker": "^2.0.4",
     "react-native-web": "~0.19.13",
     "react-redux": "^9.2.0",
-    "validate.js": "^0.13.1",
-    "expo-location": "~18.0.8"
+    "validate.js": "^0.13.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

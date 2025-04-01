@@ -7,6 +7,8 @@ import Sidebar from '../components/Sidebar';
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import firebaseConfig from "../util/firebaseConfig.json";
+import * as Animatable from 'react-native-animatable';
+
 
 const SearchScreen = ({ navigation }) => {
     const [search, setSearch] = useState('');
@@ -185,8 +187,14 @@ const SearchScreen = ({ navigation }) => {
                     })
                         .map((activity, index) => (
                      
-                        <TouchableOpacity key={index} onPress={() => handleActivityPress(activity, activity.id)}>
-                            <ActivityComponent
+                            <Animatable.View
+                            key={activity.id}
+                            animation="fadeInUp"
+                            duration={500}
+                            delay={index * 100}
+                            >
+                            <TouchableOpacity onPress={() => handleActivityPress(activity, activity.id)}>
+                                <ActivityComponent
                                 id={activity.id}
                                 name={activity.name}
                                 description={activity.description}
@@ -194,10 +202,13 @@ const SearchScreen = ({ navigation }) => {
                                 distance={activity.distance}
                                 date={isoToDateString(activity.date)}
                                 time={isoToTimeString(activity.time)}
-                                imageUrl={activity.imageUrl} 
+                                imageUrl={activity.imageUrl}
                                 location={activity.location}
-                            />
-                        </TouchableOpacity>
+                                />
+                            </TouchableOpacity>
+                            </Animatable.View>
+
+                          
                     ))}
             </ScrollView>
 
