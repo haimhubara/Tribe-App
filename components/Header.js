@@ -37,14 +37,22 @@ const styles = StyleSheet.create({
     width: 40, 
   },
   title: {
-    fontSize: 32,
-    textAlign: "center",
-    justifyContent:'center',
-    fontFamily:'bold',
-    letterSpacing:0.3,
-    color:GlobalStyles.colors.textColor,
-    flex: 1, 
+    fontSize: 22,
+    fontWeight: "bold",
+    backgroundColor: "#4A90E2",
+    color: "#fff",
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: 10,
+    overflow: "hidden",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
   },
+  
+  
 });
 
 export default Header;
