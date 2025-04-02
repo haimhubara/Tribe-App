@@ -393,7 +393,6 @@ const styles = StyleSheet.create({
   flexContainer: { flex: 1, marginTop:16},
   scrollContainer: { flexGrow: 1, justifyContent: "center", padding: 20 },
   container: { flex: 1, justifyContent: "center" },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
   label: { marginVertical: 8,
     fontFamily: 'bold',
     letterSpacing: 0.3,
