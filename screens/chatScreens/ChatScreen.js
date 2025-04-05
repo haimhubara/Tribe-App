@@ -107,7 +107,7 @@ const ChatScreen = ({ navigation, route }) => {
               const isOwnMessage = message.sentBy === userData.userId;
               const messageType = isOwnMessage ? "myMessage" : "theirMessage";
 
-              return <Bubble key={index} text={message.text} type={messageType} />;
+              return <Bubble key={index} text={message.text} type={messageType} date={message.sendAt} />;
             })}
           </ScrollView>
         </ImageBackground>

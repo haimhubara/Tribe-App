@@ -8,6 +8,14 @@ import * as Clipboard from 'expo-clipboard'
 import Feather from '@expo/vector-icons/Feather';
 
 
+function format24Hour(dateString) {
+    const date = new Date(dateString);
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    return hours + ':' + minutes;
+  }
+
 const MenuItem = ({text, onSelect, iconPack, iconName}) => {
 
     const Icon = iconPack ?? Feather
@@ -20,7 +28,7 @@ const MenuItem = ({text, onSelect, iconPack, iconName}) => {
     </MenuOption>
 }
 
-const Bubble = ({text, type}) => {
+const Bubble = ({text, type, date}) => {
 
     const bubbleStyle = {...styles.container}
     const textStyle = {... styles.text}
@@ -30,6 +38,7 @@ const Bubble = ({text, type}) => {
     const id = useRef(uuid.v4());
 
     let Container = View;
+    const dateString = format24Hour(date);
 
     switch(type){
         case  "system":
@@ -81,6 +90,11 @@ const Bubble = ({text, type}) => {
         <Container onLongPress={()=>menuRef.current.props.ctx.menuActions.openMenu(id.current)} style={{width:'100%'}}>
             <View style={bubbleStyle}>
                 <Text style={textStyle}>{text}</Text>
+               { dateString &&
+                    <View style={styles.timeContainer}>
+                        <Text style={styles.time}>{dateString}</Text>
+                    </View>
+                }
 
                 <Menu name={id.current} ref={menuRef}>
                     <MenuTrigger/>
@@ -127,6 +141,16 @@ const styles = StyleSheet.create({
         letterSpacing:0.3,
         color: GlobalStyles.colors.textColor,
         fontSize:16
+    },
+    timeContainer:{
+        flexDirection:"row",
+        justifyContent:'flex-start'
+    },
+    time:{
+        fontFamily:'regular',
+        letterSpacing:0.3,
+        color:GlobalStyles.colors.gery,
+        fontSize:12
     }
 
 });
