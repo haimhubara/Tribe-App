@@ -141,7 +141,7 @@ const ForeignProfile = ({ backArrowHandle }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f7f9fc",
+  
   },
   content: {
     alignItems: "center",
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: "100%",
     height: height * 0.6,
-    backgroundColor: "#ddd",
+   
   },
   image: {
     width: "100%",

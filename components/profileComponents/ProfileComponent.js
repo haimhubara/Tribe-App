@@ -65,8 +65,7 @@ const ProfileComponent = ({ handleEditProfileClick, handleLogout }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "linear-gradient(180deg, #e0f7fa 0%, #ffe0f0 100%)", // רקע גרדיאנטי - רק אם תומך בזה
-    backgroundColor: "#f7f9fc", // fallback לצבע אחיד
+   
   },
   content: {
     alignItems: "center",
@@ -75,7 +74,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: "100%",
     height: height * 0.6,
-    backgroundColor: "#ddd",
+  
   },
   image: {
     width: "100%",
