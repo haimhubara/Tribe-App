@@ -1,5 +1,4 @@
 import { View, StyleSheet, Text, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions } from "react-native";
-import Button from "../buttons/Button";
 import SwapImages from "../swapImages/SwapImages";
 import { useEffect, useState } from "react";
 import ShowCoupleStuf from "../ShowCoupleStuf";
@@ -90,9 +89,8 @@ const ForeignProfile = ({ backArrowHandle }) => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={{marginTop:32}}>
-
-        <Header title="User Profile" onBackPress={backArrowHandle} />
+      <View style={{ marginTop: 32 }}>
+        <Header onBackPress={backArrowHandle} />
       </View>
 
       {isLoading ? (
@@ -117,7 +115,10 @@ const ForeignProfile = ({ backArrowHandle }) => {
           <Text style={styles.subtitle}>{foreignUser.email}</Text>
 
           <View style={styles.buttons}>
-            <Button text="Send Message" handleClick={startChatHandle} />
+            <TouchableOpacity style={styles.messageButton} onPress={startChatHandle}>
+              <Feather name="message-circle" size={20} color="#fff" />
+              <Text style={styles.buttonText}>Send Message</Text>
+            </TouchableOpacity>
           </View>
 
           <View style={styles.infoBox}>
@@ -140,11 +141,11 @@ const ForeignProfile = ({ backArrowHandle }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f6fa",
+    backgroundColor: "#f7f9fc",
   },
   content: {
     alignItems: "center",
-    paddingBottom: 40,
+    paddingBottom: 60,
   },
   loadingContainer: {
     flex: 1,
@@ -154,6 +155,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: "100%",
     height: height * 0.6,
+    backgroundColor: "#ddd",
   },
   image: {
     width: "100%",
@@ -161,39 +163,61 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   name: {
-    fontSize: 28,
-    fontWeight: "700",
-    color: "#333",
-    marginTop: 16,
+    fontSize: 32,
+    fontWeight: "900",
+    color: "#2D0C57",
+    marginTop: 24,
+    marginBottom: 6,
   },
   subtitle: {
-    fontSize: 14,
-    color: "#777",
-    marginBottom: 20,
+    fontSize: 15,
+    color: "#5E5E5E",
+    marginBottom: 24,
   },
   buttons: {
     flexDirection: "row",
     justifyContent: "center",
+    gap: 16,
+    width: "85%",
+    marginBottom: 30,
+  },
+  messageButton: {
+    flexDirection: "row",
+    backgroundColor: "#00BFA6",
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderRadius: 50,
+    alignItems: "center",
     gap: 10,
-    marginBottom: 20,
+    flex: 1,
+    justifyContent: "center",
+    shadowColor: "#00BFA6",
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "800",
+    fontSize: 16,
   },
   infoBox: {
     width: "90%",
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: "#e8f0ff",
+    padding: 20,
+    borderRadius: 22,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 5,
+    marginBottom: 30,
   },
   label: {
     fontSize: 16,
     fontWeight: "600",
     marginTop: 16,
     marginBottom: 8,
-    color: GlobalStyles.colors.textColor,
+    color: "#2D0C57",
   },
   iconButtons: {
     flexDirection: "row",
