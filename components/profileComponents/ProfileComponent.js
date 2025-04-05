@@ -32,6 +32,7 @@ const ProfileComponent = ({ handleEditProfileClick, handleLogout }) => {
           isEdit={false}
           imagess={userData.images}
           imageStyle={styles.image}
+          editStyle={{ display: "none" }}
         />
       </View>
 
