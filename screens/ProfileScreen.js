@@ -34,7 +34,7 @@ const ProfileScreen = ({navigation}) => {
  
     
   return (
-    <SafeAreaView >
+    <SafeAreaView edges={["top"]}>
     <ScrollView >
      
       {isEdit === true &&
