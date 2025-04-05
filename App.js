@@ -5,6 +5,7 @@ import { store } from './store/store';
 import { Provider } from 'react-redux';
 import { useState, useCallback, useEffect } from 'react';
 import AppNavigation from './navigation/AppNavigation';
+import { MenuProvider } from 'react-native-popup-menu'
 import { StatusBar } from 'expo-status-bar';
 
 SplashScreen.preventAutoHideAsync();
@@ -58,7 +59,9 @@ function App() {
     <Provider store={store}>
       <SafeAreaProvider  onLayout={onLayout}>
         <StatusBar style="dark" />
-        <AppNavigation/>
+        <MenuProvider>
+           <AppNavigation/>
+        </MenuProvider>
       </SafeAreaProvider>
     </Provider>
   );
