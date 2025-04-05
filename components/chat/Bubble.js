@@ -1,11 +1,12 @@
 import React, { useRef } from 'react'
 import { StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native'
-import { GlobalStyles } from '../constants/styles'
-import PageContainer from './PageContainer'
+import { GlobalStyles } from '../../constants/styles'
+import PageContainer from '../PageContainer'
 import { Menu, MenuTrigger, MenuOption, MenuOptions } from 'react-native-popup-menu'
 import uuid from 'react-native-uuid'
 import * as Clipboard from 'expo-clipboard'
 import Feather from '@expo/vector-icons/Feather';
+import { useSelector } from 'react-redux'
 
 
 function format24Hour(dateString) {
@@ -28,17 +29,21 @@ const MenuItem = ({text, onSelect, iconPack, iconName}) => {
     </MenuOption>
 }
 
-const Bubble = ({text, type, date}) => {
+const Bubble = ({text, type, date, setReply, replyingTo, name}) => {
 
     const bubbleStyle = {...styles.container}
     const textStyle = {... styles.text}
     const wrappreStyle = {... styles.wrappreStyle}
+    const storedUsers = useSelector(state => state.users.storedUsers);
+    const userData = useSelector(state => state.auth.userData);
+    let isNeedPageContainer = true;
 
     const menuRef = useRef(null);
     const id = useRef(uuid.v4());
 
     let Container = View;
-    const dateString = format24Hour(date);
+    const dateString = date && format24Hour(date);
+
 
     switch(type){
         case  "system":
@@ -54,7 +59,7 @@ const Bubble = ({text, type, date}) => {
             bubbleStyle.marginTop = 10;
             break;
 
-            case "myMessage":
+        case "myMessage":
             wrappreStyle.justifyContent = 'flex-start';
             bubbleStyle.marginTop = 10;
             bubbleStyle.backgroundColor = "#E7FED6";
@@ -62,13 +67,21 @@ const Bubble = ({text, type, date}) => {
             Container = TouchableWithoutFeedback;
             break;
 
-            case "theirMessage":
+        case "theirMessage":
             wrappreStyle.justifyContent = 'flex-end';
             bubbleStyle.maxWidth = "90%";
             Container = TouchableWithoutFeedback;
-            bubbleStyle.marginTop = 10;
+            bubbleStyle.marginTop = 12;
             break;
 
+        case "reply":
+            bubbleStyle.backgroundColor = '#EEEEEE';
+            isNeedPageContainer=false;
+            textStyle.fontSize = 10;
+
+            
+                break;
+    
 
         default:
             break;
@@ -84,30 +97,46 @@ const Bubble = ({text, type, date}) => {
       
     }
 
+    const replayingToUser = replyingTo &&(storedUsers[replyingTo.sentBy] === undefined ? userData : storedUsers[replyingTo.sentBy]) ;
+
   return (
-    <PageContainer>
-    <View style={wrappreStyle}>
-        <Container onLongPress={()=>menuRef.current.props.ctx.menuActions.openMenu(id.current)} style={{width:'100%'}}>
-            <View style={bubbleStyle}>
-                <Text style={textStyle}>{text}</Text>
-               { dateString &&
-                    <View style={styles.timeContainer}>
-                        <Text style={styles.time}>{dateString}</Text>
-                    </View>
-                }
+    <PageContainer bool={!isNeedPageContainer} style={{paddingHorizontal:0}} >
+        <View style={wrappreStyle}>
+            <Container onLongPress={()=>menuRef.current.props.ctx.menuActions.openMenu(id.current)} style={{width:'100%'}}>
+                <View style={bubbleStyle}>
 
-                <Menu name={id.current} ref={menuRef}>
-                    <MenuTrigger/>
-                    <MenuOptions>
-                        <MenuItem iconName='copy' text='Copy to clipboard' onSelect={() => copyToClipboard(text)}/>
-                    </MenuOptions>
+                    {
+                        name && <Text style={styles.nameText}>{name}</Text>
+                    }
 
-              
+                    {
+                        replayingToUser &&
+                        <Bubble
+                        type='reply'
+                        text={replyingTo.text}
+                        name = {`${replayingToUser.firstName} ${replayingToUser.lastName}`}
+                        />
+                    }
+                    <Text style={textStyle}>{text}</Text>
+                { dateString &&
+                        <View style={styles.timeContainer}>
+                            <Text style={styles.time}>{dateString}</Text>
+                        </View>
+                    }
 
-                </Menu>
-            </View>
-        </Container>
-    </View>
+                    <Menu name={id.current} ref={menuRef}>
+                        <MenuTrigger/>
+                        <MenuOptions>
+                            <MenuItem iconName='copy' text='Copy to clipboard' onSelect={() => copyToClipboard(text)}/>
+                            <MenuItem iconName='arrow-left-circle' text='Reply' onSelect={setReply}/>
+                        </MenuOptions>
+
+                
+
+                    </Menu>
+                </View>
+            </Container>
+        </View>
     </PageContainer>
   )
 }
@@ -151,6 +180,10 @@ const styles = StyleSheet.create({
         letterSpacing:0.3,
         color:GlobalStyles.colors.gery,
         fontSize:12
+    },
+    nameText:{
+        fontFamily:'medium',
+        letterSpacing:0.3,
     }
 
 });

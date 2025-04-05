@@ -4,8 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from '@expo/vector-icons/Feather';
 import backgroundImage from '../../assets/images/droplet.jpeg';
 import { useSelector } from 'react-redux';
-import Bubble from '../../components/Bubble';
+import Bubble from '../../components/chat/Bubble';
 import { createChat, sendTextMessage } from '../../util/actions/chatAction';
+import ReplyTo from '../../components/chat/ReplyTo';
 
 const ChatScreen = ({ navigation, route }) => {
   const storedUsers = useSelector(state => state.users.storedUsers);
@@ -15,9 +16,10 @@ const ChatScreen = ({ navigation, route }) => {
   const [messageText, setMessageText] = useState('');
   const [chatUsers, setChatUsers] = useState([]);
   const [errorBannerText, setErrorBannerText] = useState('');
+  const [replyingTo, setReplayingTo] = useState();
   const chatData = route?.params?.chatUsers;
   const emptyArray = [];
-
+ 
   const chatMessages = useSelector(state => {
     if (!chatId) return emptyArray;
     const chatMessagesData = state.messages.messagesData[chatId];
@@ -57,10 +59,11 @@ const ChatScreen = ({ navigation, route }) => {
       }
 
       if (messageText !== "") {
-        await sendTextMessage(id, userData.userId, messageText);
+        await sendTextMessage(id, userData.userId, messageText, replyingTo && replyingTo.key);
       }
 
       setMessageText("");
+      setReplayingTo(null);
     } catch (error) {
       console.log("Error sending message:", error);
       setErrorBannerText("Message failed to send");
@@ -107,9 +110,18 @@ const ChatScreen = ({ navigation, route }) => {
               const isOwnMessage = message.sentBy === userData.userId;
               const messageType = isOwnMessage ? "myMessage" : "theirMessage";
 
-              return <Bubble key={index} text={message.text} type={messageType} date={message.sendAt} />;
+              return <Bubble replyingTo={message.replyTo && chatMessages.find(i => i.key === message.replyTo)} setReply={()=>setReplayingTo(message)} key={index} text={message.text} type={messageType} date={message.sendAt} />;
             })}
           </ScrollView>
+          {
+            replyingTo && 
+           <ReplyTo
+             text={replyingTo.text}
+             user={storedUsers[replyingTo.sentBy] === undefined ? userData : storedUsers[replyingTo.sentBy]}
+             onCancel={() => setReplayingTo(null)}
+
+             />
+          }
         </ImageBackground>
 
         <View style={styles.inputContainer}>
