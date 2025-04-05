@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native'
+import { Image, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native'
 import { GlobalStyles } from '../../constants/styles'
 import PageContainer from '../PageContainer'
 import { Menu, MenuTrigger, MenuOption, MenuOptions } from 'react-native-popup-menu'
@@ -29,7 +29,7 @@ const MenuItem = ({text, onSelect, iconPack, iconName}) => {
     </MenuOption>
 }
 
-const Bubble = ({text, type, date, setReply, replyingTo, name}) => {
+const Bubble = ({text, type, date, setReply, replyingTo, name, imageUrl}) => {
 
     const bubbleStyle = {...styles.container}
     const textStyle = {... styles.text}
@@ -117,7 +117,14 @@ const Bubble = ({text, type, date, setReply, replyingTo, name}) => {
                         name = {`${replayingToUser.firstName} ${replayingToUser.lastName}`}
                         />
                     }
-                    <Text style={textStyle}>{text}</Text>
+                    { !imageUrl &&
+                        <Text style={textStyle}>{text}</Text>}
+
+                    {
+                        imageUrl && 
+                        <Image style={styles.image} source={{uri:imageUrl}}/>
+                    }
+
                 { dateString &&
                         <View style={styles.timeContainer}>
                             <Text style={styles.time}>{dateString}</Text>
@@ -184,6 +191,11 @@ const styles = StyleSheet.create({
     nameText:{
         fontFamily:'medium',
         letterSpacing:0.3,
+    },
+    image:{
+        width:300,
+        height:300,
+        marginBottom:5
     }
 
 });
