@@ -1,12 +1,18 @@
 import React from "react";
-import {View,StyleSheet,Text,TouchableOpacity,ScrollView,Dimensions,} from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Dimensions,
+} from "react-native";
 import { useSelector } from "react-redux";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Feather from "@expo/vector-icons/Feather";
 import ShowCoupleStuf from "../ShowCoupleStuf";
 import SwapImages from "../swapImages/SwapImages";
 
-// קבלת גובה המסך
 const { height } = Dimensions.get("window");
 
 const ProfileComponent = ({ handleEditProfileClick, handleLogout }) => {
@@ -21,61 +27,55 @@ const ProfileComponent = ({ handleEditProfileClick, handleLogout }) => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* תמונות בפרופורציה מלאה כמו טינדר */}
       <View style={styles.imageContainer}>
         <SwapImages
           isEdit={false}
           imagess={userData.images}
           imageStyle={styles.image}
+          editStyle={{ display: "none" }}
         />
       </View>
 
-      {/* שם וגיל */}
       <Text style={styles.name}>
         {userData.firstName} {userData.lastName}, {calculateAge(userData.date)}
       </Text>
 
-      {/* תיאור קצר */}
       <Text style={styles.subtitle}>{userData.email}</Text>
 
-      {/* תחביבים ושפות */}
       <View style={styles.infoSection}>
-        <ShowCoupleStuf text="🎯 Hobbies" array={userData.hobbies} />
+        <ShowCoupleStuf text="🎨 Hobbies" array={userData.hobbies} />
         <ShowCoupleStuf text="🌍 Languages" array={userData.languages} />
       </View>
 
-      {/* כפתורים */}
       <View style={styles.buttons}>
-        <TouchableOpacity
-          style={styles.editButton}
-          onPress={handleEditProfileClick}
-        >
-          <FontAwesome name="edit" size={18} color="#fff" />
-          <Text style={styles.buttonText}>Edit</Text>
+        <TouchableOpacity style={styles.editButton} onPress={handleEditProfileClick}>
+          <FontAwesome name="paint-brush" size={20} color="#fff" />
+          <Text style={styles.buttonText}>Edit Profile</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Feather name="log-out" size={18} color="#fff" />
-          <Text style={styles.buttonText}>Logout</Text>
+          <Feather name="zap" size={20} color="#fff" />
+          <Text style={styles.buttonText}>Log Out</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
   );
 };
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f6fa",
+    backgroundColor: "linear-gradient(180deg, #e0f7fa 0%, #ffe0f0 100%)", // רקע גרדיאנטי - רק אם תומך בזה
+    backgroundColor: "#f7f9fc", // fallback לצבע אחיד
   },
   content: {
     alignItems: "center",
-    paddingBottom: 40,
+    paddingBottom: 60,
   },
   imageContainer: {
     width: "100%",
-    height: height * 0.6, // 60% מגובה המסך
+    height: height * 0.6,
+    backgroundColor: "#ddd",
   },
   image: {
     width: "100%",
@@ -83,54 +83,69 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   name: {
-    fontSize: 28,
-    fontWeight: "700",
-    color: "#333",
-    marginTop: 16,
+    fontSize: 32,
+    fontWeight: "900",
+    color: "#2D0C57",
+    marginTop: 24,
+    marginBottom: 6,
   },
   subtitle: {
-    fontSize: 14,
-    color: "#777",
-    marginBottom: 20,
+    fontSize: 15,
+    color: "#5E5E5E",
+    marginBottom: 24,
   },
   infoSection: {
     width: "90%",
-    marginBottom: 20,
+    backgroundColor: "#e8f0ff",
+    padding: 20,
+    borderRadius: 22,
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 5,
+    marginBottom: 30,
   },
   buttons: {
     flexDirection: "row",
     justifyContent: "space-between",
-    gap: 12,
-    width: "80%",
+    gap: 16,
+    width: "85%",
   },
   editButton: {
     flexDirection: "row",
-    backgroundColor: "#4A90E2",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 30,
+    backgroundColor: "#00BFA6",
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderRadius: 50,
     alignItems: "center",
-    gap: 6,
+    gap: 10,
     flex: 1,
     justifyContent: "center",
+    shadowColor: "#00BFA6",
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   logoutButton: {
     flexDirection: "row",
-    backgroundColor: "#FF4D4D",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 30,
+    backgroundColor: "#F50057",
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderRadius: 50,
     alignItems: "center",
-    gap: 6,
+    gap: 10,
     flex: 1,
     justifyContent: "center",
+    shadowColor: "#F50057",
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   buttonText: {
     color: "#fff",
-    fontWeight: "600",
+    fontWeight: "800",
     fontSize: 16,
   },
 });
 
-export default ProfileComponent
-
+export default ProfileComponent;
