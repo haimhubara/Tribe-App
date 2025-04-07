@@ -120,7 +120,7 @@ const ChatListScreen = ({navigation, route}) => {
                   screen: "Chat",
                   params: { chatId:chatId,
                     selectedUserId:otherUserId,
-                    chatUsers:[otherUserId,userChats.userId]
+                    chatUsers:[otherUserId,userData.userId]
                   }
                 })
               }}
