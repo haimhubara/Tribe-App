@@ -1,4 +1,4 @@
-import { View,Text,StyleSheet, TextInput, FlatList, Platform, ActivityIndicator } from "react-native"
+import { View,Text,StyleSheet, TextInput, FlatList, Platform, ActivityIndicator, TouchableOpacity } from "react-native"
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect, useState } from "react";
 import ActiveChats from "../components/ActiveChat";
@@ -10,6 +10,7 @@ import defaultImage from "../assets/images/userImage.jpeg"
 import { useSelector } from "react-redux";
 import { createSelector } from 'reselect';
 import { useFocusEffect } from "@react-navigation/native";
+import PageContainer from "../components/PageContainer";
 
 
 const ChatListScreen = ({navigation, route}) => {
@@ -26,6 +27,11 @@ const ChatListScreen = ({navigation, route}) => {
 
     
     const { selectedUserId } = route?.params || {};
+
+    const { selecterUsers } = route?.params || {};
+    const { chatName } = route?.params || {};
+
+
 
 
 
@@ -45,8 +51,8 @@ const ChatListScreen = ({navigation, route}) => {
      
     useEffect(()=>{
 
-      if(!selectedUserId){
-        return
+      if(!selectedUserId && !selecterUsers){
+        return;
       }
 
       const chatUsers = [selectedUserId,userData.userId];
@@ -60,7 +66,9 @@ const ChatListScreen = ({navigation, route}) => {
       navigation.navigate("Chat",{
         selectedUserId,
         chatUsers,
-        chatId:route?.params?.chatId
+        chatId:route?.params?.chatId,
+        isGroupChat: selecterUsers !== undefined,
+        chatName
       });
 
     },[route?.params])
@@ -76,7 +84,14 @@ const ChatListScreen = ({navigation, route}) => {
       <View style={styles.root}>
           <Text  style={styles.text}>Chats</Text>
       </View>
-      
+      <PageContainer>
+
+        <View>
+            <TouchableOpacity onPress={()=>{navigation.navigate("New Group Chat")}}>
+                <Text style={{color:GlobalStyles.colors.blue, fontSize:17}}>New Group</Text>
+            </TouchableOpacity>
+        </View>
+
       <View style={[styles.searchContainer, Platform.OS === 'ios' && styles.inputIOS,Platform.OS==='web' &&{padding:10}]}>
           <Ionicons name="search" size={16} color="grey" />
           <TextInput placeholder="Search"
@@ -88,6 +103,7 @@ const ChatListScreen = ({navigation, route}) => {
           autoComplete="off" 
           />
       </View>
+      </PageContainer>
       {isLoading && 
        <View style={{alignItems:'center',justifyContent:'center'}}>
            <ActivityIndicator size={'large'} color={GlobalStyles.colors.mainColor}/>
@@ -159,7 +175,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#ededed',
     padding: 2,
-    margin: 16,
+    marginVertical: 16,
     borderRadius: 8,
     borderWidth: 0.1,
     marginBottom: 20,

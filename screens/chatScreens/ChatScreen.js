@@ -23,6 +23,8 @@ const ChatScreen = ({ navigation, route }) => {
   const [errorBannerText, setErrorBannerText] = useState('');
   const [tempImageUri, setTempImageUri] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  console.log(chatUsers);
  
 
   const [replyingTo, setReplayingTo] = useState();

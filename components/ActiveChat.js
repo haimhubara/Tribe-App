@@ -3,8 +3,9 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { GlobalStyles } from '../constants/styles';
 import ImageToShow from './imagesAndVideo/ImageToShow';
 import { useNavigation } from '@react-navigation/native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
-const ActiveChats = ({ firstName, lastName, lastMessage, imageSource, startChatHandle,updatedAt }) => {
+const ActiveChats = ({ firstName, lastName, lastMessage, imageSource, startChatHandle,updatedAt, type, isChecked }) => {
   const navigation = useNavigation();
 
   const date = new Date(updatedAt);
@@ -30,7 +31,17 @@ const ActiveChats = ({ firstName, lastName, lastMessage, imageSource, startChatH
             </View>
           </View>
           <View style={styles.timeContainer}>
-            <Text style={styles.time} numberOfLines={1}>{formattedDate}</Text>
+            {
+              type ==="checkBox" && 
+              <View style={[styles.iconContainer,isChecked && styles.checkedStyle]}>
+                  <Ionicons name="checkmark" size={18} color="white" />
+              </View>
+            }
+            {
+              type !== "checkBox" &&
+              <Text style={styles.time} numberOfLines={1}>{formattedDate}</Text>
+            }
+            
           </View>
         </View>
       )}
@@ -92,6 +103,17 @@ const styles = StyleSheet.create({
     letterSpacing:0.3,
     marginTop: 4,
 
+  },
+  iconContainer:{
+    marginRight:10,
+    borderWidth:1,
+    borderRadius:50,
+    borderColor:GlobalStyles.colors.lightGrey,
+    backgroundColor:'white'
+  },
+  checkedStyle:{
+    backgroundColor:GlobalStyles.colors.primary,
+    borderColor:'transparent'
   }
 });
 

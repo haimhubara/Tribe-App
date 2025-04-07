@@ -20,6 +20,7 @@ import { setStoredUsers } from '../store/userSlice';
 import { getUserData } from '../util/actions/userAction';
 import { setChatMessages } from '../store/messagesSlice';
 import ActivitiesScreen from '../screens/ActivitiesScreen';
+import NewGroupChatScreen from '../screens/chatScreens/NewGroupChatScreen';
 
 
 
@@ -93,6 +94,7 @@ function ChatStack(){
       }),
     }}>
       <Stack.Screen name="Chats" component={ChatListScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="New Group Chat" component={NewGroupChatScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Chat" component={ChatScreen} options={({ navigation }) => ({
       headerTitle: "",
       headerShadowVisible: false,
