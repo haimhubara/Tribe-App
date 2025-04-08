@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { getFirebaseApp } from '../util/firebase';
 import { child, getDatabase, off, onValue, ref } from 'firebase/database';
-import { setChatsData } from '../store/chatSlice';
+import { removeChat, setChatsData, updateChat } from '../store/chatSlice';
 import { GlobalStyles } from '../constants/styles';
 import { useState } from 'react';
 import { setStoredUsers } from '../store/userSlice';
@@ -21,6 +21,9 @@ import { getUserData } from '../util/actions/userAction';
 import { setChatMessages } from '../store/messagesSlice';
 import ActivitiesScreen from '../screens/ActivitiesScreen';
 import NewGroupChatScreen from '../screens/chatScreens/NewGroupChatScreen';
+import ContactScreen from '../screens/chatScreens/ContactScreen';
+import GroupChatSetting from '../screens/chatScreens/GroupChatSetting';
+
 
 
 
@@ -95,11 +98,15 @@ function ChatStack(){
     }}>
       <Stack.Screen name="Chats" component={ChatListScreen} options={{ headerShown: false }} />
       <Stack.Screen name="New Group Chat" component={NewGroupChatScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="Chat" component={ChatScreen} options={({ navigation }) => ({
+      <Stack.Screen name="Chat" component={ChatScreen}  options={({ navigation, route }) => {
+    const from = route.params?.fromScreen;
+    const label = from === "ContactScreen" ? "" : "Chats";
+
+    return {
       headerTitle: "",
       headerShadowVisible: false,
       headerTitleAlign: 'center',
-      headerTitleStyle: { fontSize: 24,fontFamily:'medium', letterSpacing:0.3 },
+      headerTitleStyle: { fontSize: 24, fontFamily: 'medium', letterSpacing: 0.3 },
       headerLeft: () => (
         <View style={{ flexDirection: "row", alignItems: "center", marginLeft: 10 }}>
           <Ionicons
@@ -108,12 +115,16 @@ function ChatStack(){
             color="black"
             onPress={() => navigation.goBack()}
           />
-          <Text style={{ fontSize: 14, marginLeft: 2,letterSpacing:0.3,fontFamily:'medium', }}>Chats</Text>
-      </View>
+          <Text style={{ fontSize: 14, marginLeft: 2, letterSpacing: 0.3, fontFamily: 'medium' }}>
+            {label}
+          </Text>
+        </View>
       ),
-    })} 
-  />
-   
+    };
+  }} 
+/>
+    <Stack.Screen name="contact" component={ContactScreen} options={{ headerShown: false }} />
+    <Stack.Screen name="groupContact" component={GroupChatSetting} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
@@ -210,62 +221,71 @@ const WellcomeNavigation = () => {
     const [isLoading, setIsLoading] = useState(true);
     const chatsData = useSelector(state => state.chats.chatsData);
 
+    
     const userData = useSelector(state => state.auth.userData);
     const storedUsers = useSelector(state => state.users.storedUsers);
-
+    
+   
     useEffect(() => {
       const app = getFirebaseApp();
       const dbRef = ref(getDatabase(app));
       const userChatRef = child(dbRef, `userChats/${userData.userId}`);
-    
+  
       const unsubscribeUserChat = onValue(userChatRef, async (querySnapshot) => {
           const chatIdsData = querySnapshot.val() || {};
           const chatIds = Object.values(chatIdsData);
-      
+  
           if (chatIds.length === 0) {
               setIsLoading(false);
               return;
           }
-      
-          const chatsData = {};
+  
           let chatsFoundCount = 0;
+          const chatsData = {}; // לשמור את הצ'אטים שנמצאו
           const unsubscribers = [];
   
+          // עובר על כל הצ'אטים
           for (const chatId of chatIds) {
               const chatRef = child(dbRef, `chats/${chatId}`);
-              
-              
+  
               const unsubscribeChat = onValue(chatRef, async (chatSnapshot) => {
-                  chatsFoundCount++;
                   const data = chatSnapshot.val();
-                 
-      
-                  if (data) {
-                      data.key = chatSnapshot.key;
-      
-                      const missingUsers = data.users.filter(userId =>
-                          !storedUsers[userId] && userId !== userData.userId
-                      );
-      
-                      if (missingUsers.length > 0) {
-                          const fetchedUsers = await Promise.all(
-                              missingUsers.map(userId => getUserData(userId))
-                          );
-      
-                          const newUsers = {};
-                          fetchedUsers.forEach(user => {
-                              if (user) newUsers[user.userId] = user;
-                          });
-      
-                          dispatch(setStoredUsers({ newUsers }));
-                      }
-      
-                      chatsData[chatSnapshot.key] = data;
+  
+                  // אם אין דאטה או שהמשתמש לא נמצא בצ'אט — הסר את הצ'אט מ־Redux
+                  if (!data || !data.users.includes(userData.userId)) {
+                      dispatch(removeChat({ chatId: chatSnapshot.key }));
+                      return;
                   }
-      
+  
+                  data.key = chatSnapshot.key;
+  
+                  // מציאת משתמשים חסרים בצ'אט
+                  const missingUsers = data.users.filter(userId =>
+                      !storedUsers[userId] && userId !== userData.userId
+                  );
+  
+                  // אם יש משתמשים חסרים, נביא אותם מ־Firestore או ממקום אחר
+                  if (missingUsers.length > 0) {
+                      const fetchedUsers = await Promise.all(
+                          missingUsers.map(userId => getUserData(userId))
+                      );
+  
+                      const newUsers = {};
+                      fetchedUsers.forEach(user => {
+                          if (user) newUsers[user.userId] = user;
+                      });
+  
+                      dispatch(setStoredUsers({ newUsers }));
+                  }
+  
+                  // שמירה ב־chatsData ולא עדכון מיידי ב־Redux
+                  chatsData[chatSnapshot.key] = data;
+  
+                  chatsFoundCount++;
                   if (chatsFoundCount >= chatIds.length) {
+                      // עדכון של כל הצ'אטים ב־Redux
                       dispatch(setChatsData({ chatsData }));
-                      setIsLoading(false);
+                      setIsLoading(false); // מסיימים טוען רק אחרי כל הצ'אטים
                   }
               });
   
@@ -292,7 +312,6 @@ const WellcomeNavigation = () => {
           unsubscribeUserChat();
       };
   }, []);
-  
   
 
 

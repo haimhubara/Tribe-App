@@ -4,7 +4,6 @@ import { GlobalStyles } from '../../constants/styles'
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { getAllUsers } from '../../util/actions/userAction';
 import { useSelector } from 'react-redux';
-import UserComponent from '../../components/UserComponent';
 import { ActivityIndicator } from 'react-native-paper';
 import ActiveChats from '../../components/ActiveChat';
 
@@ -14,9 +13,9 @@ const NewGroupChatScreen = ({navigation}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [allUsers, setAllUsers] = useState([]);
   const userData = useSelector(state => state.auth.userData);
-  const [selecterUsers, setSelectedUsers] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
 
-  const isGroupChatDisabeld = selecterUsers.length === 0 || chatName === '';
+  const isGroupChatDisabeld = selectedUsers.length === 0 || chatName === '';
 
 
    useEffect(() => {
@@ -47,8 +46,8 @@ const NewGroupChatScreen = ({navigation}) => {
 
 
     const addUserToChat = (userId) => {
-        const newSelectedUsers = selecterUsers.includes(userId) 
-        ? selecterUsers.filter(id => id !== userId) : selecterUsers.concat(userId);
+        const newSelectedUsers = selectedUsers.includes(userId) 
+        ? selectedUsers.filter(id => id !== userId) : selectedUsers.concat(userId);
 
         setSelectedUsers(newSelectedUsers);
 
@@ -66,8 +65,9 @@ const NewGroupChatScreen = ({navigation}) => {
                    ()=>{ navigation.navigate("Chats Screen",{
                         screen: "Chats",
                         params: {
-                            selecterUsers,
-                            chatName
+                            selectedUsers,
+                            chatName,
+                            isGroupChat:true
 
                          }
                      })}} 
@@ -108,10 +108,9 @@ const NewGroupChatScreen = ({navigation}) => {
                     <ActiveChats 
                         startChatHandle={() => addUserToChat(item.userId)}
                         imageSource={item.images['firstImage']}
-                        lastName={item.lastName}
-                        firstName={item.firstName}
+                        title={`${item.firstName} ${item.lastName}`}
                         type='checkBox'
-                        isChecked={selecterUsers.includes(item.userId)}
+                        isChecked={selectedUsers.includes(item.userId)}
                     
                      />}
             />

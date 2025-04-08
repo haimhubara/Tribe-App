@@ -12,6 +12,9 @@ import AwseomeAlert from 'react-native-awesome-alerts'
 import { GlobalStyles } from '../../constants/styles';
 import {openCamera, pickImageHandle } from '../../util/actions/imageAction';
 import { uploadImageToCloudinary } from '../../components/Cloudinary';
+import { createSelector } from '@reduxjs/toolkit';
+import { HeaderButtons, Item } from 'react-navigation-header-buttons';
+import CustomHeaderButton from '../../components/buttons/CustomHeaderButton';
 
 const ChatScreen = ({ navigation, route }) => {
   const storedUsers = useSelector(state => state.users.storedUsers);
@@ -24,12 +27,12 @@ const ChatScreen = ({ navigation, route }) => {
   const [tempImageUri, setTempImageUri] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  console.log(chatUsers);
+  
  
 
   const [replyingTo, setReplayingTo] = useState();
-  const chatData = route?.params?.chatUsers;
   const emptyArray = [];
+
  
   const chatMessages = useSelector(state => {
     if (!chatId) return emptyArray;
@@ -47,25 +50,61 @@ const ChatScreen = ({ navigation, route }) => {
     return messageList;
   });
 
+  
+  const getChats = createSelector(
+    state => state.chats.chatsData, 
+    chatsData => Object.values(chatsData).sort((a,b)=>{
+      return new Date(b.updatedAt) - new Date(a.updatedAt);
+    }) 
+  );
+
+  const storedChats = useSelector(getChats);
+  const currentChat = storedChats.find(chat => chat.key === chatId);
+
+
+  const chatData = (chatId && storedChats[chatId] || {users:route?.params?.chatUsers,isGroupChat:route?.params?.isGroupChat,chatName:route?.params?.chatName});
+  // console.log(chatData);
+  // console.log(chatId);
   const getChatTitleFromName = () => {
     const otherUserId = route?.params?.selectedUserId;
     const otherUser = storedUsers[otherUserId];
     return otherUser && `${otherUser.firstName} ${otherUser.lastName}`;
   };
 
+
+
+  const title = currentChat?.chatName ?? chatData.chatName ?? getChatTitleFromName();
+  
+
   useEffect(() => {
     navigation.setOptions({
-      headerTitle: getChatTitleFromName() ? getChatTitleFromName() : ""
+      headerTitle:title,
+      headerRight: () => {
+        return <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+              {
+                chatId && 
+                <Item
+                title="Chat settings"
+                iconName='settings-outline'
+                color={GlobalStyles.colors.textColor}
+                onPress={()=> currentChat && currentChat.isGroupChat ?
+                  navigation.navigate("groupContact",{ chatId }) :
+                  navigation.navigate("contact",{uid: route?.params?.selectedUserId})
+                }
+                />
+              }
+        </HeaderButtons>
+      }
     });
 
-    setChatUsers(chatData);
-  }, [chatUsers]);
+    setChatUsers(chatData.users);
+  }, [chatUsers,title]);
 
   const sendMessage = useCallback(async () => {
     try {
       let id = chatId;
       if (!chatId) {
-        id = await createChat(userData.userId, route?.params?.chatUsers);
+        id = await createChat(userData.userId, route?.params?.chatUsers,route?.params?.chatName,route?.params?.isGroupChat);
         setChatId(id);
       }
 
@@ -82,7 +121,7 @@ const ChatScreen = ({ navigation, route }) => {
         setErrorBannerText("");
       }, 5000);
     }
-  }, [messageText, chatId]);
+  }, [messageText, chatId,title]);
 
   useLayoutEffect(() => {
     const parentNav = navigation.getParent();
@@ -130,7 +169,7 @@ const ChatScreen = ({ navigation, route }) => {
 
         let id = chatId;
         if (!chatId) {
-          id = await createChat(userData.userId, route?.params?.chatUsers);
+          id = await createChat(userData.userId, route?.params?.chatUsers,route?.params?.chatName,route?.params?.isGroupChat);
           setChatId(id);
         }
 
@@ -169,9 +208,22 @@ const ChatScreen = ({ navigation, route }) => {
           >
             {chatMessages.map((message, index) => {
               const isOwnMessage = message.sentBy === userData.userId;
-              const messageType = isOwnMessage ? "myMessage" : "theirMessage";
+            
+              let messageType;
+              if(message.type && message.type === 'info'){
+                messageType = 'info';
+              }
+              else if(isOwnMessage){
+                messageType = "myMessage"
+              }else{
+                messageType = "theirMessage";
+              }
 
-              return <Bubble imageUrl={message.imageUrl} replyingTo={message.replyTo && chatMessages.find(i => i.key === message.replyTo)} setReply={()=>setReplayingTo(message)} key={index} text={message.text} type={messageType} date={message.sendAt} />;
+              const sender = message.sentBy && storedUsers[message.sentBy];
+              const name = sender && `${sender.firstName} ${sender.lastName}`;
+              const shouldSendMessage = !chatData.isGroupChat || isOwnMessage ;
+
+              return <Bubble name={shouldSendMessage ? undefined :name} imageUrl={message.imageUrl} replyingTo={message.replyTo && chatMessages.find(i => i.key === message.replyTo)} setReply={()=>setReplayingTo(message)} key={index} text={message.text} type={messageType} date={message.sendAt} />;
             })}
           </ScrollView>
           {
@@ -260,6 +312,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     flexDirection: 'row',
+    backgroundColor:'white',
     paddingVertical: 8,
     paddingHorizontal: 10,
     height: 50,

@@ -4,8 +4,9 @@ import { GlobalStyles } from '../constants/styles';
 import ImageToShow from './imagesAndVideo/ImageToShow';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import defaultImage from "../assets/images/userImage.jpeg"
 
-const ActiveChats = ({ firstName, lastName, lastMessage, imageSource, startChatHandle,updatedAt, type, isChecked }) => {
+const ActiveChats = ({title ,lastMessage, imageSource, startChatHandle,updatedAt, type, isChecked }) => {
   const navigation = useNavigation();
 
   const date = new Date(updatedAt);
@@ -15,16 +16,17 @@ const ActiveChats = ({ firstName, lastName, lastMessage, imageSource, startChatH
     year: "numeric"
   });
 
+
   return (
     <Pressable onPress={startChatHandle} accessibilityRole="button">
       {({ pressed }) => (
         <View style={[styles.root, pressed && styles.clicked]}>
           <ImageToShow
-              imageUrl={imageSource? imageSource : null} 
+              imageUrl={imageSource? imageSource : defaultImage} 
              imageStyle={[styles.image, { overflow: 'hidden' }]}
           />
           <View style={styles.infoContainer}>
-            <Text style={styles.name} numberOfLines={1}>{firstName} {lastName}</Text>
+            <Text style={styles.name} numberOfLines={1}>{title}</Text>
             <Text style={styles.message} numberOfLines={1}></Text>
             <View>
                 <Text style={styles.lastMessage} numberOfLines={1}>{lastMessage}</Text>
@@ -38,8 +40,14 @@ const ActiveChats = ({ firstName, lastName, lastMessage, imageSource, startChatH
               </View>
             }
             {
-              type !== "checkBox" &&
+              type !== "checkBox" && type !== 'link' && type !== 'blank' && 
               <Text style={styles.time} numberOfLines={1}>{formattedDate}</Text>
+            }
+            {
+              type === "link" &&
+              <View >
+                  <Ionicons name="chevron-forward-outline" size={18} color={GlobalStyles.colors.gery} />
+             </View>
             }
             
           </View>

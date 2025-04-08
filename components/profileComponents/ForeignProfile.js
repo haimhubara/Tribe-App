@@ -36,6 +36,7 @@ const ForeignProfile = ({ backArrowHandle }) => {
 
   useEffect(() => {
     for (let chat of userChats) {
+      if (chat.isGroupChat) continue;
       const otherUserId = chat.users.find(uid => uid !== userData.userId);
       if (otherUserId === userId && chat.key !== chatId) {
         setChatId(chat.key);
@@ -71,7 +72,7 @@ const ForeignProfile = ({ backArrowHandle }) => {
     if (userId) {
       navigation.navigate("Chats Screen", {
         screen: "Chats",
-        params: { selectedUserId: userId, chatUsers: [userData.userId, userId], chatId },
+        params: { selectedUserId: userId, chatUsers: [userData.userId, userId], chatId,isGroupChat:false },
       });
       const newUsers = { [foreignUser.userId]: foreignUser };
       dispatch(setStoredUsers({ newUsers }));
