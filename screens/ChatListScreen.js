@@ -43,15 +43,7 @@ const ChatListScreen = ({navigation, route}) => {
     const userChats = useSelector(getChats);
 
     
-  
 
-    
-
-   
-
-
-    
-   
      
     useEffect(()=>{
 
@@ -150,9 +142,10 @@ const ChatListScreen = ({navigation, route}) => {
           }
 
           // console.log(chatData.latestMessageText);
+          console.log(chatData.users);
           
-          if(!otherUser){
-            return;
+          if(!chatData.users){
+            return ;
           }
        
           return <ActiveChats 

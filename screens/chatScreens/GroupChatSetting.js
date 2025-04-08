@@ -79,7 +79,11 @@ const GroupChatSetting = ({route,navigation}) => {
             }finally{
                 setIsLoading(false);
             }
-    },[navigation,isLoading]);
+    },[navigation,chatData]);
+
+
+
+    
     
 
 
@@ -133,7 +137,7 @@ const GroupChatSetting = ({route,navigation}) => {
                 <Input
                     id="chatName"
                     label="Chat Name"
-                    inputOption={{autoCapitalize:"none",allwEmpty:false}}
+                    inputOption={{autoCapitalize:"none",allwEmpty:false,autoCorrect:false}}
                     initialValue={chatData.chatName}
                     onInuptChange={inputChangeHandler}
                     error={formValues.values['chatName']}

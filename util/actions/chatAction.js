@@ -108,7 +108,7 @@ export const removeUserFromChat = async(userLoggedInData,userToRemoveData, chatD
      const userToRemoveId = userToRemoveData.userId;
      const newUsers = chatData.users.filter(uid => uid !== userToRemoveId );
      
-     if(newUsers > 1){
+    //  if(newUsers.length > 1){
 
         await updateChatData(chatData.key, userLoggedInData.userId, {users: newUsers} );
     
@@ -128,9 +128,9 @@ export const removeUserFromChat = async(userLoggedInData,userToRemoveData, chatD
     
         await sendInfoMessage(chatData.key,userLoggedInData.userId,messageText);
 
-     }else{
-        Alert.alert("can't delete or leave group under 2 pepole","i don't handle it yet");
-     }
+    //  }else{
+    //     Alert.alert("can't delete or leave group under 2 pepole","i don't handle it yet");
+    //  }
     
 }
 

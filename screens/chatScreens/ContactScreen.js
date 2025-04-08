@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
@@ -27,7 +27,7 @@ const ContactScreen = ({route,navigation}) => {
 
     const chatId = route.params.chatId; 
 
-    const chatData = chatId && myChats[chatId];
+    const chatData = useMemo(() => myChats[chatId], [myChats, chatId]);
     
 
   
@@ -51,6 +51,7 @@ const ContactScreen = ({route,navigation}) => {
                 
 
                 await removeUserFromChat(userData,otherUser, chatData);
+                
                
 
                 navigation.goBack();
@@ -60,11 +61,12 @@ const ContactScreen = ({route,navigation}) => {
                 setIsLoading(false);
             }
     },[navigation,chatData]);
+
     
   return (
          <ScrollView style={{flex:1}}>
             <View style={styles.root}>
-                <TouchableOpacity onPress={()=>navigation.navigate('Chats')} style={{marginTop:8}}>
+                <TouchableOpacity onPress={()=>navigation.goBack()} style={{marginTop:8}}>
                     <Ionicons name="arrow-back" size={32} color="black" />
                 </TouchableOpacity>
                 <Text  style={styles.text}>Contact Info</Text>
