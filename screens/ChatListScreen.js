@@ -41,6 +41,10 @@ const ChatListScreen = ({navigation, route}) => {
     );
 
     const userChats = useSelector(getChats);
+    const HaveChats = userChats && userChats.find(chat => chat.users.includes(userData.userId));
+  
+   
+   
 
     
 
@@ -116,7 +120,7 @@ const ChatListScreen = ({navigation, route}) => {
        </View>
        }
 
-      { !isLoading && userChats.length !== 0 &&
+      { !isLoading && HaveChats &&
         <FlatList 
         data={userChats}
         keyExtractor={(item) => item.key}
@@ -144,9 +148,12 @@ const ChatListScreen = ({navigation, route}) => {
           // console.log(chatData.latestMessageText);
           // console.log(chatData.users);
           
-          if(!chatData.users){
+          if(!chatData){
             return ;
           }
+          else if (!chatData.users.includes(userData.userId)) {
+            return;
+        }
 
        
           return <ActiveChats 
@@ -175,7 +182,7 @@ const ChatListScreen = ({navigation, route}) => {
 
 
       {
-        !isLoading &&  userChats.length === 0 &&
+        !isLoading &&  !HaveChats  &&
         (
             <View style={styles.notFound}>
                 <Ionicons name="people" size={55} color="grey" />

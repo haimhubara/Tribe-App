@@ -213,6 +213,9 @@ const ChatScreen = ({ navigation, route }) => {
               if(message.type && message.type === 'info'){
                 messageType = 'info';
               }
+              else if(message.type && message.type === 'start'){
+                messageType = 'start'
+              }
               else if(isOwnMessage){
                 messageType = "myMessage"
               }else{
