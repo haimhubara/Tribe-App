@@ -311,7 +311,7 @@ const WellcomeNavigation = () => {
       return () => {
           unsubscribeUserChat();
       };
-  }, [dispatch,userData,storedUsers]);
+  }, [dispatch,storedUsers]);
   
 
 

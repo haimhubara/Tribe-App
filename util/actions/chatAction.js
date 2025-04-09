@@ -1,4 +1,4 @@
-import { getDatabase, ref, push, set, child, update } from "firebase/database";
+import { getDatabase, ref, push, set, child, update, remove } from "firebase/database";
 import { getFirebaseApp } from "../firebase";
 import { deleteUserChat, getUserChats } from "./userAction";
 import { Alert } from "react-native";
@@ -105,11 +105,9 @@ export const updateChatData = async(chatId, userId, chatData) => {
 }
 
 export const removeUserFromChat = async(userLoggedInData,userToRemoveData, chatData) => {
-     const userToRemoveId = userToRemoveData.userId;
-     const newUsers = chatData.users.filter(uid => uid !== userToRemoveId );
-     
-    //  if(newUsers.length > 1){
-
+        const userToRemoveId = userToRemoveData.userId;
+        const newUsers = chatData.users.filter(uid => uid !== userToRemoveId );
+        
         await updateChatData(chatData.key, userLoggedInData.userId, {users: newUsers} );
     
         const userChats = await getUserChats(userToRemoveId);
@@ -122,17 +120,39 @@ export const removeUserFromChat = async(userLoggedInData,userToRemoveData, chatD
                 break;
             }
         }
+
+        if(newUsers.length === 0 ){
+            await deleteChat(chatData.key);
+            return;
+         }
+         
         const messageText = userLoggedInData.userId === userToRemoveData.userId 
         ? `${userLoggedInData.firstName} leave the chat` 
         : `${userLoggedInData.firstName} removed ${userToRemoveData.firstName} from the chat`
     
         await sendInfoMessage(chatData.key,userLoggedInData.userId,messageText);
 
-    //  }else{
-    //     Alert.alert("can't delete or leave group under 2 pepole","i don't handle it yet");
-    //  }
-    
+   
 }
+
+
+export const deleteChat = async (chatId) => {
+    try {
+      const app = getFirebaseApp();
+      const dbRef = ref(getDatabase(app));
+      const chatsRef = child(dbRef, `chats/${chatId}`);
+      const messageRef = child(dbRef, `messages/${chatId}`);
+  
+        await remove(chatsRef);
+        await remove(messageRef);
+   
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+};
+
+
 
 
 export const addUsersToChat = async (userLoggedInData, usersToAddData, chatData) => {
@@ -180,3 +200,5 @@ export const addUsersToChat = async (userLoggedInData, usersToAddData, chatData)
       throw error;
     }
   };
+
+

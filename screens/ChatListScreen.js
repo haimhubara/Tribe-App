@@ -142,11 +142,12 @@ const ChatListScreen = ({navigation, route}) => {
           }
 
           // console.log(chatData.latestMessageText);
-          console.log(chatData.users);
+          // console.log(chatData.users);
           
           if(!chatData.users){
             return ;
           }
+
        
           return <ActiveChats 
             imageSource={image ? image : defaultImage}
