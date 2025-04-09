@@ -3,8 +3,10 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { GlobalStyles } from '../constants/styles';
 import ImageToShow from './imagesAndVideo/ImageToShow';
 import { useNavigation } from '@react-navigation/native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import defaultImage from "../assets/images/userImage.jpeg"
 
-const ActiveChats = ({ firstName, lastName, lastMessage, imageSource, startChatHandle,updatedAt }) => {
+const ActiveChats = ({title ,lastMessage, imageSource, startChatHandle,updatedAt, type, isChecked }) => {
   const navigation = useNavigation();
 
   const date = new Date(updatedAt);
@@ -14,23 +16,40 @@ const ActiveChats = ({ firstName, lastName, lastMessage, imageSource, startChatH
     year: "numeric"
   });
 
+
   return (
     <Pressable onPress={startChatHandle} accessibilityRole="button">
       {({ pressed }) => (
         <View style={[styles.root, pressed && styles.clicked]}>
           <ImageToShow
-              imageUrl={imageSource? imageSource : null} 
+              imageUrl={imageSource? imageSource : defaultImage} 
              imageStyle={[styles.image, { overflow: 'hidden' }]}
           />
           <View style={styles.infoContainer}>
-            <Text style={styles.name} numberOfLines={1}>{firstName} {lastName}</Text>
+            <Text style={styles.name} numberOfLines={1}>{title}</Text>
             <Text style={styles.message} numberOfLines={1}></Text>
             <View>
                 <Text style={styles.lastMessage} numberOfLines={1}>{lastMessage}</Text>
             </View>
           </View>
           <View style={styles.timeContainer}>
-            <Text style={styles.time} numberOfLines={1}>{formattedDate}</Text>
+            {
+              type ==="checkBox" && 
+              <View style={[styles.iconContainer,isChecked && styles.checkedStyle]}>
+                  <Ionicons name="checkmark" size={18} color="white" />
+              </View>
+            }
+            {
+              type !== "checkBox" && type !== 'link' && type !== 'blank' && 
+              <Text style={styles.time} numberOfLines={1}>{formattedDate}</Text>
+            }
+            {
+              type === "link" &&
+              <View >
+                  <Ionicons name="chevron-forward-outline" size={18} color={GlobalStyles.colors.gery} />
+             </View>
+            }
+            
           </View>
         </View>
       )}
@@ -92,6 +111,17 @@ const styles = StyleSheet.create({
     letterSpacing:0.3,
     marginTop: 4,
 
+  },
+  iconContainer:{
+    marginRight:10,
+    borderWidth:1,
+    borderRadius:50,
+    borderColor:GlobalStyles.colors.lightGrey,
+    backgroundColor:'white'
+  },
+  checkedStyle:{
+    backgroundColor:GlobalStyles.colors.primary,
+    borderColor:'transparent'
   }
 });
 

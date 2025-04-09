@@ -7,7 +7,7 @@ export const validateString = (inputId,inputValue) =>{
       };
       if(inputValue !== ''){
           constraints.format= {
-            pattern: "[a-z]+",
+            pattern: "^[a-zA-Zא-ת]+$",
             flags: "i",
             message: "value can only contain letters"
 
@@ -180,3 +180,15 @@ export const validateLocation = (inputId, inputValue) => {
   };
   return validate({ [inputId]: inputValue }, { [inputId]: constraints });
 }
+
+export const validateChatName = (inputId, inputValue) => {
+  const constraints = {
+    length: {
+      minimum: 1,
+      message: "Chat name must be not empty"
+    }
+  };
+
+  const validationResult = validate({ [inputId]: inputValue }, { [inputId]: constraints });
+  return validationResult && validationResult[inputId];
+};

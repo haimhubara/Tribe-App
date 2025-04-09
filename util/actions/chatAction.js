@@ -1,7 +1,9 @@
-import { getDatabase, ref, push, set, child, update } from "firebase/database";
+import { getDatabase, ref, push, set, child, update, remove } from "firebase/database";
 import { getFirebaseApp } from "../firebase";
+import { deleteUserChat, getUserChats } from "./userAction";
+import { Alert } from "react-native";
 
-export const createChat = async (loggedInUserId, chatData) => {
+export const createChat = async (loggedInUserId, chatData, chatName,isGroupChat) => {
 
     const covertChatData = {
         users:chatData
@@ -15,6 +17,14 @@ export const createChat = async (loggedInUserId, chatData) => {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
     };
+
+    if(chatName){
+        newChatData.chatName = chatName;
+    }
+
+    if(isGroupChat){
+        newChatData.isGroupChat = isGroupChat;
+    }
 
     const app = getFirebaseApp();
     const dbRef = ref(getDatabase(app));
@@ -31,15 +41,19 @@ export const createChat = async (loggedInUserId, chatData) => {
 
 
 export const sendTextMessage = async(chatId,senderId,messageText, replyTo) => {
-    await sendMessage(chatId,senderId, messageText, null,replyTo);
+    await sendMessage(chatId,senderId, messageText, null,replyTo,null);
 }
 
 export const sendImageMessage = async(chatId,senderId,imageUrl, replyTo) => {
-    await sendMessage(chatId,senderId, 'Image', imageUrl,replyTo);
+    await sendMessage(chatId,senderId, 'Image', imageUrl,replyTo,null);
+}
+
+export const sendInfoMessage = async(chatId,senderId,messageText,) => {
+    await sendMessage(chatId,senderId, messageText, null,null,"info");
 }
 
 
-const sendMessage = async (chatId, senderId, messageText, imageUrl, replyTo) => {
+const sendMessage = async (chatId, senderId, messageText, imageUrl, replyTo, type) => {
     const app = getFirebaseApp();
     const dbRef = ref(getDatabase());
     const messagesRef = child(dbRef,`messages/${chatId}`);
@@ -57,6 +71,9 @@ const sendMessage = async (chatId, senderId, messageText, imageUrl, replyTo) => 
     if(imageUrl){
         messageData.imageUrl = imageUrl
     }
+    if(type){
+        messageData.type = type;
+    }
 
     await push(messagesRef,messageData);
 
@@ -68,3 +85,120 @@ const sendMessage = async (chatId, senderId, messageText, imageUrl, replyTo) => 
 
     })
 }
+
+export const updateChatData = async(chatId, userId, chatData) => {
+    try {
+            const app = getFirebaseApp();
+            const dbRef = ref(getDatabase(app));
+            const chatRef = child(dbRef,`chats/${chatId}`);
+
+            await update(chatRef, {
+                ...chatData,
+                updatedAt: new Date().toISOString(),
+                updatedBy:userId
+
+            })
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const removeUserFromChat = async(userLoggedInData,userToRemoveData, chatData) => {
+        const userToRemoveId = userToRemoveData.userId;
+        const newUsers = chatData.users.filter(uid => uid !== userToRemoveId );
+        
+        await updateChatData(chatData.key, userLoggedInData.userId, {users: newUsers} );
+    
+        const userChats = await getUserChats(userToRemoveId);
+    
+        for(const key in userChats){
+            const currentChatId = userChats[key];
+    
+            if(currentChatId === chatData.key){
+                await deleteUserChat(userToRemoveId,key);
+                break;
+            }
+        }
+
+        if(newUsers.length === 0 ){
+            await deleteChat(chatData.key);
+            return;
+         }
+         
+        const messageText = userLoggedInData.userId === userToRemoveData.userId 
+        ? `${userLoggedInData.firstName} leave the chat` 
+        : `${userLoggedInData.firstName} removed ${userToRemoveData.firstName} from the chat`
+    
+        await sendInfoMessage(chatData.key,userLoggedInData.userId,messageText);
+
+   
+}
+
+
+export const deleteChat = async (chatId) => {
+    try {
+      const app = getFirebaseApp();
+      const dbRef = ref(getDatabase(app));
+      const chatsRef = child(dbRef, `chats/${chatId}`);
+      const messageRef = child(dbRef, `messages/${chatId}`);
+  
+        await remove(chatsRef);
+        await remove(messageRef);
+   
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+};
+
+
+
+
+export const addUsersToChat = async (userLoggedInData, usersToAddData, chatData) => {
+    const existingUsers = Object.values(chatData.users);
+    const newUsers = [];
+    let userAddadName = "";
+
+    for (const userToAdd of usersToAddData) {
+        const userToAddId = userToAdd.userId;
+        if (existingUsers.includes(userToAddId)) {
+            continue;
+        }
+
+        newUsers.push(userToAddId);
+        await addUserChat(userToAddId, chatData.key);
+
+        userAddadName =`${userToAdd.firstName} ${userToAdd.lastName}`
+    }
+
+    if(newUsers.length === 0){
+        return;
+    }
+    await updateChatData(chatData.key,userLoggedInData.userId,{users:existingUsers.concat(newUsers)});
+
+    const moreUsers = newUsers.length > 1 ? `and ${newUsers.length -1} others ` :''
+    const messageText = `${userLoggedInData.firstName} ${userLoggedInData.lastName} added ${moreUsers}to the activity`
+    await sendInfoMessage(chatData.key,userLoggedInData.userId,messageText);
+
+
+
+}
+
+
+
+  export const addUserChat = async (userId,chatId) => {
+    try {
+      const app = getFirebaseApp();
+      const dbRef = ref(getDatabase(app));
+      const chatsRef = child(dbRef, `userChats/${userId}`);
+  
+        await push(chatsRef,chatId);
+   
+    } catch (error) {
+      console.error("Error fetching user chats:", error);
+      throw error;
+    }
+  };
+
+

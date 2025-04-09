@@ -1,15 +1,16 @@
-import { View,Text,StyleSheet, TextInput, FlatList, Platform, ActivityIndicator } from "react-native"
+import { View,Text,StyleSheet, TextInput, FlatList, Platform, ActivityIndicator, TouchableOpacity } from "react-native"
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect, useState } from "react";
 import ActiveChats from "../components/ActiveChat";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { searchUsers } from "../util/actions/userAction";
 import { GlobalStyles } from "../constants/styles";
+import PageContainer from "../components/PageContainer";
 
 import defaultImage from "../assets/images/userImage.jpeg"
 import { useSelector } from "react-redux";
 import { createSelector } from 'reselect';
-import { useFocusEffect } from "@react-navigation/native";
+
 
 
 const ChatListScreen = ({navigation, route}) => {
@@ -26,6 +27,8 @@ const ChatListScreen = ({navigation, route}) => {
 
     
     const { selectedUserId } = route?.params || {};
+    const { selectedUsers } = route?.params || {};
+    const { chatName } = route?.params || {};
 
 
 
@@ -39,17 +42,24 @@ const ChatListScreen = ({navigation, route}) => {
 
     const userChats = useSelector(getChats);
 
-
     
-   
+
      
     useEffect(()=>{
 
-      if(!selectedUserId){
-        return
+      if(!selectedUserId && !selectedUsers){
+        return;
       }
 
-      const chatUsers = [selectedUserId,userData.userId];
+      let chatUsers = [];
+      if(selectedUsers){
+        chatUsers = [ ...selectedUsers,userData.userId];
+      }
+      if(selectedUserId){
+        chatUsers = [ selectedUserId,userData.userId];
+      }
+
+     
       // console.log(chatUsers);
 
       // const navigationProps = {
@@ -60,7 +70,9 @@ const ChatListScreen = ({navigation, route}) => {
       navigation.navigate("Chat",{
         selectedUserId,
         chatUsers,
-        chatId:route?.params?.chatId
+        chatId:route?.params?.chatId,
+        isGroupChat: selectedUsers !== undefined,
+        chatName
       });
 
     },[route?.params])
@@ -76,18 +88,28 @@ const ChatListScreen = ({navigation, route}) => {
       <View style={styles.root}>
           <Text  style={styles.text}>Chats</Text>
       </View>
-      
-      <View style={[styles.searchContainer, Platform.OS === 'ios' && styles.inputIOS,Platform.OS==='web' &&{padding:10}]}>
-          <Ionicons name="search" size={16} color="grey" />
-          <TextInput placeholder="Search"
-          style={{flex:1}}
-          onChangeText={(data)=>{setSearch(data)}}
-          value={search}
-          autoCorrect={false}
-          autoCapitalize="none"
-          autoComplete="off" 
-          />
-      </View>
+      <PageContainer>
+
+          <View>
+              <TouchableOpacity onPress={()=>{navigation.navigate("New Group Chat")}}>
+                  <Text style={{color:GlobalStyles.colors.blue, fontSize:17}}>New Group</Text>
+              </TouchableOpacity>
+          </View>
+        
+
+          <View style={[styles.searchContainer, Platform.OS === 'ios' && styles.inputIOS,Platform.OS==='web' &&{padding:10}]}>
+              <Ionicons name="search" size={16} color="grey" />
+              <TextInput placeholder="Search"
+              style={{flex:1}}
+              onChangeText={(data)=>{setSearch(data)}}
+              value={search}
+              autoCorrect={false}
+              autoCapitalize="none"
+              autoComplete="off" 
+              />
+          </View>
+        </PageContainer>
+ 
       {isLoading && 
        <View style={{alignItems:'center',justifyContent:'center'}}>
            <ActivityIndicator size={'large'} color={GlobalStyles.colors.mainColor}/>
@@ -105,14 +127,31 @@ const ChatListScreen = ({navigation, route}) => {
           const chatId = chatData.key;
           const otherUserId = chatData.users.find(uid => uid !== userData.userId)
           const otherUser = storedUsers[otherUserId];
-          if(!otherUser){
-            return;
+          const isGroupChat = chatData.isGroupChat;
+
+          let title = "";
+          let image ="";
+          
+          if(isGroupChat){
+            title=chatData.chatName;
+            image = chatData.chatImage;
           }
+          else{
+              title =`${otherUser.firstName} ${otherUser.lastName}`
+              image=otherUser.images['firstImage'];
+          }
+
+          // console.log(chatData.latestMessageText);
+          // console.log(chatData.users);
+          
+          if(!chatData.users){
+            return ;
+          }
+
        
           return <ActiveChats 
-            imageSource={otherUser.images['firstImage']}
-             firstName={otherUser.firstName}
-             lastName={otherUser.lastName}
+            imageSource={image ? image : defaultImage}
+            title={title}
              lastMessage={chatData.latestMessageText || "New chat"}
              updatedAt={chatData.updatedAt}
               startChatHandle={()=> {
@@ -120,7 +159,10 @@ const ChatListScreen = ({navigation, route}) => {
                   screen: "Chat",
                   params: { chatId:chatId,
                     selectedUserId:otherUserId,
-                    chatUsers:[otherUserId,userData.userId]
+                    chatUsers:chatData.users,
+                    chatName:chatData.chatName,
+                    isGroupChat : chatData.isGroupChat
+
                   }
                 })
               }}
@@ -159,8 +201,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#ededed',
     padding: 2,
-    margin: 16,
     borderRadius: 8,
+    marginVertical:16,
     borderWidth: 0.1,
     marginBottom: 20,
   },

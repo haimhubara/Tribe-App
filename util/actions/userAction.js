@@ -1,5 +1,6 @@
 import { getFirestore, doc, getDoc, query, startAt, endAt,getDocs, collection, orderBy } from "firebase/firestore";
 import { getFirebaseApp } from "../firebase";
+import { child, get, getDatabase, ref, remove } from "firebase/database";
 
 export const getUserData = async (userId) => {
     try {
@@ -18,6 +19,41 @@ export const getUserData = async (userId) => {
         return null;
     }
 };
+
+export const getUserChats = async (userId) => {
+    try {
+      const app = getFirebaseApp();
+      const dbRef = ref(getDatabase(app));
+      const userChatsRef = child(dbRef, `userChats/${userId}`);
+      const snapshot = await get(userChatsRef);
+  
+      if (!snapshot.exists()) {
+        return null; 
+      }
+  
+      return snapshot.val();
+    } catch (error) {
+      console.error("Error fetching user chats:", error);
+      return null;
+    }
+  };
+
+
+  export const deleteUserChat = async (userId,key) => {
+    try {
+      const app = getFirebaseApp();
+      const dbRef = ref(getDatabase(app));
+      const chatsRef = child(dbRef, `userChats/${userId}/${key}`);
+  
+        await remove(chatsRef);
+   
+    } catch (error) {
+      console.error("Error fetching user chats:", error);
+      throw error;
+    }
+  };
+
+
 
 
 

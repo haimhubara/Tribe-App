@@ -30,7 +30,7 @@ const MenuItem = ({text, onSelect, iconPack, iconName}) => {
 }
 
 const Bubble = ({text, type, date, setReply, replyingTo, name, imageUrl}) => {
-
+    
     const bubbleStyle = {...styles.container}
     const textStyle = {... styles.text}
     const wrappreStyle = {... styles.wrappreStyle}
@@ -78,9 +78,14 @@ const Bubble = ({text, type, date, setReply, replyingTo, name, imageUrl}) => {
             bubbleStyle.backgroundColor = '#EEEEEE';
             isNeedPageContainer=false;
             textStyle.fontSize = 10;
+             break;
 
-            
-                break;
+        case "info":
+            bubbleStyle.backgroundColor = 'white';
+            bubbleStyle.alignItems ="center";
+           
+            break;
+        
     
 
         default:
@@ -106,7 +111,7 @@ const Bubble = ({text, type, date, setReply, replyingTo, name, imageUrl}) => {
                 <View style={bubbleStyle}>
 
                     {
-                        name && <Text style={styles.nameText}>{name}</Text>
+                        name && type !== "info" && <Text style={styles.nameText}>{name}</Text>
                     }
 
                     {
@@ -125,7 +130,7 @@ const Bubble = ({text, type, date, setReply, replyingTo, name, imageUrl}) => {
                         <Image style={styles.image} source={{uri:imageUrl}}/>
                     }
 
-                { dateString &&
+                { dateString && type !== "info" && 
                         <View style={styles.timeContainer}>
                             <Text style={styles.time}>{dateString}</Text>
                         </View>
