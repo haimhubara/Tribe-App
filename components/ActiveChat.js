@@ -16,14 +16,35 @@ const ActiveChats = ({title ,lastMessage, imageSource, startChatHandle,updatedAt
     year: "numeric"
   });
 
+  let rootStyle = {...styles.root}
+
+  switch(type){
+   
+    case "checkBox":
+      rootStyle.flexDirection = 'row';
+      rootStyle.alignItems = 'center';
+      rootStyle.backgroundColor = '#f8f8f8';
+      rootStyle.borderRadius = 12;
+      rootStyle.marginHorizontal = 16;
+      rootStyle.marginVertical = 8;
+      rootStyle.paddingVertical = 12;
+      rootStyle.paddingHorizontal = 14;
+      rootStyle.shadowColor = '#000';
+      rootStyle.shadowOffset = { width: 0, height: 1 };
+      rootStyle.shadowOpacity = 0.08;
+      rootStyle.shadowRadius = 4;
+      rootStyle.elevation = 2;    
+      break;
+  }
+
 
   return (
     <Pressable onPress={startChatHandle} accessibilityRole="button">
       {({ pressed }) => (
-        <View style={[styles.root, pressed && styles.clicked]}>
+        <View style={[rootStyle, pressed && styles.clicked]}>
           <ImageToShow
               imageUrl={imageSource? imageSource : defaultImage} 
-             imageStyle={[styles.image, { overflow: 'hidden' }]}
+             imageStyle={[styles.image, type === 'checkBox'? undefined : { overflow: 'hidden' }]}
           />
           <View style={styles.infoContainer}>
             <Text style={styles.name} numberOfLines={1}>{title}</Text>

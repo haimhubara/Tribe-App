@@ -15,6 +15,8 @@ const FriendRequestComponent = ({ user, activityId }) => {
   const [isFriend, setIsFriend] = useState(false);
   const [isRequestApproved, setIsRequestApproved] = useState(false);
   const userData = useSelector(state => state.auth.userData);
+
+  
   const getChats = createSelector(
     state => state.chats.chatsData, 
     chatsData => Object.values(chatsData).sort((a,b)=>{

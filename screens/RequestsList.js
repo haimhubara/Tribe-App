@@ -1,12 +1,20 @@
 import { View, Text, StyleSheet, FlatList, ActivityIndicator } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState, useEffect } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { arrayRemove, arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
 import FriendRequestComponent from "../components/FriendRequestComponent";
 import Header from "../components/Header";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import firebaseConfig from "../util/firebaseConfig.json"; // קובץ ההגדרות של Firebase
+import ActiveChats from "../components/ActiveChat";
+import { createSelector } from "@reduxjs/toolkit";
+import { useSelector } from "react-redux";
+import SubmitButton from "../components/buttons/SubmitButton";
+import { GlobalStyles } from "../constants/styles";
+import PageContainer from "../components/PageContainer";
+import { addUsersToChat } from "../util/actions/chatAction";
+import { getUserData } from "../util/actions/userAction";
 
 // אתחול Firestore
 const app = initializeApp(firebaseConfig);
@@ -17,6 +25,21 @@ const RequestsList = ({ navigation, route }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [usersData, setUsersData] = useState([]);
   const [activityRequests, setActivityRequests] = useState([]);
+  const [buttonLoading, setButtonLoading] = useState(false);
+  const [activityData, setActivityData] = useState({});
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const userData = useSelector(state => state.auth.userData);
+  
+  const getChats = createSelector(
+    state => state.chats.chatsData, 
+    chatsData => Object.values(chatsData).sort((a,b)=>{
+      return new Date(b.updatedAt) - new Date(a.updatedAt);
+    }) 
+  );
+
+  const storedChats = useSelector(getChats);
+
+  const isGroupChatDisabeld = selectedUsers.length === 0;
 
   useEffect(() => {
     const fetchActivityRequests = async () => {
@@ -32,6 +55,9 @@ const RequestsList = ({ navigation, route }) => {
 
         if (docSnap.exists()) {
           const data = docSnap.data();
+
+          setActivityData(data);
+          
           //console.log("Activity Data:", data);
 
           setActivityRequests(data.activityRequests || []);
@@ -48,6 +74,19 @@ const RequestsList = ({ navigation, route }) => {
 
     fetchActivityRequests();
   }, [activityId]);
+
+  const addUserToSelectedArray = (userId) => {
+    const newSelectedUsers = selectedUsers.includes(userId) 
+    ? selectedUsers.filter(id => id !== userId) : selectedUsers.concat(userId);
+
+    setSelectedUsers(newSelectedUsers);
+  
+  }
+
+
+  
+  
+
 
   const fetchUsersDetails = async (userIds) => {
     if (!userIds.length) {
@@ -80,8 +119,54 @@ const RequestsList = ({ navigation, route }) => {
     navigation.goBack();
   }
 
+  const ApproveRequest = async () => {
+      try {
+        setButtonLoading(true);
+        const docRef = doc(db, "activities", activityId);
+        const docSnap = await getDoc(docRef);
+  
+        if (!docSnap.exists()) {
+          console.error("Activity not found");
+          return;
+        }
+       
+        const activityData = docSnap.data();
+        if (!activityData.activityRequests) {
+          await updateDoc(docRef, { activityRequests: [] });
+        }
+        const usersToAdd = [];
+        for (const userId of selectedUsers){
+          const currentUser = await getUserData(userId);
+          usersToAdd.push(currentUser);
+         
+          await updateDoc(docRef, {
+            activityParticipants: arrayUnion(userId),
+          });
+    
+          await updateDoc(docRef, {
+            activityRequests: arrayRemove(userId),
+          });
+    
+          await updateDoc(doc(db, "users", userId), {
+            activities: arrayUnion(activityId),
+          });
+        }
+
+       const currentchat = storedChats && storedChats.find(chat => chat.key === activityData.chatId);
+      
+       await addUsersToChat(userData, usersToAdd, currentchat);
+
+       setUsersData([]);
+       setSelectedUsers([]);
+       setButtonLoading(false);
+
+      } catch (e) {
+        console.error("Error updating document:", e);
+      }
+    };
+
   return (
-    <View style={{ flex: 1 }}>
+    < >
       <View style={styles.root}>
         <Header title="Requests List" onBackPress={backArrowHandle} />
       </View>
@@ -91,24 +176,52 @@ const RequestsList = ({ navigation, route }) => {
           <ActivityIndicator size="large" color="#0000ff" />
         </View>
       ) : usersData.length > 0 ? (
-        <FlatList
-          data={usersData} // מציגים רק את הרשימה של בקשות הצטרפות
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <FriendRequestComponent user={item} activityId={activityId} />}
-        />
+        <FlatList 
+             data={usersData}
+             keyExtractor={(item) => item.userId} 
+             renderItem={({ item }) => 
+             <ActiveChats 
+                startChatHandle={() => addUserToSelectedArray(item.userId)}
+                imageSource={item.images['firstImage']}
+                title={`${item.firstName} ${item.lastName}`}
+                type='checkBox'
+                isChecked={selectedUsers.includes(item.userId)}
+                       
+            />}
+         />
       ) : (
         <View style={styles.notFound}>
           <Ionicons name="people" size={55} color="grey" />
           <Text style={styles.notFoundText}>No Requests Yet</Text>
         </View>
       )}
-    </View>
+      <PageContainer>
+        {
+          buttonLoading && 
+          <View >
+              <ActivityIndicator
+              size={'small'}
+              color={GlobalStyles.colors.mainColor}
+              />
+          </View>
+        }
+        <SubmitButton
+          title="Approve"
+          onPress={ApproveRequest}
+          color={GlobalStyles.colors.primary}
+          disabeld={isGroupChatDisabeld || isLoading}
+          style={{marginBottom:15,marginTop:10}}
+        
+        />
+      </PageContainer>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   root: {
-    marginTop: 32,
+    marginVertical: 32,
+    flexDirection:'row'
   },
   loader: {
     flex: 1,
