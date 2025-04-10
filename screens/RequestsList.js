@@ -98,14 +98,8 @@ const RequestsList = ({ navigation, route }) => {
       const users = [];
 
       for (const userId of userIds) {
-        const userRef = doc(db, "users", userId);
-        const userSnap = await getDoc(userRef);
-
-        if (userSnap.exists()) {
-          users.push({ id: userId, ...userSnap.data() });
-        } else {
-          console.warn(`User with ID ${userId} not found.`);
-        }
+          const currentUserData = await getUserData(userId);
+          users.push(currentUserData);
       }
 
       setUsersData(users);
@@ -135,7 +129,7 @@ const RequestsList = ({ navigation, route }) => {
         }
         const usersToAdd = [];
         for (const userId of selectedUsers){
-          const currentUser = await getUserData(userId);
+          const currentUser = usersData.find(user => user.userId === userId);
           usersToAdd.push(currentUser);
          
           await updateDoc(docRef, {
@@ -153,9 +147,10 @@ const RequestsList = ({ navigation, route }) => {
 
        const currentchat = storedChats && storedChats.find(chat => chat.key === activityData.chatId);
       
+      
        await addUsersToChat(userData, usersToAdd, currentchat);
 
-       setUsersData([]);
+       setUsersData(usersData.filter(user => !selectedUsers.includes(user.userId)));
        setSelectedUsers([]);
        setButtonLoading(false);
 
