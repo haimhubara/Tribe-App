@@ -7,7 +7,6 @@ import Header from "../components/Header";
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import firebaseConfig from "../util/firebaseConfig.json"; // קובץ ההגדרות של Firebase
-import ActiveChats from "../components/ActiveChat";
 import { createSelector } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
 import SubmitButton from "../components/buttons/SubmitButton";
@@ -180,11 +179,10 @@ const RequestsList = ({ navigation, route }) => {
              data={usersData}
              keyExtractor={(item) => item.userId} 
              renderItem={({ item }) => 
-             <ActiveChats 
-                startChatHandle={() => addUserToSelectedArray(item.userId)}
+             <FriendRequestComponent 
+                onPress={() => addUserToSelectedArray(item.userId)}
                 imageSource={item.images['firstImage']}
                 title={`${item.firstName} ${item.lastName}`}
-                type='checkBox'
                 isChecked={selectedUsers.includes(item.userId)}
                        
             />}
