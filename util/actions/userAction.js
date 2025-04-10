@@ -69,7 +69,6 @@ export const getUserChats = async (userId) => {
                 if (userChats[chatKey] === chatKeyToDelete) {
                     const chatRefToDelete = child(userChatsRef, chatKey);
                     await remove(chatRefToDelete);  // Delete the chat reference
-                    console.log(`Deleted chat ${chatKeyToDelete} for user ${userId}`);
                 }
             }
         } else {

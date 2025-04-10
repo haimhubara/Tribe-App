@@ -550,34 +550,45 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
 
   const deleteActivity = async () => {
     try {
-      // const activityRef = doc(db, "activities", activityId);
-      // const activitySnap = await getDoc(activityRef);
-      // if (!activitySnap.exists()) return;
-
-      // const data = activitySnap.data();
-      // const allUserIds = [...(data.activityParticipants || []), ...(data.activityRequests || [])];
-      // for (const userId of allUserIds) {
-      //   await updateDoc(doc(db, "users", userId), {
-      //     activities: arrayRemove(activityId)
-      //   });
-      // }
-
-      // await deleteDoc(activityRef);
-
-       
-       const currentChat = userChats && userChats[chatId];
-       for (let i = 0; i < userToRemoveFromChatIds.length; i++) {
-        const userToRemoveId = userToRemoveFromChatIds[i];
-        await deleteUserChatV2(userToRemoveId,chatId);
-    }
+    
+      const activityRef = doc(db, "activities", activityId);
+      const activitySnap = await getDoc(activityRef);
+  
+    
+      if (!activitySnap.exists()) return;
+  
+      const data = activitySnap.data();
+      const allUserIds = [...(data.activityParticipants || []), ...(data.activityRequests || [])];
+  
       
-       await deleteFromActivity(currentChat);
-     
+      const updatePromises = allUserIds.map(userId =>
+        updateDoc(doc(db, "users", userId), {
+          activities: arrayRemove(activityId) 
+        })
+      );
+  
+   
+      await Promise.all(updatePromises);
+  
+   
+      await deleteDoc(activityRef);
+  
+  
+      const currentChat = userChats && userChats[chatId];
+  
+    
+      const removeChatPromises = userToRemoveFromChatIds.map(userToRemoveId =>
+        deleteUserChatV2(userToRemoveId, chatId)
+      );
+  
+      await Promise.all(removeChatPromises);
+  
+      await deleteFromActivity(currentChat);
+  
       Alert.alert("Deleted", "Activity deleted successfully.");
+      
       navigation.navigate("SearchScreen");
-
-      // delete group chat by data.chatId
-
+  
     } catch (error) {
       console.error("Error deleting activity:", error);
       Alert.alert("Error", "Something went wrong while deleting the activity.");

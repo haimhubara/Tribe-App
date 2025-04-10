@@ -63,13 +63,6 @@ const ChatListScreen = ({navigation, route}) => {
         chatUsers = [ selectedUserId,userData.userId];
       }
 
-     
-      // console.log(chatUsers);
-
-      // const navigationProps = {
-      //   newChatData : { users: chatUsers}
-      // }
-
 
       navigation.navigate("Chat",{
         selectedUserId,
@@ -94,12 +87,6 @@ const ChatListScreen = ({navigation, route}) => {
       </View>
       <PageContainer>
 
-          <View>
-              <TouchableOpacity onPress={()=>{navigation.navigate("New Group Chat")}}>
-                  <Text style={{color:GlobalStyles.colors.blue, fontSize:17}}>New Group</Text>
-              </TouchableOpacity>
-          </View>
-        
 
           <View style={[styles.searchContainer, Platform.OS === 'ios' && styles.inputIOS,Platform.OS==='web' &&{padding:10}]}>
               <Ionicons name="search" size={16} color="grey" />

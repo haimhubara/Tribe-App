@@ -112,7 +112,7 @@ const ContactScreen = ({route,navigation}) => {
                 }
 
                 {
-                    chatData && chatData.isGroupChat &&
+                    chatData && chatData.isGroupChat && chatData.ownerActivity === userData.userId &&
                     (
                         isLoading?
                         <ActivityIndicator
