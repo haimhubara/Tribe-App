@@ -412,6 +412,8 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, doc, getDoc, updateDoc, deleteDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import firebaseConfig from "../util/firebaseConfig.json";
 import { useSelector } from "react-redux";
+import { deleteFromActivity, removeUserFromChat } from "../util/actions/chatAction";
+import {  deleteUserChatV2 } from "../util/actions/userAction";
 
 const formatDateFromISO = (isoString) => {
   if (!isoString) return { date: "", day: "" };
@@ -440,6 +442,9 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
   const [userId, setUserId] = useState("");
   const [isPending, setIsPending] = useState(false);
   const [isParticipant, setIsParticipant] = useState(false);
+  const [chatId, setChatId] = useState("");
+  const [userToRemoveFromChatIds,setUserToRemoveFromChatIds] =  useState([])
+  const userChats = useSelector(state => state.chats.chatsData);
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
@@ -471,6 +476,10 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
           if (data.imageUrl) setActivityImage({ uri: data.imageUrl });
           setIsPending(data.activityRequests?.includes(myID));
           setIsParticipant(data.activityParticipants?.includes(myID));
+        
+          setChatId(data.chatId);
+          
+          setUserToRemoveFromChatIds(data.activityParticipants);
         }
       } catch (error) {
         console.error("Error fetching activity data:", error);
@@ -480,6 +489,7 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
     fetchActivityData();
   }, [activityId]);
 
+ 
   const handleEditClick = (id) => {
     if (id === "editButton") {
       navigation.navigate('AddNewEventScreen', {
@@ -487,7 +497,7 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
         name, location, description,
         date: new Date().toISOString(),
         time: new Date().toISOString(),
-        ages, gender, languages, categories, activityImage, selectedNumPartitions, myPage, activityId
+        ages, gender, languages, categories, activityImage, selectedNumPartitions, myPage, activityId, chatId
       });
     } else if (id === "participantsButton") {
       navigation.navigate('ParticipantsListScreen', { activityId, myPage });
@@ -540,22 +550,45 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
 
   const deleteActivity = async () => {
     try {
+    
       const activityRef = doc(db, "activities", activityId);
       const activitySnap = await getDoc(activityRef);
+  
+    
       if (!activitySnap.exists()) return;
-
+  
       const data = activitySnap.data();
       const allUserIds = [...(data.activityParticipants || []), ...(data.activityRequests || [])];
-      for (const userId of allUserIds) {
-        await updateDoc(doc(db, "users", userId), {
-          activities: arrayRemove(activityId)
-        });
-      }
-
+  
+      
+      const updatePromises = allUserIds.map(userId =>
+        updateDoc(doc(db, "users", userId), {
+          activities: arrayRemove(activityId) 
+        })
+      );
+  
+   
+      await Promise.all(updatePromises);
+  
+   
       await deleteDoc(activityRef);
+  
+  
+      const currentChat = userChats && userChats[chatId];
+  
+    
+      const removeChatPromises = userToRemoveFromChatIds.map(userToRemoveId =>
+        deleteUserChatV2(userToRemoveId, chatId)
+      );
+  
+      await Promise.all(removeChatPromises);
+  
+      await deleteFromActivity(currentChat);
+  
       Alert.alert("Deleted", "Activity deleted successfully.");
+      
       navigation.navigate("SearchScreen");
-
+  
     } catch (error) {
       console.error("Error deleting activity:", error);
       Alert.alert("Error", "Something went wrong while deleting the activity.");

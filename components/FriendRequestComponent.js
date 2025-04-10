@@ -6,11 +6,25 @@ import { useNavigation } from '@react-navigation/native'
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, getDoc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import firebaseConfig from "../util/firebaseConfig.json";
+import { addUsersToChat } from '../util/actions/chatAction'
+import { useSelector } from 'react-redux'
+import { createSelector } from '@reduxjs/toolkit'
 
 const FriendRequestComponent = ({ user, activityId }) => {
   const navigation = useNavigation();
   const [isFriend, setIsFriend] = useState(false);
   const [isRequestApproved, setIsRequestApproved] = useState(false);
+  const userData = useSelector(state => state.auth.userData);
+  const getChats = createSelector(
+    state => state.chats.chatsData, 
+    chatsData => Object.values(chatsData).sort((a,b)=>{
+      return new Date(b.updatedAt) - new Date(a.updatedAt);
+    }) 
+  );
+
+  const storedChats = useSelector(getChats);
+
+ 
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
@@ -54,6 +68,13 @@ const FriendRequestComponent = ({ user, activityId }) => {
       await updateDoc(doc(db, "users", myID), {
         activities: arrayUnion(activityId),
       });
+
+     activityData.activityParticipants
+     const currentchat = storedChats && storedChats.find(chat => chat.key === activityData.chatId);
+     const userToAddData = [];
+     userToAddData.push(user);
+     await addUsersToChat(userData, userToAddData, currentchat);
+     //activity owner.userID 
 
     } catch (e) {
       console.error("Error updating document:", e);

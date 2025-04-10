@@ -1,6 +1,6 @@
 import { getDatabase, ref, push, set, child, update, remove } from "firebase/database";
 import { getFirebaseApp } from "../firebase";
-import { deleteUserChat, getUserChats } from "./userAction";
+import { deleteUserChat, deleteUserChatV2, getUserChats } from "./userAction";
 import { Alert } from "react-native";
 
 export const createChat = async (loggedInUserId, chatData, chatName,isGroupChat) => {
@@ -24,6 +24,7 @@ export const createChat = async (loggedInUserId, chatData, chatName,isGroupChat)
 
     if(isGroupChat){
         newChatData.isGroupChat = isGroupChat;
+        newChatData.ownerActivity = loggedInUserId;
     }
 
     const app = getFirebaseApp();
@@ -52,6 +53,9 @@ export const sendInfoMessage = async(chatId,senderId,messageText,) => {
     await sendMessage(chatId,senderId, messageText, null,null,"info");
 }
 
+export const sendStartMessage = async(chatId,senderId,messageText,) => {
+    await sendMessage(chatId,senderId, messageText, null,null,"start");
+}
 
 const sendMessage = async (chatId, senderId, messageText, imageUrl, replyTo, type) => {
     const app = getFirebaseApp();
@@ -100,7 +104,7 @@ export const updateChatData = async(chatId, userId, chatData) => {
             })
 
     } catch (error) {
-        console.log(error);
+        console.log("updateChatData: ",error);
     }
 }
 
@@ -152,10 +156,27 @@ export const deleteChat = async (chatId) => {
     }
 };
 
+export const deleteFromActivity = async (chatData) => {
+    try {
+      const app = getFirebaseApp();
+      const dbRef = ref(getDatabase(app));
+      const chatsRef = child(dbRef, `chats/${chatData.key}`);
+      const messageRef = child(dbRef, `messages/${chatData.key}`);
+
+        await remove(chatsRef);
+        await remove(messageRef);
+   
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+};
+
 
 
 
 export const addUsersToChat = async (userLoggedInData, usersToAddData, chatData) => {
+
     const existingUsers = Object.values(chatData.users);
     const newUsers = [];
     let userAddadName = "";
@@ -178,7 +199,7 @@ export const addUsersToChat = async (userLoggedInData, usersToAddData, chatData)
     await updateChatData(chatData.key,userLoggedInData.userId,{users:existingUsers.concat(newUsers)});
 
     const moreUsers = newUsers.length > 1 ? `and ${newUsers.length -1} others ` :''
-    const messageText = `${userLoggedInData.firstName} ${userLoggedInData.lastName} added ${moreUsers}to the activity`
+    const messageText = `${userLoggedInData.firstName} ${userLoggedInData.lastName} added ${userAddadName} ${moreUsers}to the activity`
     await sendInfoMessage(chatData.key,userLoggedInData.userId,messageText);
 
 

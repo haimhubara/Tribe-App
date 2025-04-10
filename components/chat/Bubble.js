@@ -85,6 +85,12 @@ const Bubble = ({text, type, date, setReply, replyingTo, name, imageUrl}) => {
             bubbleStyle.alignItems ="center";
            
             break;
+        case  "start":
+            textStyle.color = "#65644A";
+            bubbleStyle.backgroundColor = GlobalStyles.colors.beige;
+            bubbleStyle.alignItems = 'center';
+            bubbleStyle.marginTop = 10;
+            break;
         
     
 
@@ -111,7 +117,7 @@ const Bubble = ({text, type, date, setReply, replyingTo, name, imageUrl}) => {
                 <View style={bubbleStyle}>
 
                     {
-                        name && type !== "info" && <Text style={styles.nameText}>{name}</Text>
+                        name && type !== "info" &&  type !== "start" && <Text style={styles.nameText}>{name}</Text>
                     }
 
                     {
@@ -130,7 +136,7 @@ const Bubble = ({text, type, date, setReply, replyingTo, name, imageUrl}) => {
                         <Image style={styles.image} source={{uri:imageUrl}}/>
                     }
 
-                { dateString && type !== "info" && 
+                { dateString && type !== "info" &&  type !== "start" && 
                         <View style={styles.timeContainer}>
                             <Text style={styles.time}>{dateString}</Text>
                         </View>

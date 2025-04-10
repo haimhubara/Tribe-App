@@ -41,6 +41,10 @@ const ChatListScreen = ({navigation, route}) => {
     );
 
     const userChats = useSelector(getChats);
+    const HaveChats = userChats && userChats.find(chat => chat.users.includes(userData.userId));
+  
+   
+   
 
     
 
@@ -58,13 +62,6 @@ const ChatListScreen = ({navigation, route}) => {
       if(selectedUserId){
         chatUsers = [ selectedUserId,userData.userId];
       }
-
-     
-      // console.log(chatUsers);
-
-      // const navigationProps = {
-      //   newChatData : { users: chatUsers}
-      // }
 
 
       navigation.navigate("Chat",{
@@ -90,12 +87,6 @@ const ChatListScreen = ({navigation, route}) => {
       </View>
       <PageContainer>
 
-          <View>
-              <TouchableOpacity onPress={()=>{navigation.navigate("New Group Chat")}}>
-                  <Text style={{color:GlobalStyles.colors.blue, fontSize:17}}>New Group</Text>
-              </TouchableOpacity>
-          </View>
-        
 
           <View style={[styles.searchContainer, Platform.OS === 'ios' && styles.inputIOS,Platform.OS==='web' &&{padding:10}]}>
               <Ionicons name="search" size={16} color="grey" />
@@ -116,7 +107,7 @@ const ChatListScreen = ({navigation, route}) => {
        </View>
        }
 
-      { !isLoading && userChats.length !== 0 &&
+      { !isLoading && HaveChats &&
         <FlatList 
         data={userChats}
         keyExtractor={(item) => item.key}
@@ -144,9 +135,12 @@ const ChatListScreen = ({navigation, route}) => {
           // console.log(chatData.latestMessageText);
           // console.log(chatData.users);
           
-          if(!chatData.users){
+          if(!chatData){
             return ;
           }
+          else if (!chatData.users.includes(userData.userId)) {
+            return;
+        }
 
        
           return <ActiveChats 
@@ -175,7 +169,7 @@ const ChatListScreen = ({navigation, route}) => {
 
 
       {
-        !isLoading &&  userChats.length === 0 &&
+        !isLoading &&  !HaveChats  &&
         (
             <View style={styles.notFound}>
                 <Ionicons name="people" size={55} color="grey" />

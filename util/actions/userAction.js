@@ -53,6 +53,33 @@ export const getUserChats = async (userId) => {
     }
   };
 
+  export const deleteUserChatV2 = async (userId, chatKeyToDelete) => {
+    try {
+        const app = getFirebaseApp();
+        const dbRef = ref(getDatabase(app));
+        const userChatsRef = child(dbRef, `userChats/${userId}`);
+
+        const snapshot = await get(userChatsRef);
+
+        if (snapshot.exists()) {
+            const userChats = snapshot.val();
+
+            // Iterate over all chat keys to find if any value equals chatKeyToDelete
+            for (const chatKey in userChats) {
+                if (userChats[chatKey] === chatKeyToDelete) {
+                    const chatRefToDelete = child(userChatsRef, chatKey);
+                    await remove(chatRefToDelete);  // Delete the chat reference
+                }
+            }
+        } else {
+            console.log(`No chats found for user ${userId}`);
+        }
+    } catch (error) {
+        console.error("Error deleting user chat:", error);
+        throw error;
+    }
+};
+
 
 
 

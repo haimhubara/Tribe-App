@@ -61,6 +61,8 @@ const GroupChatSetting = ({route,navigation}) => {
         }
     },[formValues]);
 
+    
+
 
     const hasChanges = () => {
         return formValues.actualValues.chatName !== chatData.chatName;
@@ -187,7 +189,7 @@ const GroupChatSetting = ({route,navigation}) => {
                  </View>
             }
 
-            {
+            {   chatData.ownerActivity !== userData.userId &&
                 <SubmitButton
                     title = "Leave chat"
                     color={GlobalStyles.colors.errorColorDark}

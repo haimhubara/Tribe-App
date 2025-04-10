@@ -7,6 +7,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, updateDoc, arrayRemove } from "firebase/firestore";
 import firebaseConfig from "../util/firebaseConfig.json";
+import { removeUserFromChat } from '../util/actions/chatAction';
+import { getActivityData } from '../util/actions/activityAction';
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -14,6 +16,7 @@ const db = getFirestore(app);
 const ParticipantComponent = ({ user, myPage, activityId, onUserRemoved }) => {
     const navigation = useNavigation();
     const userData = useSelector(state => state.auth.userData);
+    const userChats = useSelector(state => state.chats.chatsData);
 
     function openFriendProfileHandle() {
         if (userData.userId !== user.userId) {
@@ -22,7 +25,7 @@ const ParticipantComponent = ({ user, myPage, activityId, onUserRemoved }) => {
             });
         }
     }
-
+  
     // ✅ פופאפ אישור
     const confirmRemove = (userID) => {
         Alert.alert(
@@ -55,10 +58,18 @@ const ParticipantComponent = ({ user, myPage, activityId, onUserRemoved }) => {
             if (onUserRemoved) {
                 onUserRemoved(userID); // עדכון חיצוני אם צריך
             }
+            const currentActivity =  await getActivityData(activityId);
+            const currentChat = userChats && userChats[currentActivity.chatId];
+          
+           
+            await removeUserFromChat(userData,user, currentChat);
+            // remove the user with userID from the chat
         } catch (e) {
             console.error("Error updating document:", e);
         }
     };
+
+    
 
     return (
         <Pressable onPress={openFriendProfileHandle}>

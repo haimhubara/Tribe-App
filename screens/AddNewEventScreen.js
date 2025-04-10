@@ -22,6 +22,7 @@ import ImageGenerator from "../components/imagesAndVideo/ImageGenerator";
 import { uploadImageToCloudinary,deleteImageFromCloudinary } from "../components/Cloudinary";
 import { useSelector } from "react-redux";
 import LocationPicker from "../components/LocationPicker";
+import { createChat, sendStartMessage, updateChatData } from "../util/actions/chatAction";
 
 
 
@@ -41,6 +42,7 @@ const AddNewEventScreen = ({ navigation, route }) => {
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
   const [generatedImage, setGeneratedImage] = useState(null);
   const [location,setLocation]=useState(route.params?.location||null);
+
   
 
   const userData = useSelector(state => state.auth.userData);
@@ -160,6 +162,7 @@ const handleSubmit = async () => {
 
         if (route.params?.ifGoBack) {
             if (route.params?.activityId) {
+                //update activity
                 const docRef = doc(db, "activities", route.params?.activityId);
                 await updateDoc(docRef, {
                     name,
@@ -176,12 +179,23 @@ const handleSubmit = async () => {
                     location:location,
                     
                 });
+               
+                await updateChatData(route.params?.chatId, userData.userId, {chatImage:imageUrl,chatName:name});
+
                 alert("Event updated successfully!");
-                navigation.navigate("SearchScreen");
+                navigation.popToTop();
+                // navigation.navigate("SearchScreen");
             } else {
                 alert("Error: No activity ID provided.");
             }
         } else {
+
+          let chataData = [];
+          chataData.push(userData.userId);
+          const chatId = await createChat(userData.userId,chataData,name,true);
+          await sendStartMessage(chatId,userData.userId,`hi and wellcome to ${name} activity`);
+          await updateChatData(chatId, userData.userId, {chatImage:imageUrl});
+
           const docRef=await addDoc(collection(db, "activities"), {
                 name,
                 description,
@@ -190,6 +204,7 @@ const handleSubmit = async () => {
                 selectedNumPartitions,
                 gender: selectedGender,
                 ages,
+                chatId,
                 languages,
                 categories: selectedCategories,
                 imageUrl: imageUrl,
@@ -209,7 +224,8 @@ const handleSubmit = async () => {
 
             alert("Event created successfully!");
             resetForm();
-            navigation.navigate("Search");
+            // navigation.navigate("Search");
+             navigation.popToTop();
         }
     } catch (e) {
         console.error("Error adding document: " + route.params?.activityId, e);
