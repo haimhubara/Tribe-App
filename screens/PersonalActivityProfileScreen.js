@@ -535,6 +535,8 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
       await updateDoc(doc(db, "users", myID), {
         activities: arrayRemove(activityId),
       });
+       const currentChat = userChats && userChats[chatId];        
+       await removeUserFromChat(userData,userData, currentChat);
       setIsParticipant(false);
     } catch (e) {
       console.error("Error leaving activity:", e);
