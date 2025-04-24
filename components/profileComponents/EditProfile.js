@@ -136,7 +136,7 @@ const EditProfile = ({isEdit,setIsEdit}) => {
     <View style={styles.root}>
       <Header title="Edit Profile" onBackPress={onBackPress}/>
         
-         <SwapImages  isEdit={isEdit} imagess={userData.images}/>
+         <SwapImages  isEdit={isEdit} imagess={userData.images} videoUrl={userData.videoUrl}/>
         
          <PageContainer>
           

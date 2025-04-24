@@ -25,6 +25,7 @@ const ProfileComponent = ({ handleEditProfileClick, handleLogout }) => {
     return Math.floor(ageDifMs / (1000 * 60 * 60 * 24 * 365.25));
   };
 
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.imageContainer}>
@@ -33,6 +34,7 @@ const ProfileComponent = ({ handleEditProfileClick, handleLogout }) => {
           imagess={userData.images}
           imageStyle={styles.image}
           editStyle={{ display: "none" }}
+          videoUrl={userData.videoUrl}
         />
       </View>
 

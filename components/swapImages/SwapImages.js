@@ -3,20 +3,29 @@ import { useRef, useState, useMemo } from "react";
 import SwapImageItem from "./SwapImageItem";
 import Paginator from "./Paginator";
 
-const SwapImages = ({ editStyle, imagess,isEdit, setImages,uploadImagesHandle }) => {
+const SwapImages = ({ editStyle, imagess,isEdit, setImages,uploadImagesHandle,videoUrl }) => {
 
   const defaultImage = "https://via.placeholder.com/150/FFFFFF?text=No+Image"; 
 
   const images = useMemo(() => {
-    return Object.entries(imagess || {})
+    const imageItems = Object.entries(imagess || {})
       .map(([key, uri]) => ({
         id: key,
-        uri: uri 
+        uri: uri,
+        type: 'image'
       }))
-      .filter(image => isEdit || (image.uri && image.uri !== defaultImage)); 
-      
-}, [imagess,isEdit]);
- 
+      .filter(image => isEdit || (image.uri && image.uri !== defaultImage));
+  
+    const videoItem = videoUrl
+      ? [{
+          id: 'video',
+          uri: videoUrl,
+          type: 'video'
+        }]
+      : [];
+  
+    return [...imageItems, ...videoItem]; // אם אתה רוצה שהווידאו יופיע בסוף
+  }, [imagess, videoUrl, isEdit]);
 
   const scrollX = useRef(new Animated.Value(0)).current;
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -43,6 +52,7 @@ const SwapImages = ({ editStyle, imagess,isEdit, setImages,uploadImagesHandle })
             imageUri={item.uri} 
             imageId={item.id}
             setImages={setImages}
+            type={item.type}
             uploadImagesHandle={uploadImagesHandle}
           />
         )}

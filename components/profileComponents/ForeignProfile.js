@@ -106,6 +106,7 @@ const ForeignProfile = ({ backArrowHandle }) => {
               isEdit={false}
               imageStyle={styles.image}
               editStyle={{ display: "none" }}
+              videoUrl={foreignUser.videoUrl}
             />
           </View>
 

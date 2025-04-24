@@ -3,17 +3,21 @@ import { View, Image, StyleSheet, useWindowDimensions, Text, Pressable, Modal, T
 import Icon from "react-native-vector-icons/FontAwesome";
 import { GlobalStyles } from "../../constants/styles";
 import { launchCameraAsync, launchImageLibraryAsync, useCameraPermissions, PermissionStatus } from 'expo-image-picker';
-import { deleteImageFromCloudinary, uploadImageToCloudinary } from "../Cloudinary";
+import { deleteImageFromCloudinary, deleteVideoFromCloudinary, uploadImageToCloudinary, uploadVideoToCloudinary } from "../Cloudinary";
 import { updateLoggedInUserData } from "../../store/authSlice";
 import { updateSignInUserData } from "../../util/actions/AuthAction";
 import { useDispatch, useSelector } from "react-redux";
 import { ActivityIndicator } from "react-native";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { Video } from "expo-av";
+import VideoScreen from "../imagesAndVideo/VideoScreen";
+import { pickVideoHandle } from "../../util/actions/imageAction";
 
 
 
 
-const SwapImageItem = ({ imageUri , editStyle ,imageId}) => {
+
+const SwapImageItem = ({ imageUri , editStyle ,imageId , type}) => {
      const [cameraPermissionInformation, requestPermission] = useCameraPermissions();
      const [loading, setLoading] = useState(false);
      const dispach = useDispatch();
@@ -21,6 +25,7 @@ const SwapImageItem = ({ imageUri , editStyle ,imageId}) => {
      const [modalVisible, setModalVisible] = useState(false);
      const defaultImage = "https://via.placeholder.com/150/FFFFFF?text=No+Image";
      const [isImageUploded, setIsImageUploaded] = useState(false);
+     const [videoUri, setVideoUri] = useState(null);
 
      
      const userData = useSelector(state => state.auth.userData);
@@ -88,6 +93,36 @@ const SwapImageItem = ({ imageUri , editStyle ,imageId}) => {
         }
         setModalVisible(false);
     }
+
+    async function handleNewVideoSelection(newVideoUrl) {
+       
+        if (!newVideoUrl) {
+            Alert.alert("Error", "No video found.");
+            return;
+        }
+        try {
+            setLoading(true);
+    
+                const oldVideoUrl = userData.videoUrl;
+                const publicId = oldVideoUrl.split('/').pop().split('.')[0];
+                await deleteVideoFromCloudinary(publicId);
+                const videoCloudinaryUrl = await uploadVideoToCloudinary(newVideoUrl);
+                await updateSignInUserData(userData.userId, { videoUrl:videoCloudinaryUrl});
+                dispach(updateLoggedInUserData({newData:{ videoUrl:videoCloudinaryUrl }}));
+                setIsImageUploaded(true);
+
+        
+            setTimeout(()=>{
+                setIsImageUploaded(false);
+            },3000);
+        } catch (error) {
+            console.log(error);
+       
+        }finally {
+         setLoading(false);
+        }
+        setModalVisible(false);
+    }
         
     async function openCamera() {
         const hasPermission = await verifyPermissions();
@@ -114,17 +149,33 @@ const SwapImageItem = ({ imageUri , editStyle ,imageId}) => {
 
         await handleNewImageSelection(result);
     }
+    async function selectVideo() {
+        const videoUri = await pickVideoHandle();
+        await handleNewVideoSelection(videoUri);
+      }
 
-  
+ 
+
     return (
         <View style={[styles.container, { width }]}>
     
-           <Image 
-                // source={{ uri: imageUri }}  
-                source={typeof imageUri === "string" && imageUri.startsWith("http") ? { uri: imageUri } : imageUri}
-                style={[styles.image, { width:width*0.9, height:width*0.9}]} 
-                resizeMode="cover"
+          {  type === "image" && 
+               <Image 
+                    // source={{ uri: imageUri }}  
+                    source={typeof imageUri === "string" && imageUri.startsWith("http") ? { uri: imageUri } : imageUri}
+                    style={[styles.image, { width:width*0.9, height:width*0.9}]} 
+                    resizeMode="cover"
+                />
+          }
+          
+          
+          {type ==="video" && 
+            <VideoScreen
+                 videoSource={imageUri}
             />
+          }
+
+    
 
             {/* <IconButton 
                 iconName="pencil"
@@ -148,7 +199,7 @@ const SwapImageItem = ({ imageUri , editStyle ,imageId}) => {
                 
                 />
             )}
-            {isImageUploded && <Text>Image Saved!</Text>}
+            {isImageUploded && <Text>{type === 'image' ? 'Image Saved!' : 'Video Saved!'}</Text>}
         </View>
 
         {/* Modal הצגת אפשרויות */}
@@ -158,26 +209,33 @@ const SwapImageItem = ({ imageUri , editStyle ,imageId}) => {
             visible={modalVisible && !loading} 
             onRequestClose={() => setModalVisible(false)}
         >
+           
             <View style={styles.modalOverlay}>
-                <View style={styles.modalContainer}>
-                    <Text style={styles.modalTitle}>Choose an option</Text>
-                    <Pressable style={styles.modalButton} onPress={openCamera}>
-                        <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                            <Icon name="camera" size={18} color="white" />
-                            <Text style={[styles.modalButtonText, { marginLeft: 5 }]}>Open Camera</Text>
-                        </View>
-                    </Pressable>
-                    <Pressable style={styles.modalButton} onPress={openGallery}>
-                        <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                            <Icon name="photo" size={18} color="white" />
-                            <Text style={[styles.modalButtonText, { marginLeft: 5 }]}>Open Gallery</Text>
-                        </View>
-                    </Pressable>
-                    <Pressable style={styles.modalCancel} onPress={() => setModalVisible(false)}>
-                        <Text style={styles.modalCancelText}>Cancel</Text>
-                    </Pressable>
-                </View>
+              
+                 <View style={styles.modalContainer}>
+                        <Text style={styles.modalTitle}>Choose an option</Text>
+                        { type === "image" &&
+                            <Pressable style={styles.modalButton} onPress={ openCamera }>
+                                <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+                                    <Icon name={type === 'image' ? "camera" : 'video-camera'} size={18} color="white" />
+                                    <Text style={[styles.modalButtonText, { marginLeft: 5 }]}>{type === "image" ?'Open Camera' : 'Record video'}</Text>
+                                </View>
+                            </Pressable>
+                        }
+                        <Pressable style={styles.modalButton} onPress={type === 'image' ? openGallery : selectVideo}>
+                            <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+                                <Icon name="photo" size={18} color="white" />
+                                <Text style={[styles.modalButtonText, { marginLeft: 5 }]}>Open Gallery</Text>
+                            </View>
+                        </Pressable>
+                    
+                        <Pressable style={styles.modalCancel} onPress={() => setModalVisible(false)}>
+                            <Text style={styles.modalCancelText}>Cancel</Text>
+                        </Pressable>
+                    </View>
+              
             </View>
+
         </Modal>
 
         </View>
@@ -265,6 +323,13 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 16,
     },
+    video: {
+        width:"90%",
+        height: 340,
+        borderRadius: 10,
+        overflow: "hidden",
+        marginBottom: 20,
+      },
 });
 
 export default SwapImageItem;
