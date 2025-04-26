@@ -11,7 +11,7 @@ const DatePicker = ({ label, iconName, IconPack, iconSize, error, date, setDate,
     setDatePickerVisible(false);
     if (selectedDate) {
       setDate(selectedDate);
-      onInputChange(id, dayjs(selectedDate).format("YYYY-MM-DD"), true); 
+      onInputChange(id, selectedDate, true);
     }
   };
 

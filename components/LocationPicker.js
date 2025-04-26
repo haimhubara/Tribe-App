@@ -13,9 +13,9 @@ import Input from './Input';
 import Entypo from '@expo/vector-icons/Entypo';
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-const LocationPicker = ({ inputChangeHandler }) => {
+const LocationPicker = ({ inputChangeHandler,initialLocation  }) => {
   
-  const [location, setLocation] = useState(null);
+  const [location, setLocation] = useState(initialLocation ||null);
   const [isPickingOnMap, setIsPickingOnMap] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);

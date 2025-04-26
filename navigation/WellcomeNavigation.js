@@ -156,7 +156,7 @@ function WellcomeWindow() {
         headerShown: false,
       })}
     >
-      <Tab.Screen name="HomeStack" component={HomeStack} options={{tabBarLabel:"Home"}}/>
+      {/* <Tab.Screen name="HomeStack" component={HomeStack} options={{tabBarLabel:"Home"}}/> */}
       <Tab.Screen name="Search" component={SearchPage} initialParams={{myPage:0}}/>
       <Tab.Screen name="Chats Screen" component={ChatStack} options={{tabBarLabel:"Chats"}}/>
       <Tab.Screen name="MyActivities" component={MyActivities}  options={{tabBarLabel:"My Tribes"}} />
@@ -178,7 +178,7 @@ function MyActivities(){
         },
       }),
     }}>
-          <Tab.Screen name="ActivitiesScreen" component={ActivitiesScreen}  options={{tabBarLabel:"My Activities",headerShown: false }} />
+          <Stack.Screen name="ActivitiesScreen" component={ActivitiesScreen}  options={{tabBarLabel:"My Activities",headerShown: false }} />
           <Stack.Screen name="AddNewEventScreen" component={AddNewEventScreen} options={{ headerShown: false }} />
           <Stack.Screen name="SearchScreen" component={SearchScreen} options={{ headerShown: false }}  />
           <Stack.Screen name="PersonalActivityProfileScreen" component={PersonalActivityProfileScreen} options={{ headerShown: false }} />

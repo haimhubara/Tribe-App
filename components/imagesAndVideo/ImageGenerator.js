@@ -88,7 +88,7 @@ const ImageGenerator = ({ imageStyle, buttonStyle, imageRootStyle, onInputChange
                     <Ionicons name="images" size={26} color="white" />
                 </Pressable>
 
-                <Pressable disabled={true} style={[styles.generateButton, buttonStyle]} onPress={() => setPromptModalVisible(true)}>
+                <Pressable disabled={false} style={[styles.generateButton, buttonStyle]} onPress={() => setPromptModalVisible(true)}>
                     <Ionicons name="sparkles-sharp" size={26} color="white" />
                 </Pressable>
             </View>

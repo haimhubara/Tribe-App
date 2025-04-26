@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { GlobalStyles } from "../constants/styles";
-import {Text,StyleSheet,View,ScrollView,KeyboardAvoidingView,TouchableWithoutFeedback,Keyboard,TouchableOpacity} from "react-native";
+import {Text,StyleSheet,View,ScrollView,KeyboardAvoidingView,TouchableWithoutFeedback,Keyboard,TouchableOpacity,ActivityIndicator } from "react-native";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import { SafeAreaView } from "react-native-safe-area-context";
 import HobbiesPicker from "../components/HobbiesPicker";
@@ -31,19 +31,19 @@ import { createChat, sendStartMessage, updateChatData } from "../util/actions/ch
 const AddNewEventScreen = ({ navigation, route }) => {
   const [name, setName] = useState(route.params?.name||null );
   const [description, setDescription] = useState(route.params?.description ||null);
-  const [date, setDate] = useState(null);
+  const [date, setDate] = useState(route.params?.date ? new Date(route.params.date) : null);
   const [selectedNumPartitions, setSelectedNumPartitions] = useState(route.params?.selectedNumPartitions||1);
   const [isPartitionsVisible, setPartitionsVisible] = useState(false);
   const [selectedGender, setSelectedGender] = useState(route.params?.gender||"Any");
   const [ages, setAges] = useState(route.params?.ages|| [18, 35] );
   const [languages, setLanguage] = useState(route.params?.languages||"");
   const [selectedCategories, setSelectedCategories] = useState(route.params?.categories||"");
-  const [time, setTime] = useState(null);
+  const [time, setTime] = useState(route.params?.time ? new Date(route.params.time) : null);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
-  const [generatedImage, setGeneratedImage] = useState(null);
-  const [location,setLocation]=useState(route.params?.location||null);
-
-  
+  const [generatedImage, setGeneratedImage] = useState(route.params?.activityImage||null);
+  const [location,setLocation]=useState(route.params?.locationObject||null);
+  const [imageChanged, setImageChanged] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const userData = useSelector(state => state.auth.userData);
 
@@ -51,9 +51,7 @@ const AddNewEventScreen = ({ navigation, route }) => {
 
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
-
-
-
+  
   // Initialize Cloud Firestore and get a reference to the service
   const db = getFirestore(app);
 
@@ -84,20 +82,29 @@ const AddNewEventScreen = ({ navigation, route }) => {
       setSelectedCategories(text);
     }else if(id==="image"){
       setGeneratedImage(text);
+      setImageChanged(true);
     }else if(id==="location"){
       setLocation(text);
     }
   };
 
-  const parseDateString = (dateString) => {
-    if (!dateString) return null; // אם אין תאריך, החזר null
-
-    const [year, month, day] = dateString.split('-').map(Number);
-    if (isNaN(year) || isNaN(month) || isNaN(day)) return null; // בדיקה אם קיימת שגיאה
-
-    const parsedDate = new Date(year, month - 1, day+1); // המרת מחרוזת לתאריך (חודשים מתחילים מ-0)
-    return isNaN(parsedDate.getTime()) ? null : parsedDate; // בדיקה אם התוצאה תקינה
-};
+  const parseDateString = (dateInput) => {
+    if (!dateInput) return null;
+    
+    if (dateInput instanceof Date) {
+      return dateInput;
+    }
+  
+    if (typeof dateInput === "string") {
+      const [year, month, day] = dateInput.split('-').map(Number);
+      if (isNaN(year) || isNaN(month) || isNaN(day)) return null;
+      const parsedDate = new Date(year, month - 1, day + 1);
+      return isNaN(parsedDate.getTime()) ? null : parsedDate;
+    }
+  
+    return null;
+  };
+  
 
   const multiSliderValuesChange = (values) => {
     setAges( values );
@@ -128,7 +135,6 @@ const AddNewEventScreen = ({ navigation, route }) => {
     setLocation(null);
   };
  
-
 const handleSubmit = async () => {
     if (name == null || description == null || date == null || time == null) {
         alert("You Missed Something");
@@ -139,36 +145,36 @@ const handleSubmit = async () => {
     }
 
     try {
-        let imageUrl = null;
 
-        if (generatedImage) {
+        setIsLoading(true);
+
+        let imageUrl=generatedImage;
+        
+
+        if (generatedImage && imageChanged) {
             if (route.params?.activityId) {
                 // שליפת ה-URL הישן מה-Firebase
                 const docRef = doc(db, "activities", route.params.activityId);
                 const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    const oldImageUrl = docSnap.data().imageUrl;
-                    if (oldImageUrl) {
-                        // חילוץ ה-public_id מ-Cloudinary (שם הקובץ בלי הקידומת)
-                        const publicId = oldImageUrl.split('/').pop().split('.')[0];
-                        await deleteImageFromCloudinary(publicId);
-                    }
-                }
+                
             }
 
-            // העלאת התמונה החדשה
+           // העלאת התמונה החדשה
             imageUrl = await uploadImageToCloudinary(generatedImage);
+            
+          
         }
 
         if (route.params?.ifGoBack) {
             if (route.params?.activityId) {
                 //update activity
+                const parsedDate = parseDateString(date);
                 const docRef = doc(db, "activities", route.params?.activityId);
                 await updateDoc(docRef, {
                     name,
                     description,
-                    date: parseDateString(date).toISOString(),
-                    time: time instanceof Date ? time.toISOString() : new Date().toISOString(),
+                    date: parsedDate ? parsedDate.toISOString() : null,
+                    time: time ? time.toISOString() : null,
                     selectedNumPartitions,
                     gender: selectedGender,
                     ageRange: ages,
@@ -229,7 +235,10 @@ const handleSubmit = async () => {
         }
     } catch (e) {
         console.error("Error adding document: " + route.params?.activityId, e);
+    }finally{
+      setIsLoading(false);
     }
+    
 };
 
 
@@ -302,9 +311,11 @@ const handleSubmit = async () => {
                   IconPack={AntDesign}
                   onInuptChange={onInuptChange}
                 />
-                <LocationPicker
-                  inputChangeHandler={onInuptChange}
+                <LocationPicker 
+                  inputChangeHandler={onInuptChange} 
+                  initialLocation={location}
                 />
+
                 <InputPicker
                   label="Number Of Partitions:"
                   iconName="numeric"
@@ -394,9 +405,15 @@ const handleSubmit = async () => {
               <TouchableOpacity
                 style={styles.submitButton}
                 onPress={handleSubmit}
+                disabled={isLoading} // כדי שלא ילחצו שוב בזמן טעינה
               >
-                <Text style={styles.submitButtonText}>Submit</Text>
+                {isLoading ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Text style={styles.submitButtonText}>Submit</Text>
+                )}
               </TouchableOpacity>
+
             </View>
           </ScrollView>
         </TouchableWithoutFeedback>
