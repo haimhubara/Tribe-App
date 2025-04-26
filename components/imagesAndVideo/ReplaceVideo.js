@@ -6,11 +6,13 @@ import { GlobalStyles } from "../../constants/styles";
 import * as MediaLibrary from 'expo-media-library';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { Video } from 'expo-av';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import IconButton from '../buttons/IconButton';
+import { StatusBar } from 'react-native';
 import VideoScreen from './VideoScreen';
 
-const TakeVideo = ({videoUri,setVideoUri,setTakeVideo,onBackPress}) => {
+const ReplaceVideo = ({videoUri,setVideoUri,setTakeVideo,onBackPress,onSave}) => {
     const [permission, setPermission] = useState(null);
     const [type, setType] = useState("back");
     const [flashMode, setFlashMode] = useState("on");
@@ -20,6 +22,9 @@ const TakeVideo = ({videoUri,setVideoUri,setTakeVideo,onBackPress}) => {
     const [isRecording, setIsRecording] = useState(false);
     const [mode, setMode] = useState("video");
     const videoRef = useRef(null);
+    const [position, setPosition] = useState(0);
+    const [duration, setDuration] = useState(1);
+
  
     
 
@@ -102,6 +107,7 @@ const TakeVideo = ({videoUri,setVideoUri,setTakeVideo,onBackPress}) => {
                 await MediaLibrary.createAlbumAsync("Tribe app", asset, false);
                 setPreviewVisible(false);
                 setTakeVideo(true);
+                onSave()
             }
         } catch (err) {
             console.warn("Error saving video:", err);
@@ -143,11 +149,20 @@ const TakeVideo = ({videoUri,setVideoUri,setTakeVideo,onBackPress}) => {
     if (videoUri) {
         return (
             <View style={styles.container}>
-                 <VideoScreen
-                     videoSource={videoUri}
-                      style={{ width: width, height: height }}
-                      play={true}
-                 />
+                {/* <Video
+                    ref={videoRef}
+                    source={{ uri: videoUri }}
+                    style={{ width: width, height: height }}
+                    useNativeControls
+                    resizeMode="contain"
+                    shouldPlay
+                    onPlaybackStatusUpdate={updateProgress}
+                /> */}
+                <VideoScreen
+                    videoSource={videoUri}
+                    style={{ width: width, height: height }}
+                    play={true}
+                />
                 <View style={styles.buttonsContainer}>
                     <Button buttonStyle={{backgroundColor:GlobalStyles.colors.nearWhite}} textStyle={{color:'black'}}  text="❌ Discard" handleClick={discardVideo} />
                     <Button buttonStyle={{backgroundColor:GlobalStyles.colors.nearWhite}} textStyle={{color:'black'}}  text="✅ Save" handleClick={saveVideo} />
@@ -156,7 +171,7 @@ const TakeVideo = ({videoUri,setVideoUri,setTakeVideo,onBackPress}) => {
         );
     }
     return (
-        <View style={{ flex: 1 }}>  
+        <View style={{ flex: 1,backgroundColor:'black' }}>  
         {onBackPress && (
             <TouchableOpacity 
                 style={{ marginLeft: 10, marginBottom: 5, opacity: isRecording ? 0.5 : 1 }}
@@ -244,4 +259,4 @@ const styles = StyleSheet.create({
    
 });
 
-export default TakeVideo;
+export default ReplaceVideo;

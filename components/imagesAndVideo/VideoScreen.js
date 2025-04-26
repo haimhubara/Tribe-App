@@ -4,18 +4,18 @@ import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 
 
-export default function VideoScreen({videoSource}) {
+export default function VideoScreen({videoSource, style, play}) {
 
    const { width, height } = useWindowDimensions();
 
 
   const player = useVideoPlayer(videoSource, player => {
     player.loop = false;
-    // player.play();
+    play && player.play();
   });
 
   return (
-    <View style={[styles.contentContainer, { width:width*0.9, height:width*0.9}]}>
+    <View style={[styles.contentContainer, { width:width*0.9, height:width*0.9},style]}>
       { videoSource ?
         <VideoView
          style={styles.video} 

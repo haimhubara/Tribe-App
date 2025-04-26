@@ -12,6 +12,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Video } from "expo-av";
 import VideoScreen from "../imagesAndVideo/VideoScreen";
 import { pickVideoHandle } from "../../util/actions/imageAction";
+import ReplaceVideo from "../imagesAndVideo/ReplaceVideo";
 
 
 
@@ -23,9 +24,11 @@ const SwapImageItem = ({ imageUri , editStyle ,imageId , type}) => {
      const dispach = useDispatch();
      const { width, height } = useWindowDimensions();
      const [modalVisible, setModalVisible] = useState(false);
+     const [modalVideoVisible, setModalVideoVisible] = useState(false);
      const defaultImage = "https://via.placeholder.com/150/FFFFFF?text=No+Image";
      const [isImageUploded, setIsImageUploaded] = useState(false);
      const [videoUri, setVideoUri] = useState(null);
+     const [takeVideo, setTakeVideo] = useState(true);
 
      
      const userData = useSelector(state => state.auth.userData);
@@ -152,7 +155,22 @@ const SwapImageItem = ({ imageUri , editStyle ,imageId , type}) => {
     async function selectVideo() {
         const videoUri = await pickVideoHandle();
         await handleNewVideoSelection(videoUri);
-      }
+    }
+
+    const recordVideo = () => {
+        setModalVideoVisible(true);
+        setModalVisible(false);
+    }
+
+    const saveVideo = async () => {
+        setModalVideoVisible(false);
+        setTakeVideo(true);
+        setVideoUri(null);
+        if(videoUri){
+            await handleNewVideoSelection(videoUri);
+          
+        }
+    }
 
  
 
@@ -214,14 +232,14 @@ const SwapImageItem = ({ imageUri , editStyle ,imageId , type}) => {
               
                  <View style={styles.modalContainer}>
                         <Text style={styles.modalTitle}>Choose an option</Text>
-                        { type === "image" &&
-                            <Pressable style={styles.modalButton} onPress={ openCamera }>
-                                <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                                    <Icon name={type === 'image' ? "camera" : 'video-camera'} size={18} color="white" />
-                                    <Text style={[styles.modalButtonText, { marginLeft: 5 }]}>{type === "image" ?'Open Camera' : 'Record video'}</Text>
-                                </View>
-                            </Pressable>
-                        }
+            
+                        <Pressable style={styles.modalButton} onPress={ type ==="image" ? openCamera : recordVideo }>
+                            <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+                                <Icon name={type === 'image' ? "camera" : 'video-camera'} size={18} color="white" />
+                                <Text style={[styles.modalButtonText, { marginLeft: 5 }]}>{type === "image" ?'Open Camera' : 'Record video'}</Text>
+                            </View>
+                        </Pressable>
+                    
                         <Pressable style={styles.modalButton} onPress={type === 'image' ? openGallery : selectVideo}>
                             <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
                                 <Icon name="photo" size={18} color="white" />
@@ -237,6 +255,25 @@ const SwapImageItem = ({ imageUri , editStyle ,imageId , type}) => {
             </View>
 
         </Modal>
+
+        <Modal
+            transparent={false}
+            animationType="slide"
+            visible={modalVideoVisible && !loading} 
+            onRequestClose={() => setModalVideoVisible(false)}
+        >
+           <ReplaceVideo
+                videoUri={videoUri}
+                setVideoUri={setVideoUri}
+                onBackPress={() => setModalVideoVisible(false)}
+                setTakeVideo={setTakeVideo}
+                onSave={saveVideo}
+           />
+           
+        </Modal>
+
+
+        
 
         </View>
       
