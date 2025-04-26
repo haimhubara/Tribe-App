@@ -120,27 +120,39 @@ export const uploadVideoToCloudinary = async (videoUri) => {
 
 
 export const deleteVideoFromCloudinary = async (publicId) => {
-    const CLOUD_NAME = "da4moxwz3"; // שם החשבון שלך ב-Cloudinary
-    const API_KEY = "845138355419153"; // החלף במפתח שלך
-    const API_SECRET = "nOCzr57Wbhj7xuMCSo7ysb1l5bI"; // החלף בסוד שלך
+    const CLOUD_NAME = "da4moxwz3";
+    const API_KEY = "845138355419153";
+    const API_SECRET = "nOCzr57Wbhj7xuMCSo7ysb1l5bI";
 
+    const timestamp = Math.floor(Date.now() / 1000);
+    const signatureString = `public_id=${publicId}&timestamp=${timestamp}${API_SECRET}`;
+    const signature = sha1(signatureString);
 
-    const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/destroy`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: new URLSearchParams({
-            "public_id": publicId,    // ה־public_id של הווידאו שאתה רוצה למחוק
-            "api_key": API_KEY, // מפתח ה-API שלך מ-Cloudinary
-            "api_secret": API_SECRET  // סוד ה-API שלך (אם יש צורך)
-        })
-    });
+    const formData = new FormData();
+    formData.append("public_id", publicId);
+    formData.append("api_key", API_KEY);
+    formData.append("timestamp", timestamp.toString());
+    formData.append("signature", signature);
 
-    const result = await response.json();
-    if (result.result === 'ok') {
-        console.log("Video deleted successfully!");
-    } else {
-        console.error("Error deleting video:", result);
+    try {
+        const response = await fetch(
+            `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/destroy`,
+            {
+                method: "POST",
+                body: formData,
+            }
+        );
+
+        const result = await response.json();
+
+        if (result.result === "ok") {
+            return true;
+        } else {
+            console.error("Error deleting video:", result);
+            return false;
+        }
+    } catch (error) {
+        console.error("Error deleting video from Cloudinary:", error);
+        return false;
     }
 };
