@@ -4,7 +4,7 @@ import { useState } from "react";
 import Button from "../buttons/Button";
 import SubmitButton from "../buttons/SubmitButton";
 import React from "react";
-import { Video } from "expo-av";
+import VideoScreen from "../imagesAndVideo/VideoScreen";
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Header from "../Header";
@@ -46,13 +46,11 @@ const VideoForm = ({takeVideo,setTakeVideo,isLoading,setSecondNext,signUpHandle,
                 <View style={styles.root}>
                 {videoUri && 
                 <>
-                  <Video
-                  source={{ uri: videoUri }}
+                <VideoScreen
+                  videoSource={videoUri}
+                  play={true}
                   style={styles.video}
-                  useNativeControls
-                  resizeMode="cover"
-                  shouldPlay={true}
-                  />
+                />
                 </>
                   }
                    { !videoUri &&  <Image

@@ -8,7 +8,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import SubmitButton from '../../components/buttons/SubmitButton'
 import { GlobalStyles } from '../../constants/styles';
 import InputPicker from '../InputPicker';
-import DatePicker from '../DatePicker';
+import SignUpDatePicker from '../SignUpDatePicker';
 import { StyleSheet, Text } from 'react-native';
 import HobbiesPicker from '../HobbiesPicker';
 import { validateInput } from '../../util/actions/FormActions';
@@ -151,7 +151,7 @@ const SignUpForm = ({setNext,formValues,dispachFormValues, setFormUseStateValue}
           selectedValue={formValues.actualValues['religion']}
         />
 
-        <DatePicker 
+        <SignUpDatePicker 
           label='Day of birth'
           iconName='date' 
           IconPack={Fontisto}   
