@@ -11,7 +11,7 @@ export default function VideoScreen({videoSource}) {
 
   const player = useVideoPlayer(videoSource, player => {
     player.loop = false;
-    player.play();
+    // player.play();
   });
 
   return (
