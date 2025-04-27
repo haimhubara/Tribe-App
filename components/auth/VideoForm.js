@@ -66,7 +66,7 @@ const VideoForm = ({takeVideo,setTakeVideo,isLoading,setSecondNext,signUpHandle,
                   />)
                    :(
                    <SubmitButton 
-                    disabeld={!videoUri}
+                    disabeld={false}
                     style={{marginTop:20, width:'100%'}}
                     onPress={signUpHandle}
                     title="Sign up" 

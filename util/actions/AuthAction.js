@@ -36,8 +36,13 @@ export const  signUp = (signUpFormValue,uploadImagesFormValues,videoUri) => {
                 imageUrls[key] = "https://via.placeholder.com/150/FFFFFF?text=No+Image"; 
             } 
         }
-       
-        const videoUrl = await uploadVideoToCloudinary(videoUri);
+        let videoUrl = null;
+        if(videoUri){
+            videoUrl = await uploadVideoToCloudinary(videoUri);
+        }
+        else{
+            videoUrl = "";
+        }
         
         const userData = await createUser(firestore,signUpFormValue,imageUrls,videoUrl, uid);
         dispach(authenticate({token:accessToken,userData}));

@@ -107,10 +107,12 @@ const SwapImageItem = ({ imageUri , editStyle ,imageId , type}) => {
         }
         try {
             setLoading(true);
-    
+
                 const oldVideoUrl = userData.videoUrl;
                 const publicId = oldVideoUrl.split('/').pop().split('.')[0];
-                await deleteVideoFromCloudinary(publicId);
+                if(oldVideoUrl !== ""){
+                    await deleteVideoFromCloudinary(publicId);
+                }
                 const videoCloudinaryUrl = await uploadVideoToCloudinary(newVideoUrl);
                 await updateSignInUserData(userData.userId, { videoUrl:videoCloudinaryUrl});
                 dispach(updateLoggedInUserData({newData:{ videoUrl:videoCloudinaryUrl }}));
