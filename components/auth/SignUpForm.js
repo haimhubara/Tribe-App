@@ -61,6 +61,7 @@ const SignUpForm = ({setNext,formValues,dispachFormValues, setFormUseStateValue}
            id="firstName"
            error={formValues.values['firstName']}
            value={formValues.actualValues['firstName']}
+           type="mustField"
         />
 
         <Input 
@@ -72,6 +73,7 @@ const SignUpForm = ({setNext,formValues,dispachFormValues, setFormUseStateValue}
           id="lastName"
           error={formValues.values['lastName']}
           value={formValues.actualValues['lastName']}
+          type="mustField"
          />
 
         <Input 
@@ -83,6 +85,7 @@ const SignUpForm = ({setNext,formValues,dispachFormValues, setFormUseStateValue}
           id="email"
           error={formValues.values['email']}
           value={formValues.actualValues['email']}
+          type="mustField"
         />
         
         <Input 
@@ -94,6 +97,7 @@ const SignUpForm = ({setNext,formValues,dispachFormValues, setFormUseStateValue}
           id="password"
           error={formValues.values['password']}
           value={formValues.actualValues['password']}
+          type="mustField"
         />
 
         <Input
@@ -105,6 +109,7 @@ const SignUpForm = ({setNext,formValues,dispachFormValues, setFormUseStateValue}
             id="confirmPassword"
             error={formValues.values['confirmPassword']}
             value={formValues.actualValues['confirmPassword']}
+            type="mustField"
            
         />
         <Input
@@ -116,6 +121,7 @@ const SignUpForm = ({setNext,formValues,dispachFormValues, setFormUseStateValue}
           id='userName'
           error={formValues.values['userName']}
           value={formValues.actualValues['userName']}
+          type="mustField"
         />
 
         <Input 
@@ -127,6 +133,7 @@ const SignUpForm = ({setNext,formValues,dispachFormValues, setFormUseStateValue}
          id="phoneNumber"
          error={formValues.values['phoneNumber']}
          value={formValues.actualValues['phoneNumber']}
+         type="mustField"
         />
 
         <InputPicker label="Gender" iconName="human-male-female" IconPack={MaterialCommunityIcons}
@@ -138,6 +145,7 @@ const SignUpForm = ({setNext,formValues,dispachFormValues, setFormUseStateValue}
           id="gender"
           error={formValues.values['gender']}
           selectedValue={formValues.actualValues['gender']}
+          type="mustField"
         />
        <InputPicker label="Religion" iconName="globe" IconPack={FontAwesome}
          options={[
@@ -149,6 +157,7 @@ const SignUpForm = ({setNext,formValues,dispachFormValues, setFormUseStateValue}
           id="religion"
           error={formValues.values['religion']}
           selectedValue={formValues.actualValues['religion']}
+          type="mustField"
         />
 
         <SignUpDatePicker 
@@ -161,7 +170,7 @@ const SignUpForm = ({setNext,formValues,dispachFormValues, setFormUseStateValue}
           onInputChange={inputChangeHandler} 
           error={formValues.values['date']}
         />
-        <LocationPicker inputChangeHandler={inputChangeHandler}/>
+        <LocationPicker inputChangeHandler={inputChangeHandler} type="mustField"/>
 
 
         <Input 
@@ -201,6 +210,7 @@ const SignUpForm = ({setNext,formValues,dispachFormValues, setFormUseStateValue}
            onInuptChange={inputChangeHandler}
            value={formValues.actualValues['hobbies']}
            error={formValues.values['hobbies']}
+           type="mustField"
         />
         <HobbiesPicker
          text="Select Languages"
@@ -210,6 +220,7 @@ const SignUpForm = ({setNext,formValues,dispachFormValues, setFormUseStateValue}
          onInuptChange={inputChangeHandler}
          value={formValues.actualValues['languages']}
          error={formValues.values['languages']}
+         type="mustField"
         /> 
        
 

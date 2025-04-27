@@ -17,7 +17,7 @@ const SignUpDatePicker = ({ label, iconName, IconPack, iconSize, error, date, se
 
   return (
     <View style={styles.root}>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={styles.label}>{label}*</Text>
       <View style={styles.inputContainer}>
         {IconPack && <IconPack style={styles.icon} name={iconName} size={iconSize || 24} />}
         <Pressable style={styles.input} onPress={() => setDatePickerVisible(true)}>

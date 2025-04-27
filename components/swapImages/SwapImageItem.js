@@ -13,6 +13,7 @@ import { Video } from "expo-av";
 import VideoScreen from "../imagesAndVideo/VideoScreen";
 import { pickVideoHandle } from "../../util/actions/imageAction";
 import ReplaceVideo from "../imagesAndVideo/ReplaceVideo";
+import Feather from '@expo/vector-icons/Feather';
 
 
 
@@ -32,6 +33,7 @@ const SwapImageItem = ({ imageUri , editStyle ,imageId , type}) => {
 
      
      const userData = useSelector(state => state.auth.userData);
+
 
       async function verifyPermissions() {
             if (cameraPermissionInformation.status === PermissionStatus.UNDETERMINED) {
@@ -177,9 +179,9 @@ const SwapImageItem = ({ imageUri , editStyle ,imageId , type}) => {
     return (
         <View style={[styles.container, { width }]}>
     
-          {  type === "image" && 
+          {  type === "image" && imageUri !== defaultImage &&
                <Image 
-                    // source={{ uri: imageUri }}  
+
                     source={typeof imageUri === "string" && imageUri.startsWith("http") ? { uri: imageUri } : imageUri}
                     style={[styles.image, { width:width*0.9, height:width*0.9}]} 
                     resizeMode="cover"
@@ -193,17 +195,14 @@ const SwapImageItem = ({ imageUri , editStyle ,imageId , type}) => {
             />
           }
 
-    
+          {
+            type === "image" && imageUri === defaultImage &&
+            <View style={styles.textContainer}> 
+                <Feather name="image" size={40} color={GlobalStyles.colors.mainColorDark} />
+                <Text style={styles.text}>Add Image</Text>
+            </View>
+          }
 
-            {/* <IconButton 
-                iconName="pencil"
-                IconPack={Icon}
-                containerStyle={styles.containerStyle}
-                rootStyle={[styles.rootContainer,editStyle]}
-                onPress={editPressHandle}
-                iconColor='white'
-                iconSize={22}
-          /> */}
           <TouchableOpacity style={[styles.rootIconContainer,editStyle]} onPress={editPressHandle}>
                 <FontAwesome name='pencil' size={18} color={'white'}/>
           </TouchableOpacity>
@@ -366,7 +365,25 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         overflow: "hidden",
         marginBottom: 20,
+    },
+    text:{
+        justifyContent:'center',
+        alignItems:'center',
+        fontFamily:'regular',
+        fontSize:20,letterSpacing:0.3,
+        color:GlobalStyles.colors.mainColorDark
       },
+      textContainer:{
+        width:'90%',
+        height:'97%',
+        justifyContent:'center',
+        alignItems:'center',
+        borderWidth:0.6, 
+        borderColor:GlobalStyles.colors.lightGrey,
+        borderRadius:4,
+        backgroundColor:GlobalStyles.colors.nearlyWhite
+      }
+    
 });
 
 export default SwapImageItem;

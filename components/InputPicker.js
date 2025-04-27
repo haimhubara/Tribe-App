@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Modal, TouchableOpacity, Platform } from 'react
 import { Picker } from '@react-native-picker/picker';
 import { GlobalStyles } from '../constants/styles';
 
-const InputPicker = ({ label, iconName, IconPack, iconSize, error, options, onInuptChange, id, selectedValue }) => {
+const InputPicker = ({ label, iconName, IconPack, iconSize, error, options, onInuptChange, id, selectedValue,type }) => {
   const [isPickerVisible, setIsPickerVisible] = useState(false);
 
   const onChangeText = (itemValue) => {
@@ -15,7 +15,7 @@ const InputPicker = ({ label, iconName, IconPack, iconSize, error, options, onIn
 
   return (
     <View style={styles.root}>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={styles.label}>{type === "mustField" ? `${label}*` : label}</Text>
 
       {/* iOS: TouchableOpacity פותח את ה-Picker */}
       {Platform.OS === 'ios' ? (

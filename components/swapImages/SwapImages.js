@@ -22,7 +22,7 @@ const SwapImages = ({ editStyle, imagess,isEdit, setImages,uploadImagesHandle,vi
           uri: videoUrl,
           type: 'video'
         }]
-      : [];
+      : !isEdit ? [] : [{id:'video', uri:"", type:"video"}];
   
     return [...imageItems, ...videoItem]; // אם אתה רוצה שהווידאו יופיע בסוף
   }, [imagess, videoUrl, isEdit]);
@@ -37,7 +37,6 @@ const SwapImages = ({ editStyle, imagess,isEdit, setImages,uploadImagesHandle,vi
   }).current;
 
   const viewConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
-
 
 
   return (

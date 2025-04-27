@@ -1,6 +1,8 @@
 import { useEvent } from 'expo';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { Button, StyleSheet, Text, useWindowDimensions, View ,Platform} from 'react-native';
+import Feather from '@expo/vector-icons/Feather';
+import { GlobalStyles } from '../../constants/styles';
 
 
 
@@ -20,7 +22,7 @@ export default function VideoScreen({videoSource, style, play}) {
 
   return (
     <View style={[styles.contentContainer, { width:width*0.9, height:width*0.9},style]}>
-      { videoSource !== "" ?
+      { videoSource && videoSource !== "" ?
       <>
         <VideoView
             style={styles.video} 
@@ -46,7 +48,10 @@ export default function VideoScreen({videoSource, style, play}) {
         }
       </>
         :
-        <Text>Add Video</Text>
+        <View style={styles.textContainer}> 
+           <Feather name="video" size={40} color={GlobalStyles.colors.mainColorDark} />
+           <Text style={styles.text}>Add Video</Text>
+        </View>
       }
     </View>
   );
@@ -67,5 +72,20 @@ const styles = StyleSheet.create({
   controlsContainer: {
     padding: 10,
   },
+  text:{
+    justifyContent:'center',
+    alignItems:'center',
+    fontFamily:'regular',
+    fontSize:20,letterSpacing:0.3,
+    color:GlobalStyles.colors.mainColorDark
+  },
+  textContainer:{
+    flex:1,
+    justifyContent:'center',
+    alignItems:'center',
+    borderWidth:1, 
+    borderColor:GlobalStyles.colors.lightGrey,borderRadius:4,
+    backgroundColor:GlobalStyles.colors.nearlyWhite
+  }
 
 });

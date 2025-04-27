@@ -27,7 +27,7 @@ const UploadPhotosForm = ({secondNextHandle ,onBackPress ,dispachPhotosReducer,p
   return (
     <ScrollView >
          <View style={styles.root}>
-          <Header style={{paddingHorizontal:0}} title="Select images" onBackPress={onBackPress}/>
+          <Header style={{paddingHorizontal:0}} title="Select images*" onBackPress={onBackPress}/>
            <View style={styles.imageContainer}>
 
 

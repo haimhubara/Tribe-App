@@ -13,7 +13,7 @@ import Input from './Input';
 import Entypo from '@expo/vector-icons/Entypo';
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-const LocationPicker = ({ inputChangeHandler,initialLocation  }) => {
+const LocationPicker = ({ inputChangeHandler, initialLocation, type}) => {
   
   const [location, setLocation] = useState(initialLocation ||null);
   const [isPickingOnMap, setIsPickingOnMap] = useState(false);
@@ -101,6 +101,7 @@ const LocationPicker = ({ inputChangeHandler,initialLocation  }) => {
           iconName="location-pin"
           value={location ? location.address : 'Select Location'}
           inputOption={{ editable: false,multiline:true }}
+          type={type}
           
         />
       </TouchableOpacity>

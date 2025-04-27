@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { GlobalStyles } from '../constants/styles';
 
-const HobbiesPicker = ({ selectedHobbies, setSelectedHobbies,array,text,id,onInuptChange,value,error }) => {
+const HobbiesPicker = ({ selectedHobbies, setSelectedHobbies,array,text,id,onInuptChange,value,error,type }) => {
  
   const handleHobbyChange = (hobby) => {
     if (selectedHobbies.includes(hobby)) {
@@ -25,7 +25,7 @@ const HobbiesPicker = ({ selectedHobbies, setSelectedHobbies,array,text,id,onInu
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{text}</Text>
+      <Text style={styles.title}>{type === "mustField" ? `${text}*` : text}</Text>
       <ScrollView contentContainerStyle={styles.scrollView}>
         {!value && array.map(hobby => (
           <TouchableOpacity

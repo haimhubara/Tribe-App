@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, TextInput } from 'react-native'
 import { GlobalStyles } from '../constants/styles'
 
 
-const Input = ({label,iconName,IconPack,iconSize,error,id,onInuptChange,inputOption,value,styleInputContainer,initialValue}) => {
+const Input = ({label,iconName,IconPack,iconSize,error,id,onInuptChange,inputOption,value,styleInputContainer,initialValue,type}) => {
      
     const [fieldValue, setFieldValue] = useState(initialValue);
 
@@ -14,7 +14,7 @@ const Input = ({label,iconName,IconPack,iconSize,error,id,onInuptChange,inputOpt
 
   return (
     <View style={styles.root}>
-        <Text style={styles.label}>{label}</Text>
+        <Text style={styles.label}>{type !== 'mustField' ? label : `${label}*`}</Text>
         <View style={[styles.inputContainer,styleInputContainer]}>
            {IconPack && <IconPack style={styles.icon} name={iconName} size={iconSize || 24} />}
             <TextInput style={styles.input} onChangeText={onChangeText} {...inputOption} value={initialValue ? fieldValue : value} />
