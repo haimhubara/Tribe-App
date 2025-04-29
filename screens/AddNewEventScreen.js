@@ -62,12 +62,20 @@ const AddNewEventScreen = ({ navigation, route }) => {
       setSelectedNumPartitions(text);
     } else if (id === "description") {
       setDescription(text);
-    }else if( id==="date"){
-      
-      setDate(text);
-      
-    }else if(id==="gender"){
-      setSelectedGender(text)
+    } else if( id==="date"){
+      const selectedDate = new Date(text);
+      const today = new Date();
+    
+      selectedDate.setHours(0, 0, 0, 0);
+      today.setHours(0, 0, 0, 0);
+    
+      if (selectedDate < today) {
+        alert("The selected date has already passed. Please choose a future date.");
+        setDate(null);
+        return;
+      }
+    
+      setDate(selectedDate);
     }else if (id === "time") {
       // הוספת תאריך נוכחי כדי למנוע שגיאה
       const today = new Date();
@@ -347,6 +355,9 @@ const handleSubmit = async () => {
 
                 <Text style={styles.label}>Age Range:</Text>
                 <View style={styles.sliderContainer}>
+                <Text style={styles.ageText}>
+                    {`From ${ages[0]} to ${ages[1]} years`}
+                  </Text>
                   <MultiSlider
                     values={[ages[0], ages[1]]}
                     sliderLength={280}
@@ -356,9 +367,7 @@ const handleSubmit = async () => {
                     max={65}
                     step={1}
                   />
-                  <Text style={styles.ageText}>
-                    {`From ${ages[0]} to ${ages[1]} years`}
-                  </Text>
+                 
                 </View>
               </PageContainer>
               
@@ -464,7 +473,7 @@ const styles = StyleSheet.create({
     width: "80%",
   },
   sliderContainer: { marginVertical: 20, alignItems: "center" },
-  ageText: { marginTop: 10, fontSize: 16, color: "#333" },
+  ageText: { marginTop: 10, fontSize: 16, color: "#333", marginLeft:-20 },
   submitButton: {
     backgroundColor: "#4285F4",
     paddingVertical: 15,
