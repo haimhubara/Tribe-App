@@ -174,13 +174,14 @@ const RequestsList = ({ navigation, route }) => {
              data={usersData}
              keyExtractor={(item) => item.userId} 
              renderItem={({ item }) => 
-             <FriendRequestComponent 
-                onPress={() => addUserToSelectedArray(item.userId)}
-                imageSource={item.images['firstImage']}
-                title={`${item.firstName} ${item.lastName}`}
-                isChecked={selectedUsers.includes(item.userId)}
-                       
-            />}
+              <FriendRequestComponent 
+             userId={item.userId}
+             imageSource={item.images['firstImage']}
+             title={`${item.firstName} ${item.lastName}`}
+             isChecked={selectedUsers.includes(item.userId)}
+             onSelectPress={addUserToSelectedArray}
+           />
+           }
          />
       ) : (
         <View style={styles.notFound}>

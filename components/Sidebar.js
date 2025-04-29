@@ -95,7 +95,7 @@ const Sidebar = ({ applyFilters }) => {
             setSelectedCategories([...selectedCategories, value]);
         }
       }else if(id==="languages"){
-        if (selectedCategories.includes(value)) {
+        if (selectedLanguages.includes(value)) {
           setSelectedLanguages(selectedLanguages.filter(item => item !== value));
       } else {
         setSelectedLanguages([...selectedLanguages, value]);

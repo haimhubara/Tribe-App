@@ -4,18 +4,20 @@ import { GlobalStyles } from "../constants/styles";
 
 const Header = ({ title, onBackPress,style }) => {
   return (
-      <View style={[styles.headerContainer,style]}>
-      
-        <Pressable onPress={onBackPress} style={styles.iconContainer}>
-          <Ionicons name="arrow-back" size={32} color="black" />
-        </Pressable>
-
-     
-        <Text style={styles.title}>{title}</Text>
-
-     
-        <View style={styles.iconPlaceholder} />
-      </View>
+    <View style={[styles.headerContainer, style]}>
+    <Pressable onPress={onBackPress} style={styles.iconContainer}>
+      <Ionicons name="arrow-back" size={32} color="black" />
+    </Pressable>
+  
+    {title?.trim() ? (
+      <Text style={styles.title}>{title}</Text>
+    ) : (
+      <View style={{ width: 40 }} /> // שומר על הפרופורציות אם אין טקסט
+    )}
+  
+    <View style={styles.iconPlaceholder} />
+  </View>
+  
   );
 };
 
