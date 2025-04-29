@@ -23,9 +23,7 @@ import { uploadImageToCloudinary,deleteImageFromCloudinary } from "../components
 import { useSelector } from "react-redux";
 import LocationPicker from "../components/LocationPicker";
 import { createChat, sendStartMessage, updateChatData } from "../util/actions/chatAction";
-
-
-
+import * as Haptics from 'expo-haptics';
 
 
 const AddNewEventScreen = ({ navigation, route }) => {
@@ -115,8 +113,19 @@ const AddNewEventScreen = ({ navigation, route }) => {
   
 
   const multiSliderValuesChange = (values) => {
-    setAges( values );
+    const [newMin, newMax] = values;
+    const [prevMin, prevMax] = ages;
+  
+    const diffMin = Math.abs(newMin - prevMin);
+    const diffMax = Math.abs(newMax - prevMax);
+  
+    if ((diffMin === 1 && newMin !== prevMin) || (diffMax === 1 && newMax !== prevMax)) {
+      Haptics.selectionAsync(); // רטט קצר, עדין ונעים
+    }
+  
+    setAges(values);
   };
+  
 
   const defaultState = {
     name: null,
@@ -352,15 +361,16 @@ const handleSubmit = async () => {
                     selectedValue={selectedGender}
                   />
                 
-
+                
                 <Text style={styles.label}>Age Range:</Text>
+                </PageContainer>
                 <View style={styles.sliderContainer}>
                 <Text style={styles.ageText}>
                     {`From ${ages[0]} to ${ages[1]} years`}
                   </Text>
                   <MultiSlider
                     values={[ages[0], ages[1]]}
-                    sliderLength={280}
+                    sliderLength={300}
                     selectedStyle={{ backgroundColor: "#FFCA28" }}
                     onValuesChange={multiSliderValuesChange}
                     min={0}
@@ -369,7 +379,7 @@ const handleSubmit = async () => {
                   />
                  
                 </View>
-              </PageContainer>
+              
               
               <HobbiesPicker
                 text="Pick Language Of The Partition:"

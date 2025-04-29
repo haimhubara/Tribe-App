@@ -65,7 +65,8 @@
     "react-native-web": "~0.19.13",
     "react-navigation-header-buttons": "^9.0.0",
     "react-redux": "^9.2.0",
-    "validate.js": "^0.13.1"
+    "validate.js": "^0.13.1",
+    "expo-haptics": "~14.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

@@ -36,7 +36,13 @@ const HobbiesPicker = ({ selectedHobbies, setSelectedHobbies,array,text,id,onInu
             ]}
             onPress={() => handleHobbyChange(hobby)}
           >
-            <Text style={styles.hobbyText}>{hobby}</Text>
+            <Text style={[
+              styles.hobbyText,
+              (selectedHobbies?.includes(hobby) || value?.includes(hobby)) && styles.selectedHobbyText
+            ]}>
+              {hobby}
+            </Text>
+
           </TouchableOpacity>
         ))}
         {value && !selectedHobbies && array.map(hobby => (
@@ -99,6 +105,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontStyle: 'italic',
   },
+  selectedHobbyText: {
+    color: 'white',
+    fontFamily: 'regular',
+    letterSpacing: 0.3,
+  },
+  
     errorContainer:{
         marginVertical:5
     },
