@@ -144,8 +144,9 @@ function WellcomeWindow() {
           } else if (route.name === 'Profile Screen') {
             iconName = 'person';
           } else if (route.name === 'MyActivities') {
-            return <Feather name="activity" size={24} color="gray" />
+            return <Feather name="activity" size={size} color={color} />
           }
+          
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: 'black',
