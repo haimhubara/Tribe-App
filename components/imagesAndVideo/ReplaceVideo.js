@@ -6,10 +6,8 @@ import { GlobalStyles } from "../../constants/styles";
 import * as MediaLibrary from 'expo-media-library';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { Video } from 'expo-av';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import IconButton from '../buttons/IconButton';
-import { StatusBar } from 'react-native';
 import VideoScreen from './VideoScreen';
 
 const ReplaceVideo = ({videoUri,setVideoUri,setTakeVideo,onBackPress,onSave}) => {
