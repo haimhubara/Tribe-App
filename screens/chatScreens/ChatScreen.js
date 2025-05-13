@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { View, Text, ImageBackground, StyleSheet, TextInput, Pressable, KeyboardAvoidingView, Platform, FlatList, ScrollView, Image, ActivityIndicator } from 'react-native';
+import { View, Text, ImageBackground, StyleSheet, TextInput, Pressable, useWindowDimensions , Platform, FlatList, ScrollView, Image, ActivityIndicator, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from '@expo/vector-icons/Feather';
 import backgroundImage from '../../assets/images/droplet.jpeg';
@@ -15,6 +15,8 @@ import { uploadImageToCloudinary } from '../../components/Cloudinary';
 import { createSelector } from '@reduxjs/toolkit';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import CustomHeaderButton from '../../components/buttons/CustomHeaderButton';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 
 const ChatScreen = ({ navigation, route }) => {
   const storedUsers = useSelector(state => state.users.storedUsers);
@@ -26,6 +28,13 @@ const ChatScreen = ({ navigation, route }) => {
   const [errorBannerText, setErrorBannerText] = useState('');
   const [tempImageUri, setTempImageUri] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { height: screenHeight } = Dimensions.get('window');
+  
+  const getExtraScrollHeight = () => {
+  if (Platform.OS === 'ios') return screenHeight * 0.15;
+  if (Platform.OS === 'android') return screenHeight * 0.20; // slightly more generous
+  return 100; // fallback
+  };
 
   
  
@@ -96,6 +105,7 @@ const ChatScreen = ({ navigation, route }) => {
         </HeaderButtons>
       }
     });
+    
 
     setChatUsers(chatData.users);
   }, [chatUsers,title]);
@@ -188,10 +198,13 @@ const ChatScreen = ({ navigation, route }) => {
 
   return (
     <SafeAreaView edges={['right', 'left', 'bottom']} style={styles.root}>
-      <KeyboardAvoidingView
+    <KeyboardAwareScrollView
         style={{ flex: 1 }}
-        keyboardVerticalOffset={100}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+         ref={flatList}
+        contentContainerStyle={{ flexGrow: 1 }}
+        extraScrollHeight={getExtraScrollHeight()}
+        enableOnAndroid={true}
+        keyboardShouldPersistTaps="handled"
       >
         <ImageBackground style={styles.backgroundImage} source={backgroundImage}>
 
@@ -298,7 +311,7 @@ const ChatScreen = ({ navigation, route }) => {
         </Modal>
 
         </View>
-      </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 };
