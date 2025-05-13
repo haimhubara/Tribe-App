@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { View, Text, ImageBackground, StyleSheet, TextInput, Pressable, useWindowDimensions , Platform, FlatList, ScrollView, Image, ActivityIndicator, Dimensions } from 'react-native';
+import { View, Text, ImageBackground, StyleSheet, TextInput,Keyboard, Pressable, KeyboardAvoidingView, Platform, FlatList, ScrollView, Image, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from '@expo/vector-icons/Feather';
 import backgroundImage from '../../assets/images/droplet.jpeg';
@@ -15,8 +15,7 @@ import { uploadImageToCloudinary } from '../../components/Cloudinary';
 import { createSelector } from '@reduxjs/toolkit';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import CustomHeaderButton from '../../components/buttons/CustomHeaderButton';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
+import { useFocusEffect } from '@react-navigation/native';
 
 const ChatScreen = ({ navigation, route }) => {
   const storedUsers = useSelector(state => state.users.storedUsers);
@@ -28,13 +27,7 @@ const ChatScreen = ({ navigation, route }) => {
   const [errorBannerText, setErrorBannerText] = useState('');
   const [tempImageUri, setTempImageUri] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { height: screenHeight } = Dimensions.get('window');
-  
-  const getExtraScrollHeight = () => {
-  if (Platform.OS === 'ios') return screenHeight * 0.15;
-  if (Platform.OS === 'android') return screenHeight * 0.20; // slightly more generous
-  return 100; // fallback
-  };
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false)
 
   
  
@@ -83,6 +76,15 @@ const ChatScreen = ({ navigation, route }) => {
 
 
   const title = currentChat?.chatName ?? chatData.chatName ?? getChatTitleFromName();
+
+  const handlekeyboardShow = (event) => {
+    setIsKeyboardVisible(true);
+  }
+
+  const handlekeyboardHide = (event) => {
+    setIsKeyboardVisible(false);
+  }
+  
   
 
   useEffect(() => {
@@ -105,9 +107,20 @@ const ChatScreen = ({ navigation, route }) => {
         </HeaderButtons>
       }
     });
-    
 
     setChatUsers(chatData.users);
+    const  showSubscription = Keyboard.addListener (
+      "keyboardDidShow",
+      handlekeyboardShow
+    );
+    const  hideSubscription = Keyboard.addListener (
+      "keyboardDidHide",
+      handlekeyboardHide
+    );
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    }
   }, [chatUsers,title]);
 
   const sendMessage = useCallback(async () => {
@@ -133,7 +146,8 @@ const ChatScreen = ({ navigation, route }) => {
     }
   }, [messageText, chatId,title]);
 
-  useLayoutEffect(() => {
+  useFocusEffect(
+  useCallback(() => {
     const parentNav = navigation.getParent();
     if (parentNav) {
       parentNav.setOptions({ tabBarStyle: { display: 'none' } });
@@ -144,8 +158,8 @@ const ChatScreen = ({ navigation, route }) => {
         parentNav.setOptions({ tabBarStyle: { display: 'flex', backgroundColor: '#fff' } });
       }
     };
-  }, [navigation]);
-
+  }, [navigation])
+);
   const pickImage = useCallback( async () => {
       try {
           const tempUri = await pickImageHandle();
@@ -198,13 +212,10 @@ const ChatScreen = ({ navigation, route }) => {
 
   return (
     <SafeAreaView edges={['right', 'left', 'bottom']} style={styles.root}>
-    <KeyboardAwareScrollView
-        style={{ flex: 1 }}
-         ref={flatList}
-        contentContainerStyle={{ flexGrow: 1 }}
-        extraScrollHeight={getExtraScrollHeight()}
-        enableOnAndroid={true}
-        keyboardShouldPersistTaps="handled"
+      <KeyboardAvoidingView
+        style={{ flex: 1, backgroundColor:'white' }}
+        keyboardVerticalOffset={isKeyboardVisible ? 100 : 0}
+        behavior={Platform.OS === 'ios' ? 'padding' :  'height'}
       >
         <ImageBackground style={styles.backgroundImage} source={backgroundImage}>
 
@@ -311,7 +322,7 @@ const ChatScreen = ({ navigation, route }) => {
         </Modal>
 
         </View>
-      </KeyboardAwareScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
