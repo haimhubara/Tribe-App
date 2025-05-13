@@ -75,7 +75,12 @@ const ContactScreen = ({route,navigation}) => {
     
             <PageContainer>
                 <View style={styles.topContainer}>
-                    <Image style={styles.image} source={{uri:otherUser.images['firstImage']}}/>
+                 <Image
+                style={styles.image}
+                source={{ uri: typeof otherUser.images['firstImage'] === 'string'
+                    ? otherUser.images['firstImage']
+                    : otherUser.images['firstImage']?.uri }}
+                />
                 </View>
                 <View style={styles.nameContainer}>
                     <Text style={styles.name}>{`${otherUser.firstName} ${otherUser.lastName}`}</Text>
