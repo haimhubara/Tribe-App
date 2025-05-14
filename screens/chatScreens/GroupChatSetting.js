@@ -26,6 +26,7 @@ const GroupChatSetting = ({route,navigation}) => {
     const [isLoadingName , setIsLoadingName] = useState(false);
     const [showSucessMessage , setShowSucessMessage] = useState(false);
 
+
     const initialState = {
         actualValues: { chatName: chatData.chatName },
         values: { chatName: false },
@@ -103,7 +104,8 @@ const GroupChatSetting = ({route,navigation}) => {
       
 
     }
-
+    const imageValue = chatData.chatImage;
+    const imageUri = typeof imageValue === 'string' ? imageValue : imageValue?.uri;
     if(!chatData.users) return null;
 
   return (
@@ -126,7 +128,7 @@ const GroupChatSetting = ({route,navigation}) => {
                 {
                     !isLoading &&
                     <>
-                    <Image style={styles.image} source={chatData.chatImage ? {uri:chatData.chatImage}:defaultImage}/>
+                    <Image style={styles.image} source={imageUri ? { uri: imageUri } : defaultImage}/>
                     <TouchableOpacity onPress={editImage} style={styles.editIcon}>
                         <Entypo name="edit" size={24} color="black" />
                     </TouchableOpacity>

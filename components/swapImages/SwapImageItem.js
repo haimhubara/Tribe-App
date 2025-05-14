@@ -9,7 +9,6 @@ import { updateSignInUserData } from "../../util/actions/AuthAction";
 import { useDispatch, useSelector } from "react-redux";
 import { ActivityIndicator } from "react-native";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Video } from "expo-av";
 import VideoScreen from "../imagesAndVideo/VideoScreen";
 import { pickVideoHandle } from "../../util/actions/imageAction";
 import ReplaceVideo from "../imagesAndVideo/ReplaceVideo";

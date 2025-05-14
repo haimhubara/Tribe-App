@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { View, Text, ImageBackground, StyleSheet, TextInput, Pressable, KeyboardAvoidingView, Platform, FlatList, ScrollView, Image, ActivityIndicator } from 'react-native';
+import { View, Text, ImageBackground, StyleSheet, TextInput,Keyboard, Pressable, KeyboardAvoidingView, Platform, FlatList, ScrollView, Image, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from '@expo/vector-icons/Feather';
 import backgroundImage from '../../assets/images/droplet.jpeg';
@@ -8,13 +8,14 @@ import Bubble from '../../components/chat/Bubble';
 import { createChat, sendImageMessage, sendTextMessage } from '../../util/actions/chatAction';
 import ReplyTo from '../../components/chat/ReplyTo';
 
-import AwseomeAlert from 'react-native-awesome-alerts'
+import Modal from 'react-native-modal';
 import { GlobalStyles } from '../../constants/styles';
 import {openCamera, pickImageHandle } from '../../util/actions/imageAction';
 import { uploadImageToCloudinary } from '../../components/Cloudinary';
 import { createSelector } from '@reduxjs/toolkit';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import CustomHeaderButton from '../../components/buttons/CustomHeaderButton';
+import { useFocusEffect } from '@react-navigation/native';
 
 const ChatScreen = ({ navigation, route }) => {
   const storedUsers = useSelector(state => state.users.storedUsers);
@@ -26,6 +27,7 @@ const ChatScreen = ({ navigation, route }) => {
   const [errorBannerText, setErrorBannerText] = useState('');
   const [tempImageUri, setTempImageUri] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false)
 
   
  
@@ -74,6 +76,15 @@ const ChatScreen = ({ navigation, route }) => {
 
 
   const title = currentChat?.chatName ?? chatData.chatName ?? getChatTitleFromName();
+
+  const handlekeyboardShow = (event) => {
+    setIsKeyboardVisible(true);
+  }
+
+  const handlekeyboardHide = (event) => {
+    setIsKeyboardVisible(false);
+  }
+  
   
 
   useEffect(() => {
@@ -98,6 +109,18 @@ const ChatScreen = ({ navigation, route }) => {
     });
 
     setChatUsers(chatData.users);
+    const  showSubscription = Keyboard.addListener (
+      "keyboardDidShow",
+      handlekeyboardShow
+    );
+    const  hideSubscription = Keyboard.addListener (
+      "keyboardDidHide",
+      handlekeyboardHide
+    );
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    }
   }, [chatUsers,title]);
 
   const sendMessage = useCallback(async () => {
@@ -123,7 +146,8 @@ const ChatScreen = ({ navigation, route }) => {
     }
   }, [messageText, chatId,title]);
 
-  useLayoutEffect(() => {
+  useFocusEffect(
+  useCallback(() => {
     const parentNav = navigation.getParent();
     if (parentNav) {
       parentNav.setOptions({ tabBarStyle: { display: 'none' } });
@@ -134,8 +158,8 @@ const ChatScreen = ({ navigation, route }) => {
         parentNav.setOptions({ tabBarStyle: { display: 'flex', backgroundColor: '#fff' } });
       }
     };
-  }, [navigation]);
-
+  }, [navigation])
+);
   const pickImage = useCallback( async () => {
       try {
           const tempUri = await pickImageHandle();
@@ -189,9 +213,9 @@ const ChatScreen = ({ navigation, route }) => {
   return (
     <SafeAreaView edges={['right', 'left', 'bottom']} style={styles.root}>
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        keyboardVerticalOffset={100}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={{ flex: 1, backgroundColor:'white' }}
+        keyboardVerticalOffset={isKeyboardVisible ? 100 : 0}
+        behavior={Platform.OS === 'ios' ? 'padding' :  'height'}
       >
         <ImageBackground style={styles.backgroundImage} source={backgroundImage}>
 
@@ -263,41 +287,39 @@ const ChatScreen = ({ navigation, route }) => {
               <Feather name="send" size={20} color="black" />
             </Pressable>
           )}
-          {tempImageUri &&
-          <AwseomeAlert
-            show={true}
-            title='Send image'
-            closeOnTouchOutside={true}
-            closeOnHardwareBackPress={false}
-            showCancelButton={true}
-            showConfirmButton={true}
-            cancelText='Cancel'
-            confirmText='Send image'
-            confirmButtonColor={GlobalStyles.colors.mainColor}
-            cancelButtonColor={GlobalStyles.colors.errorColor}
-            titleStyle={styles.popupTitleStyle}
-            onCancelPressed={() => {
-              setTempImageUri("");
-            }}
-            onConfirmPressed={uploadImage}
-            onDismiss={() => {
-              setTempImageUri("");
-            }}
-            customView={(
-                 <View> 
-                  {
-                    isLoading && 
-                    <ActivityIndicator
-                    size='small' color={GlobalStyles.colors.mainColor}
-                    />
-                  }
-                   {!isLoading && tempImageUri !=="" && 
-                   <Image source= {{uri: tempImageUri}} style={{width:200, height:200}}/>}
-                 </View>
-         
-           )}
-          />
-        }
+           <Modal isVisible={!!tempImageUri} onBackdropPress={() => setTempImageUri("")}>
+            <View style={{
+              backgroundColor: 'white',
+              borderRadius: 10,
+              padding: 20,
+              alignItems: 'center'
+            }}>
+              <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Send image</Text>
+              <Text style={{ textAlign: 'center', marginBottom: 15 }}>Do you want to send this image?</Text>
+
+              {isLoading ? (
+                <ActivityIndicator size="small" color={GlobalStyles.colors.mainColor} />
+              ) : (
+                tempImageUri !== "" &&
+                <Image source={{ uri: tempImageUri }} style={{ width: 200, height: 200, marginBottom: 15 }} />
+              )}
+
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
+                <Pressable
+                  onPress={() => setTempImageUri("")}
+                  style={{ flex: 1, marginRight: 10, padding: 10, backgroundColor: GlobalStyles.colors.errorColor, borderRadius: 5 }}
+                >
+                  <Text style={{ color: 'white', textAlign: 'center' }}>Cancel</Text>
+                </Pressable>
+                <Pressable
+                  onPress={uploadImage}
+                  style={{ flex: 1, marginLeft: 10, padding: 10, backgroundColor: GlobalStyles.colors.mainColor, borderRadius: 5 }}
+                >
+                  <Text style={{ color: 'white', textAlign: 'center' }}>Send</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
 
         </View>
       </KeyboardAvoidingView>

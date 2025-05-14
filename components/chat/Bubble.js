@@ -1,8 +1,8 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import { Image, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native'
 import { GlobalStyles } from '../../constants/styles'
 import PageContainer from '../PageContainer'
-import { Menu, MenuTrigger, MenuOption, MenuOptions } from 'react-native-popup-menu'
+import { Menu, IconButton, Divider } from 'react-native-paper';
 import uuid from 'react-native-uuid'
 import * as Clipboard from 'expo-clipboard'
 import Feather from '@expo/vector-icons/Feather';
@@ -17,17 +17,7 @@ function format24Hour(dateString) {
     return hours + ':' + minutes;
   }
 
-const MenuItem = ({text, onSelect, iconPack, iconName}) => {
 
-    const Icon = iconPack ?? Feather
-
-    return <MenuOption onSelect={onSelect}>
-        <View style={styles.menuItemConatainer}>
-            <Text style={styles.menuText}>{text}</Text>
-            <Icon name={iconName} size={18}/>
-        </View>
-    </MenuOption>
-}
 
 const Bubble = ({text, type, date, setReply, replyingTo, name, imageUrl}) => {
     
@@ -37,6 +27,9 @@ const Bubble = ({text, type, date, setReply, replyingTo, name, imageUrl}) => {
     const storedUsers = useSelector(state => state.users.storedUsers);
     const userData = useSelector(state => state.auth.userData);
     let isNeedPageContainer = true;
+    const [visible, setVisible] = useState(false);
+    const openMenu = () => setVisible(true);
+    const closeMenu = () => setVisible(false);
 
     const menuRef = useRef(null);
     const id = useRef(uuid.v4());
@@ -112,49 +105,69 @@ const Bubble = ({text, type, date, setReply, replyingTo, name, imageUrl}) => {
 
   return (
     <PageContainer bool={!isNeedPageContainer} style={{paddingHorizontal:0}} >
-        <View style={wrappreStyle}>
-            <Container onLongPress={()=>menuRef.current.props.ctx.menuActions.openMenu(id.current)} style={{width:'100%'}}>
-                <View style={bubbleStyle}>
+          <View >
+                           <Menu
+                                visible={visible}
+                                onDismiss={closeMenu}
+                                 anchor={
+                                    <View style={wrappreStyle}>
+                                         <Container onLongPress={openMenu} style={{width:'100%'}}>
+                                             <View style={bubbleStyle}>
 
-                    {
-                        name && type !== "info" &&  type !== "start" && <Text style={styles.nameText}>{name}</Text>
-                    }
+                                                 {
+                                                     name && type !== "info" &&  type !== "start" && <Text style={styles.nameText}>{name}</Text>
+                                                 }
 
-                    {
-                        replayingToUser &&
-                        <Bubble
-                        type='reply'
-                        text={replyingTo.text}
-                        name = {`${replayingToUser.firstName} ${replayingToUser.lastName}`}
-                        />
-                    }
-                    { !imageUrl &&
-                        <Text style={textStyle}>{text}</Text>}
+                                                 {
+                                                    replayingToUser &&
+                                                     <Bubble
+                                                        type='reply'
+                                                        text={replyingTo.text}
+                                                        name = {`${replayingToUser.firstName} ${replayingToUser.lastName}`}
+                                                    />
+                                                }
+                                                { !imageUrl &&
+                                                    <Text style={textStyle}>{text}</Text>
+                                                }
 
-                    {
-                        imageUrl && 
-                        <Image style={styles.image} source={{uri:imageUrl}}/>
-                    }
+                                                {
+                                                   imageUrl && 
+                                                    <Image style={styles.image} source={{uri:imageUrl}}/>
+                                                }
 
-                { dateString && type !== "info" &&  type !== "start" && 
-                        <View style={styles.timeContainer}>
-                            <Text style={styles.time}>{dateString}</Text>
+                                                { dateString && type !== "info" &&  type !== "start" && 
+                                                      <View style={styles.timeContainer}>
+                                                          <Text style={styles.time}>{dateString}</Text>
+                                                        </View>
+                                                }
+                                                        
+                                                    
+                                             </View>
+                                         </Container>
+                                     </View>
+                                 }
+                            >
+                                <Menu.Item
+                                onPress={() => {
+                                    copyToClipboard(text);
+                                    closeMenu();
+                                }}
+                                title="Copy to clipboard"
+                                leadingIcon="content-copy"
+                                />
+                                <Divider />
+                                <Menu.Item
+                                onPress={() => {
+                                    setReply()
+                                    closeMenu();
+                                }}
+                                title="Reply"
+                                leadingIcon="reply"
+                                />
+                            </Menu>
+
                         </View>
-                    }
-
-                    <Menu name={id.current} ref={menuRef}>
-                        <MenuTrigger/>
-                        <MenuOptions>
-                            <MenuItem iconName='copy' text='Copy to clipboard' onSelect={() => copyToClipboard(text)}/>
-                            <MenuItem iconName='arrow-left-circle' text='Reply' onSelect={setReply}/>
-                        </MenuOptions>
-
-                
-
-                    </Menu>
-                </View>
-            </Container>
-        </View>
+       
     </PageContainer>
   )
 }
