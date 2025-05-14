@@ -149,6 +149,7 @@ const SearchScreen = ({ navigation }) => {
         fetchActivities(filters, search);
     }, [fetchActivities, filters, search]);
 
+
     return (
         <SafeAreaView edges={['top', 'left', 'right']} style={styles.container}>
             <View style={styles.headerContainer}>

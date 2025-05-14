@@ -69,23 +69,27 @@ const Sidebar = ({ applyFilters }) => {
 
     
     const toggleSidebar = () => {
-      setIsSidebarVisible(!isSidebarVisible); 
-      if (!isSidebarVisible) {
-          setIsAnimating(true);
-          Animated.timing(sidebarPosition, {
-              toValue: 0,
-              duration: 170,
-              useNativeDriver: false,
-          }).start(() => setIsAnimating(false));
-      } else {
-          setIsAnimating(true);
-          Animated.timing(sidebarPosition, {
-              toValue: -SIDEBAR_WIDTH,
-              duration: 200,
-              useNativeDriver: false,
-          }).start(() => setIsAnimating(false));
-      }
-  };
+    if (isSidebarVisible) {
+        setIsAnimating(true);
+        Animated.timing(sidebarPosition, {
+            toValue: -SIDEBAR_WIDTH,
+            duration: 200,
+            useNativeDriver: false,
+        }).start(() => {
+            setIsAnimating(false);
+            setIsSidebarVisible(false); // ⬅️ רק אחרי הסיום
+        });
+    } else {
+        setIsSidebarVisible(true); // ⬅️ קודם פותח ואז...
+        setIsAnimating(true);
+        Animated.timing(sidebarPosition, {
+            toValue: 0,
+            duration: 170,
+            useNativeDriver: false,
+        }).start(() => setIsAnimating(false));
+    }
+};
+
 
     const handleCategoryChange = (id,value) => {
       if(id==="categories"){

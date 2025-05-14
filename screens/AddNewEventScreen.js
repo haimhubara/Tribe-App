@@ -91,6 +91,8 @@ const AddNewEventScreen = ({ navigation, route }) => {
       setImageChanged(true);
     }else if(id==="location"){
       setLocation(text);
+    }else if(id==="gender"){
+      setSelectedGender(text);
     }
   };
 
