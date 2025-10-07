@@ -5,10 +5,10 @@ import { useSelector } from 'react-redux';
 import Feather from '@expo/vector-icons/Feather';
 import * as Animatable from 'react-native-animatable';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
-import { getActivityData } from '../util/actions/activityAction';
-import ActivityComponent from '../components/ActivityComponent';
-import { GlobalStyles } from '../constants/styles';
-import { getFirebaseApp } from '../util/firebase';
+import { getActivityData } from '../../util/actions/activityAction';
+import { ActivityComponent } from '../../components';
+import { GlobalStyles } from '../../constants/styles';
+import { getFirebaseApp } from '../../util/firebase'
 
 const app =getFirebaseApp()
 const db = getFirestore(app);

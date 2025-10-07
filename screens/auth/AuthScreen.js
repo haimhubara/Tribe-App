@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect,useReducer, useCallback } from 'react'
 import { Pressable, Text, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Alert, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import PageContainer from '../../components/PageContainer'
+import { PageContainer } from '../../components'
 import { SignUpForm, SignInForm, UploadPhotosForm, VideoForm } from "./components"
 import { GlobalStyles } from '../../constants/styles'
 import { signUpreducer } from '../../util/reducers/AuthReducer'

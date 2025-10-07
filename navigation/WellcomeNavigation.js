@@ -3,11 +3,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import Feather from '@expo/vector-icons/Feather';
 import { createStackNavigator } from '@react-navigation/stack';
-import {NewGroupChatScreen, ContactScreen, GroupChatSetting, ForeignProfileScreen, HomeScreen, ProfileScreen, ChatListScreen, SearchScreen, AddNewEventScreen,PersonalActivityProfileScreen } from '../screens';
-import ChatScreen from '../screens/chat/ChatScreen';
-import ParticipantsListScreen from '../screens/ParticipantsListScreen';
+import { ParticipantsListScreen, RequestsList,  ActivitiesScreen, ChatScreen,NewGroupChatScreen, ContactScreen, GroupChatSetting, ForeignProfileScreen, ProfileScreen, ChatListScreen, SearchScreen, AddNewEventScreen,PersonalActivityProfileScreen } from '../screens';
 import ActivityComponent from '../components/ActivityComponent';
-import RequestsList from '../screens/RequestsList';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { getFirebaseApp } from '../util/firebase';
@@ -18,7 +15,6 @@ import { useState } from 'react';
 import { setStoredUsers } from '../store/userSlice';
 import { getUserData } from '../util/actions/userAction';
 import { setChatMessages } from '../store/messagesSlice';
-import ActivitiesScreen from '../screens/ActivitiesScreen';
 
 
 

@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, ScrollView, TextInput, TouchableOpacity, RefreshControl, Modal, Pressable } from 'react-native';
-import ActivityComponent from '../components/ActivityComponent';
+import { ActivityComponent } from '../../components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import Sidebar from '../components/Sidebar';
+import { Sidebar } from './components';
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 import * as Animatable from 'react-native-animatable';
-import { getFirebaseApp } from '../util/firebase';
+import { getFirebaseApp } from '../../util/firebase';
 
 
 const SearchScreen = ({ navigation }) => {

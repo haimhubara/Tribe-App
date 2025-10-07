@@ -1,28 +1,22 @@
 import React, { useState } from "react";
-import { GlobalStyles } from "../constants/styles";
+import { GlobalStyles } from "../../constants/styles";
 import {Text,StyleSheet,View,ScrollView,KeyboardAvoidingView,TouchableWithoutFeedback,Keyboard,TouchableOpacity,ActivityIndicator } from "react-native";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import { SafeAreaView } from "react-native-safe-area-context";
-import HobbiesPicker from "../components/HobbiesPicker";
-import Header from "../components/Header";
-import GalInput from "../components/GalInput";
+import {PageContainer, LocationPicker, HobbiesPicker, Header, DatePicker, InputPicker, TimePicker } from "../../components";
+import { GalInput } from "./components"
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import PageContainer from "../components/PageContainer";
-import DatePicker from "../components/DatePicker";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import InputPicker from "../components/InputPicker";
-import TimePicker from "../components/TimePicker";
 import { getFirestore } from "firebase/firestore";
 import {  doc, updateDoc, addDoc,getDoc, collection,arrayUnion } from "firebase/firestore"; 
-import ImageGenerator from "../components/imagesAndVideo/ImageGenerator";
-import { uploadImageToCloudinary,deleteImageFromCloudinary } from "../util/cloudinary";
+import { ImageGenerator } from "./components";
+import { uploadImageToCloudinary,deleteImageFromCloudinary } from "../../util/cloudinary";
 import { useSelector } from "react-redux";
-import LocationPicker from "../components/LocationPicker";
-import { createChat, sendStartMessage, updateChatData } from "../util/actions/chatAction";
+import { createChat, sendStartMessage, updateChatData } from "../../util/actions/chatAction";
 import * as Haptics from 'expo-haptics';
-import { getFirebaseApp } from "../util/firebase";
+import { getFirebaseApp } from "../../util/firebase";
 
 
 const AddNewEventScreen = ({ navigation, route }) => {
@@ -325,7 +319,7 @@ const handleSubmit = async () => {
                   time={time}
                   setTime={setTime}
                   label="Time:"
-                  iconName="clockcircleo"
+                  iconName="clock-circle"
                   IconPack={AntDesign}
                   onInuptChange={onInuptChange}
                 />

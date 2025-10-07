@@ -1,16 +1,13 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, Button, Modal, StyleSheet, TouchableOpacity, Animated, ScrollView } from 'react-native';
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
-import DatePicker from "../components/DatePicker";
-import InputPicker from "../components/InputPicker";
-import TimePicker from "../components/TimePicker";
+import { InputPicker, DatePicker, TimePicker, LocationPicker } from "../../../components";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Checkbox } from 'react-native-paper'; 
-import { GlobalStyles } from '../constants/styles';
+import { GlobalStyles } from '../../../constants/styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import LocationPicker from './LocationPicker';
 import { useSelector } from "react-redux";
 
 

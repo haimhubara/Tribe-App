@@ -1,4 +1,3 @@
-export { default as HomeScreen } from "./HomeScreen";
 export { default as ProfileScreen } from "./profile/ProfileScreen";
 export { default as ForeignProfileScreen } from "./profile/ForeignProfileScreen";
 export { default as ChatListScreen } from "./chat/ChatListScreen";
@@ -6,7 +5,10 @@ export { default as ChatScreen } from "./chat/ChatScreen";
 export { default as ContactScreen } from "./chat/ContactScreen";
 export { default as GroupChatSetting } from "./chat/GroupChatSetting";
 export { default as NewGroupChatScreen } from "./chat/NewGroupChatScreen";
-export { default as SearchScreen } from "./SearchScreen";
-export { default as AddNewEventScreen } from "./AddNewEventScreen";
-export { default as PersonalActivityProfileScreen } from "./PersonalActivityProfileScreen";
+export { default as SearchScreen } from "./search/SearchScreen";
 export { default as AuthScreen } from "./auth/AuthScreen";
+export { default as ActivitiesScreen } from "./activity/ActivitiesScreen";
+export { default as AddNewEventScreen } from "./activity/AddNewEventScreen";
+export { default as ParticipantsListScreen } from "./activity/ParticipantsListScreen";
+export { default as PersonalActivityProfileScreen } from "./activity/PersonalActivityProfileScreen";
+export { default as RequestsList } from "./activity/RequestsList";

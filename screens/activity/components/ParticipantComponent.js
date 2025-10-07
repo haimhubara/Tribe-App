@@ -1,13 +1,13 @@
 import { View, Text, Pressable, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { GlobalStyles } from '../constants/styles';
-import ImageToShow from './imagesAndVideo/ImageToShow';
+import { GlobalStyles } from '../../../constants/styles';
+import ImageToShow from '../../../components/imagesAndVideo/ImageToShow';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { getFirestore, doc, updateDoc, arrayRemove } from "firebase/firestore";
-import { removeUserFromChat } from '../util/actions/chatAction';
-import { getActivityData } from '../util/actions/activityAction';
-import { getFirebaseApp } from '../util/firebase';
+import { removeUserFromChat } from '../../../util/actions/chatAction';
+import { getActivityData } from '../../../util/actions/activityAction';
+import { getFirebaseApp } from '../../../util/firebase';
 
 const app = getFirebaseApp()
 const db = getFirestore(app);

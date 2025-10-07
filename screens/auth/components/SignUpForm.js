@@ -7,7 +7,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import SubmitButton from '../../../components/buttons/SubmitButton'
 import { GlobalStyles } from '../../../constants/styles';
-import { SignUpDatePicker } from '../components';
+import SignUpDatePicker from './SignUpDatePicker';
 import { StyleSheet, Text } from 'react-native';
 import { validateInput } from '../../../util/actions/FormActions';
 

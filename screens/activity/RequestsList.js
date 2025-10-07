@@ -2,17 +2,16 @@ import { View, Text, StyleSheet, FlatList, ActivityIndicator } from "react-nativ
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState, useEffect } from "react";
 import { arrayRemove, arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
-import FriendRequestComponent from "../components/FriendRequestComponent";
-import Header from "../components/Header";
+import { FriendRequestComponent } from "./components";
+import { Header, PageContainer } from "../../components";
 import { getFirestore } from "firebase/firestore";
 import { createSelector } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
-import SubmitButton from "../components/buttons/SubmitButton";
-import { GlobalStyles } from "../constants/styles";
-import PageContainer from "../components/PageContainer";
-import { addUsersToChat } from "../util/actions/chatAction";
-import { getUserData } from "../util/actions/userAction";
-import { getFirebaseApp } from "../util/firebase";
+import SubmitButton from "../../components/buttons/SubmitButton";
+import { GlobalStyles } from "../../constants/styles";
+import { addUsersToChat } from "../../util/actions/chatAction";
+import { getUserData } from "../../util/actions/userAction";
+import { getFirebaseApp } from "../../util/firebase";
 
 // אתחול Firestore
 const app = getFirebaseApp()

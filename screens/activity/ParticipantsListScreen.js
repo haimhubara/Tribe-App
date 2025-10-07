@@ -2,10 +2,10 @@ import { View, Text, StyleSheet, FlatList, ActivityIndicator } from "react-nativ
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState, useEffect } from "react";
 import { doc, getDoc } from "firebase/firestore";
-import Header from "../components/Header";
-import ParticipantComponent from "../components/ParticipantComponent";
+import { Header } from "../../components";
+import ParticipantComponent from "./components";
 import { getFirestore } from "firebase/firestore";
-import { getFirebaseApp } from "../util/firebase";
+import { getFirebaseApp } from "../../util/firebase";
 
 // אתחול Firestore
 const app = getFirebaseApp()

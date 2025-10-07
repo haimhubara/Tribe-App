@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { View, StyleSheet, Text, TextInput } from 'react-native'
-import { GlobalStyles } from '../constants/styles'
+import { GlobalStyles } from '../../../constants/styles'
 
 
 const GalInput = ({label, iconName, IconPack, iconSize, error, id, onInuptChange, inputOption, value, styleInputContainer}) => {
