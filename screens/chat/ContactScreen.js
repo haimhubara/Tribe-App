@@ -6,7 +6,7 @@ import PageContainer from '../../components/PageContainer';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { GlobalStyles } from '../../constants/styles';
 import { getUserChats } from '../../util/actions/userAction';
-import ActiveChats from './components/ActiveChat';
+import { ActiveChats } from './components';
 import SubmitButton from '../../components/buttons/SubmitButton';
 import { ActivityIndicator } from 'react-native-paper';
 import { removeUserFromChat } from '../../util/actions/chatAction';

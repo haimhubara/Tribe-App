@@ -13,7 +13,7 @@ import Input from '../../components/Input';
 import { signInReducer } from '../../util/reducers/AuthReducer';
 import SubmitButton from '../../components/buttons/SubmitButton';
 import { validateInput } from '../../util/actions/FormActions';
-import ActiveChats from './components/ActiveChat';
+import { ActiveChats } from './components';
 
 
 const GroupChatSetting = ({route,navigation}) => {

@@ -1,7 +1,7 @@
 import { View,Text,StyleSheet, TextInput, FlatList, Platform, ActivityIndicator, TouchableOpacity } from "react-native"
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect, useState } from "react";
-import { ActiveChats} from "./components";
+import { ActiveChats } from "./components";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { GlobalStyles } from "../../constants/styles";
 import { PageContainer } from "../../components";
