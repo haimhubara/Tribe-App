@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
-import { GlobalStyles } from '../../constants/styles';
+import { GlobalStyles } from '../../../constants/styles';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
 const ReplyTo = ({text, user, onCancel}) => {

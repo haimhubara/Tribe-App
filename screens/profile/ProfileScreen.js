@@ -1,9 +1,8 @@
 import { Text, StyleSheet, ScrollView} from "react-native";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import ProfileComponent from "../components/profileComponents/ProfileComponent";
-import EditProfile from "../components/profileComponents/EditProfile";
-import { userLogout } from "../util/actions/AuthAction";
+import { ProfileComponent, EditProfile} from "./components";
+import { userLogout } from "../../util/actions/AuthAction";
 import { useDispatch } from 'react-redux';
 
 

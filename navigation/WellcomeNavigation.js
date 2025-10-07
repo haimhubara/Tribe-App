@@ -3,9 +3,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import Feather from '@expo/vector-icons/Feather';
 import { createStackNavigator } from '@react-navigation/stack';
-import { HomeScreen, ProfileScreen, ChatListScreen, SearchScreen, AddNewEventScreen,PersonalActivityProfileScreen } from '../screens';
-import ForeignProfileScreen from '../screens/proflieScreens/ForeignProfileScreen';
-import ChatScreen from '../screens/chatScreens/ChatScreen';
+import {NewGroupChatScreen, ContactScreen, GroupChatSetting, ForeignProfileScreen, HomeScreen, ProfileScreen, ChatListScreen, SearchScreen, AddNewEventScreen,PersonalActivityProfileScreen } from '../screens';
+import ChatScreen from '../screens/chat/ChatScreen';
 import ParticipantsListScreen from '../screens/ParticipantsListScreen';
 import ActivityComponent from '../components/ActivityComponent';
 import RequestsList from '../screens/RequestsList';
@@ -20,9 +19,6 @@ import { setStoredUsers } from '../store/userSlice';
 import { getUserData } from '../util/actions/userAction';
 import { setChatMessages } from '../store/messagesSlice';
 import ActivitiesScreen from '../screens/ActivitiesScreen';
-import NewGroupChatScreen from '../screens/chatScreens/NewGroupChatScreen';
-import ContactScreen from '../screens/chatScreens/ContactScreen';
-import GroupChatSetting from '../screens/chatScreens/GroupChatSetting';
 
 
 

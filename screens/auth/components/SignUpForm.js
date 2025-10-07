@@ -8,7 +8,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import SubmitButton from '../../../components/buttons/SubmitButton'
 import { GlobalStyles } from '../../../constants/styles';
 import InputPicker from '../../../components/InputPicker';
-import SignUpDatePicker from '../../../components/SignUpDatePicker';
+import { SignUpDatePicker } from '../components';
 import { StyleSheet, Text } from 'react-native';
 import HobbiesPicker from '../../../components/HobbiesPicker';
 import { validateInput } from '../../../util/actions/FormActions';

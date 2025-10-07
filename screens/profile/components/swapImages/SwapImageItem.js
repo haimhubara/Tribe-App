@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 import { View, Image, StyleSheet, useWindowDimensions, Text, Pressable, Modal, Touchable, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { GlobalStyles } from "../../constants/styles";
+import { GlobalStyles } from "../../../../constants/styles";
 import { launchCameraAsync, launchImageLibraryAsync, useCameraPermissions, PermissionStatus } from 'expo-image-picker';
-import { deleteImageFromCloudinary, deleteVideoFromCloudinary, uploadImageToCloudinary, uploadVideoToCloudinary } from "../../util/cloudinary";
-import { updateLoggedInUserData } from "../../store/authSlice";
-import { updateSignInUserData } from "../../util/actions/AuthAction";
+import { deleteImageFromCloudinary, deleteVideoFromCloudinary, uploadImageToCloudinary, uploadVideoToCloudinary } from "../../../../util/cloudinary";
+import { updateLoggedInUserData } from "../../../../store/authSlice";
+import { updateSignInUserData } from "../../../../util/actions/AuthAction";
 import { useDispatch, useSelector } from "react-redux";
 import { ActivityIndicator } from "react-native";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import VideoScreen from "../imagesAndVideo/VideoScreen";
-import { pickVideoHandle } from "../../util/actions/imageAction";
-import ReplaceVideo from "../imagesAndVideo/ReplaceVideo";
+import VideoScreen from "../../../../components/imagesAndVideo/VideoScreen";
+import { pickVideoHandle } from "../../../../util/actions/imageAction";
+import ReplaceVideo from "../../../../components/imagesAndVideo/ReplaceVideo";
 import Feather from '@expo/vector-icons/Feather';
 
 

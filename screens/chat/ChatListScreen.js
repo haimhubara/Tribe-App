@@ -1,13 +1,11 @@
 import { View,Text,StyleSheet, TextInput, FlatList, Platform, ActivityIndicator, TouchableOpacity } from "react-native"
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect, useState } from "react";
-import ActiveChats from "../components/ActiveChat";
+import { ActiveChats} from "./components";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { searchUsers } from "../util/actions/userAction";
-import { GlobalStyles } from "../constants/styles";
-import PageContainer from "../components/PageContainer";
-
-import defaultImage from "../assets/images/userImage.jpeg"
+import { GlobalStyles } from "../../constants/styles";
+import { PageContainer } from "../../components";
+import defaultImage from "../../assets/images/userImage.jpeg"
 import { useSelector } from "react-redux";
 import { createSelector } from 'reselect';
 

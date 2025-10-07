@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { GlobalStyles } from '../constants/styles';
-import ImageToShow from './imagesAndVideo/ImageToShow';
+import { GlobalStyles } from '../../../constants/styles';
+import ImageToShow from '../../../components/imagesAndVideo/ImageToShow';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import defaultImage from "../assets/images/userImage.jpeg"
+import defaultImage from "../../../assets/images/userImage.jpeg"
 
 const ActiveChats = ({title ,lastMessage, imageSource, startChatHandle,updatedAt, type, isChecked }) => {
   const navigation = useNavigation();

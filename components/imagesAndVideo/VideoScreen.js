@@ -27,7 +27,7 @@ export default function VideoScreen({videoSource, style, play}) {
         <VideoView
             style={styles.video} 
             player={player}
-            allowsFullscreen
+             fullscreenOptions={{ allowsFullscreen: true }}
             allowsPictureInPicture
             VideoContentFit='cover'
             contentFit="cover" 

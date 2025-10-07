@@ -5,7 +5,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { getAllUsers } from '../../util/actions/userAction';
 import { useSelector } from 'react-redux';
 import { ActivityIndicator } from 'react-native-paper';
-import ActiveChats from '../../components/ActiveChat';
+import ActiveChats from './components/ActiveChat';
 import { createChat, sendStartMessage } from '../../util/actions/chatAction';
 
 

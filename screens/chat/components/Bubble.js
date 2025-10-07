@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { Image, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native'
-import { GlobalStyles } from '../../constants/styles'
-import PageContainer from '../PageContainer'
+import { GlobalStyles } from '../../../constants/styles'
+import { PageContainer } from '../../../components'
 import { Menu, IconButton, Divider } from 'react-native-paper';
 import uuid from 'react-native-uuid'
 import * as Clipboard from 'expo-clipboard'

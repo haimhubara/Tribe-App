@@ -4,9 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from '@expo/vector-icons/Feather';
 import backgroundImage from '../../assets/images/droplet.jpeg';
 import { useSelector } from 'react-redux';
-import Bubble from '../../components/chat/Bubble';
+import { Bubble, ReplyTo } from "./components";
 import { createChat, sendImageMessage, sendTextMessage } from '../../util/actions/chatAction';
-import ReplyTo from '../../components/chat/ReplyTo';
 
 import Modal from 'react-native-modal';
 import { GlobalStyles } from '../../constants/styles';

@@ -1,17 +1,9 @@
-import React from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Dimensions,
-} from "react-native";
+import {View,StyleSheet,Text,TouchableOpacity, ScrollView,Dimensions,} from "react-native";
 import { useSelector } from "react-redux";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Feather from "@expo/vector-icons/Feather";
-import ShowCoupleStuf from "../ShowCoupleStuf";
-import SwapImages from "../swapImages/SwapImages";
+import {ShowCoupleStuf} from "../../../components";
+import SwapImages from "./swapImages/SwapImages";
 
 const { height } = Dimensions.get("window");
 

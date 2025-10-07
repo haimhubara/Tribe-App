@@ -1,24 +1,20 @@
-import { View, StyleSheet,Text} from "react-native";
-import HobbiesPicker from "../HobbiesPicker";
-import SwapImages from "../swapImages/SwapImages";
-import Input from "../Input";
-import PageContainer from "../PageContainer";
 import { useCallback, useState } from "react";
+import { View, StyleSheet,Text, ActivityIndicator} from "react-native";
+import SwapImages from "./swapImages/SwapImages";
+import { Input, PageContainer,HobbiesPicker, Header } from "../../../components";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Feather from '@expo/vector-icons/Feather';
 import { useSelector } from "react-redux";
-import { validateInput } from "../../util/actions/FormActions";
+import { validateInput } from "../../../util/actions/FormActions";
 import { useReducer } from "react";
-import { signUpreducer } from "../../util/reducers/AuthReducer";
-import SubmitButton from "../buttons/SubmitButton";
-import { ActivityIndicator } from "react-native";
-import { GlobalStyles } from "../../constants/styles";
-import Header from "../Header";
+import { signUpreducer } from "../../../util/reducers/AuthReducer";
+import SubmitButton from "../../../components/buttons/SubmitButton";
+import { GlobalStyles } from "../../../constants/styles";
 import { useNavigation } from "@react-navigation/native";
-import { updateSignInUserData } from "../../util/actions/AuthAction";
+import { updateSignInUserData } from "../../../util/actions/AuthAction";
 import { useDispatch } from "react-redux";
-import { updateLoggedInUserData } from "../../store/authSlice";
+import { updateLoggedInUserData } from "../../../store/authSlice";
 
 
 

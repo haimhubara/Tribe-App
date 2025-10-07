@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import dayjs from "dayjs";
-import { GlobalStyles } from "../constants/styles";
+import { GlobalStyles } from "../../../constants/styles";
 
 const SignUpDatePicker = ({ label, iconName, IconPack, iconSize, error, date, setDate, id, onInputChange }) => {
   const [isDatePickerVisible, setDatePickerVisible] = useState(false);

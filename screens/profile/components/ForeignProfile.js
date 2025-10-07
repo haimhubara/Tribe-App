@@ -1,19 +1,18 @@
 import { View, StyleSheet, Text, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions } from "react-native";
-import SwapImages from "../swapImages/SwapImages";
 import { useEffect, useState } from "react";
-import ShowCoupleStuf from "../ShowCoupleStuf";
+import SwapImages from "./swapImages/SwapImages";
+import {ShowCoupleStuf, Header} from "../../../components";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Feather from '@expo/vector-icons/Feather';
-import Header from "../Header";
-import IconButton from "../buttons/IconButton";
-import { GlobalStyles } from "../../constants/styles";
+import IconButton from "../../../components/buttons/IconButton";
+import { GlobalStyles } from "../../../constants/styles";
 import { useRoute, useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { setStoredUsers } from "../../store/userSlice";
+import { setStoredUsers } from "../../../store/userSlice";
 import { createSelector } from 'reselect';
-import defaultImage from "../../assets/images/camera.png";
-import { getUserData } from "../../util/actions/userAction";
+import defaultImage from "../../../assets/images/camera.png";
+import { getUserData } from "../../../util/actions/userAction";
 
 const { height } = Dimensions.get("window");
 

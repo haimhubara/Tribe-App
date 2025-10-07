@@ -1,5 +1,5 @@
 import { ScrollView} from "react-native";
-import ForeignProfile from "../../components/profileComponents/ForeignProfile";
+import { ForeignProfile } from "./components/";
 
 const ForeignProfileScreen = ({navigation, route}) => {
     
