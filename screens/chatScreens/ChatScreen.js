@@ -11,7 +11,7 @@ import ReplyTo from '../../components/chat/ReplyTo';
 import Modal from 'react-native-modal';
 import { GlobalStyles } from '../../constants/styles';
 import {openCamera, pickImageHandle } from '../../util/actions/imageAction';
-import { uploadImageToCloudinary } from '../../components/Cloudinary';
+import { uploadImageToCloudinary } from "../../util/cloudinary";
 import { createSelector } from '@reduxjs/toolkit';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import CustomHeaderButton from '../../components/buttons/CustomHeaderButton';

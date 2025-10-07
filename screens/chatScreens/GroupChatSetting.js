@@ -7,7 +7,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import Entypo from '@expo/vector-icons/Entypo';
 import defaultImage from "../../assets/images/userImage.jpeg"
 import { pickImageHandle } from '../../util/actions/imageAction';
-import { uploadImageToCloudinary } from '../../components/Cloudinary';
+import { uploadImageToCloudinary } from '../../util/cloudinary';
 import { removeUserFromChat, updateChatData } from '../../util/actions/chatAction';
 import Input from '../../components/Input';
 import { signInReducer } from '../../util/reducers/AuthReducer';

@@ -3,7 +3,7 @@ import { View, Image, StyleSheet, useWindowDimensions, Text, Pressable, Modal, T
 import Icon from "react-native-vector-icons/FontAwesome";
 import { GlobalStyles } from "../../constants/styles";
 import { launchCameraAsync, launchImageLibraryAsync, useCameraPermissions, PermissionStatus } from 'expo-image-picker';
-import { deleteImageFromCloudinary, deleteVideoFromCloudinary, uploadImageToCloudinary, uploadVideoToCloudinary } from "../Cloudinary";
+import { deleteImageFromCloudinary, deleteVideoFromCloudinary, uploadImageToCloudinary, uploadVideoToCloudinary } from "../../util/cloudinary";
 import { updateLoggedInUserData } from "../../store/authSlice";
 import { updateSignInUserData } from "../../util/actions/AuthAction";
 import { useDispatch, useSelector } from "react-redux";

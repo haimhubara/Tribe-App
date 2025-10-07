@@ -5,7 +5,7 @@ import { authenticate, logout } from "../../store/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getUserData } from "./userAction";
 import { auth } from "../firebase";
-import { uploadImageToCloudinary,uploadVideoToCloudinary } from "../../components/Cloudinary";
+import { uploadImageToCloudinary,uploadVideoToCloudinary } from "../cloudinary";
 
 
 

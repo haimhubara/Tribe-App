@@ -17,7 +17,7 @@ import TimePicker from "../components/TimePicker";
 import { getFirestore } from "firebase/firestore";
 import {  doc, updateDoc, addDoc,getDoc, collection,arrayUnion } from "firebase/firestore"; 
 import ImageGenerator from "../components/imagesAndVideo/ImageGenerator";
-import { uploadImageToCloudinary,deleteImageFromCloudinary } from "../components/Cloudinary";
+import { uploadImageToCloudinary,deleteImageFromCloudinary } from "../util/cloudinary";
 import { useSelector } from "react-redux";
 import LocationPicker from "../components/LocationPicker";
 import { createChat, sendStartMessage, updateChatData } from "../util/actions/chatAction";
