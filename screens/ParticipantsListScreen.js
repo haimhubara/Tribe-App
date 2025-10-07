@@ -4,13 +4,11 @@ import { useState, useEffect } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import Header from "../components/Header";
 import ParticipantComponent from "../components/ParticipantComponent";
-
-import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import firebaseConfig from "../util/firebaseConfig.json"; // קובץ ההגדרות של Firebase
+import { getFirebaseApp } from "../util/firebase";
 
 // אתחול Firestore
-const app = initializeApp(firebaseConfig);
+const app = getFirebaseApp()
 const db = getFirestore(app);
 
 const ParticipantsListScreen = ({ navigation, route }) => {

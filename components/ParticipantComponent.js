@@ -4,13 +4,12 @@ import ImageToShow from './imagesAndVideo/ImageToShow';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
-import { initializeApp } from "firebase/app";
 import { getFirestore, doc, updateDoc, arrayRemove } from "firebase/firestore";
-import firebaseConfig from "../util/firebaseConfig.json";
 import { removeUserFromChat } from '../util/actions/chatAction';
 import { getActivityData } from '../util/actions/activityAction';
+import { getFirebaseApp } from '../util/firebase';
 
-const app = initializeApp(firebaseConfig);
+const app = getFirebaseApp()
 const db = getFirestore(app);
 
 const ParticipantComponent = ({ user, myPage, activityId, onUserRemoved }) => {

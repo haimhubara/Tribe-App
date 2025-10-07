@@ -173,8 +173,8 @@ const LocationPicker = ({ inputChangeHandler, initialLocation, type}) => {
             </View>
             <View style={{ justifyContent: 'center', alignItems: 'center', marginVertical: 10 }}>
               <IconButton
-                iconName="checkcircleo"
-                IconPack={AntDesign}
+                iconName="check-circle"
+                IconPack={AntDesign}כדג
                 information="Confirm"
                 onPress={confirmHandle}
                 containerStyle={{ backgroundColor: GlobalStyles.colors.primary, width: '40%' }}

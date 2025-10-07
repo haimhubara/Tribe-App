@@ -4,10 +4,9 @@ import ActivityComponent from '../components/ActivityComponent';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Sidebar from '../components/Sidebar';
-import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
-import firebaseConfig from "../util/firebaseConfig.json";
 import * as Animatable from 'react-native-animatable';
+import { getFirebaseApp } from '../util/firebase';
 
 
 const SearchScreen = ({ navigation }) => {
@@ -17,7 +16,7 @@ const SearchScreen = ({ navigation }) => {
     const [sidebarVisible, setSidebarVisible] = useState(false);
     const [filters, setFilters] = useState({});
 
-    const app = initializeApp(firebaseConfig);
+    const app = getFirebaseApp()
     const db = getFirestore(app);
 
     const handleActivityPress = (activityData, id) => {

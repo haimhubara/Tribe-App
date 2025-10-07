@@ -3,12 +3,11 @@ import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from '@expo/vector-icons';
 import Header from "../components/Header";
-import { initializeApp } from "firebase/app";
 import { getFirestore, doc, getDoc, updateDoc, deleteDoc, arrayUnion, arrayRemove } from "firebase/firestore";
-import firebaseConfig from "../util/firebaseConfig.json";
 import { useSelector } from "react-redux";
 import { deleteFromActivity, removeUserFromChat } from "../util/actions/chatAction";
 import {  deleteUserChatV2 } from "../util/actions/userAction";
+import { getFirebaseApp } from "../util/firebase";
 
 const formatDateFromISO = (isoString) => {
   if (!isoString) return { date: "", day: "" };
@@ -42,7 +41,7 @@ const PersonalActivityProfileScreen = ({ navigation, route }) => {
   const [locationObject,setLocationObject] = useState(null);
   const userChats = useSelector(state => state.chats.chatsData);
 
-  const app = initializeApp(firebaseConfig);
+  const app = getFirebaseApp()
   const db = getFirestore(app);
 
   const userData = useSelector(state => state.auth.userData);

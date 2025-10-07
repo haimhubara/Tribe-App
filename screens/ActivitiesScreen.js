@@ -4,16 +4,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import Feather from '@expo/vector-icons/Feather';
 import * as Animatable from 'react-native-animatable';
-
-import { initializeApp } from 'firebase/app';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
-import firebaseConfig from '../util/firebaseConfig.json';
-
 import { getActivityData } from '../util/actions/activityAction';
 import ActivityComponent from '../components/ActivityComponent';
 import { GlobalStyles } from '../constants/styles';
+import { getFirebaseApp } from '../util/firebase';
 
-const app = initializeApp(firebaseConfig);
+const app =getFirebaseApp()
 const db = getFirestore(app);
 
 const ActivitiesScreen = ({ navigation }) => {

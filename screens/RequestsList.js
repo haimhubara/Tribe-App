@@ -4,9 +4,7 @@ import { useState, useEffect } from "react";
 import { arrayRemove, arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
 import FriendRequestComponent from "../components/FriendRequestComponent";
 import Header from "../components/Header";
-import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import firebaseConfig from "../util/firebaseConfig.json"; // קובץ ההגדרות של Firebase
 import { createSelector } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
 import SubmitButton from "../components/buttons/SubmitButton";
@@ -14,9 +12,10 @@ import { GlobalStyles } from "../constants/styles";
 import PageContainer from "../components/PageContainer";
 import { addUsersToChat } from "../util/actions/chatAction";
 import { getUserData } from "../util/actions/userAction";
+import { getFirebaseApp } from "../util/firebase";
 
 // אתחול Firestore
-const app = initializeApp(firebaseConfig);
+const app = getFirebaseApp()
 const db = getFirestore(app);
 
 const RequestsList = ({ navigation, route }) => {
