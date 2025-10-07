@@ -1,5 +1,5 @@
 import React, { useCallback, useReducer, useState } from 'react'
-import Input from '../../../components/Input'
+import { Input,InputPicker, HobbiesPicker, LocationPicker } from '../../../components'
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Feather from '@expo/vector-icons/Feather';
 import Fontisto from '@expo/vector-icons/Fontisto';
@@ -7,13 +7,9 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import SubmitButton from '../../../components/buttons/SubmitButton'
 import { GlobalStyles } from '../../../constants/styles';
-import InputPicker from '../../../components/InputPicker';
 import { SignUpDatePicker } from '../components';
 import { StyleSheet, Text } from 'react-native';
-import HobbiesPicker from '../../../components/HobbiesPicker';
 import { validateInput } from '../../../util/actions/FormActions';
-import LocationPicker from '../../../components/LocationPicker';
-
 
 const SignUpForm = ({setNext,formValues,dispachFormValues, setFormUseStateValue}) => {
 
