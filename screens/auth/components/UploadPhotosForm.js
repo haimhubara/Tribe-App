@@ -1,10 +1,10 @@
 import { View, StyleSheet, ScrollView, Text } from "react-native"
 import { useCallback} from "react";
-import SubmitButton from "../buttons/SubmitButton";
-import Header from "../../components/Header";
-import { GlobalStyles } from "../../constants/styles";
-import ImagePicker from "../imagesAndVideo/ImagePicker";
-import { validateInput } from "../../util/actions/FormActions";
+import SubmitButton from "../../../components/buttons/SubmitButton";
+import Header from "../../../components/Header";
+import { GlobalStyles } from "../../../constants/styles";
+import ImagePicker from "../../../components/imagesAndVideo/ImagePicker";
+import { validateInput } from "../../../util/actions/FormActions";
 
 
 

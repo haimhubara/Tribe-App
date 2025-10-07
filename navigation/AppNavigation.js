@@ -1,5 +1,5 @@
 import { NavigationContainer } from '@react-navigation/native';
-import AuthScreen from '../screens/AuthScreen';
+import { AuthScreen } from '../screens';
 import WellcomeNavigation from './WellcomeNavigation';
 import { useSelector } from 'react-redux';
 import StartUpScreen from '../screens/StartUpScreen';

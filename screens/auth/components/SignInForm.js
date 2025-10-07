@@ -1,16 +1,13 @@
-import React, { useCallback,useState,useEffect } from 'react'
-import Input from '../../components/Input'
+import React, { useCallback,useState,useEffect,useReducer } from 'react'
+import Input from '../../../components/Input'
 import Feather from '@expo/vector-icons/Feather';
-import SubmitButton from '../../components/buttons/SubmitButton'
-import { GlobalStyles } from '../../constants/styles';
-import { StyleSheet, Text } from 'react-native';
-import { validateInput } from '../../util/actions/FormActions';
-import { useReducer } from 'react';
-import { signin } from '../../util/actions/AuthAction';
-import { signInReducer } from '../../util/reducers/AuthReducer';
+import SubmitButton from '../../../components/buttons/SubmitButton'
+import { GlobalStyles } from '../../../constants/styles';
+import { StyleSheet, Text, Alert, ActivityIndicator } from 'react-native';
+import { validateInput } from "../../../util/actions/FormActions";
+import { signin } from '../../../util/actions/AuthAction';
+import { signInReducer } from '../../../util/reducers/AuthReducer';
 import { useDispatch } from 'react-redux';
-import { Alert } from 'react-native';
-import { ActivityIndicator } from 'react-native';
 
 
 const isTestMode = true;

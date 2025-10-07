@@ -1,15 +1,14 @@
 import { Text, StyleSheet, View, Image, ActivityIndicator } from "react-native";
-import TakeVideo from "../imagesAndVideo/TakeVideo";
+import TakeVideo from "../../../components/imagesAndVideo/TakeVideo";
 import { useState } from "react";
-import Button from "../buttons/Button";
-import SubmitButton from "../buttons/SubmitButton";
-import React from "react";
-import VideoScreen from "../imagesAndVideo/VideoScreen";
+import Button from "../../../components/buttons/Button";
+import SubmitButton from "../../../components/buttons/SubmitButton";
+import VideoScreen from "../../../components/imagesAndVideo/VideoScreen";
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import Header from "../Header";
-import { GlobalStyles } from "../../constants/styles";
-import image from "../../assets/images/video.png"
+import Header from "../../../components/Header";
+import { GlobalStyles } from "../../../constants/styles";
+import image from "../../../assets/images/video.png"
 
 
 const VideoForm = ({takeVideo,setTakeVideo,isLoading,setSecondNext,signUpHandle, videoUri,setVideoUri}) => {
