@@ -3,7 +3,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState, useEffect } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { Header } from "../../components";
-import ParticipantComponent from "./components";
+import { ParticipantComponent } from "./components";
 import { getFirestore } from "firebase/firestore";
 import { getFirebaseApp } from "../../util/firebase";
 
