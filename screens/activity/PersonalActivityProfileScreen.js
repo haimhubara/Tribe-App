@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from '@expo/vector-icons';
 import { Header } from "../../components";
 import { useSelector } from "react-redux";
-import { getActivityData,requestToJoinActivity,leaveActivity as leaveActivityAction,deleteActivity as deleteActivityAction} from "../../util/actions/activityActions";
+import { getActivityData,requestToJoinActivity,leaveActivity as leaveActivityAction,deleteActivity as deleteActivityAction} from "../../util/actions/activityAction";
 
 const formatDateFromISO = (isoString) => {
   if (!isoString) return { date: "", day: "" };
