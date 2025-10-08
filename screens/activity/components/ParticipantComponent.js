@@ -4,13 +4,9 @@ import ImageToShow from '../../../components/imagesAndVideo/ImageToShow';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
-import { getFirestore, doc, updateDoc, arrayRemove } from "firebase/firestore";
-import { removeUserFromChat } from '../../../util/actions/chatAction';
-import { getActivityData } from '../../../util/actions/activityAction';
-import { getFirebaseApp } from '../../../util/firebase';
+import { getActivityData, removeParticipantFromActivity } from '../../../util/actions/activityAction';
 
-const app = getFirebaseApp()
-const db = getFirestore(app);
+
 
 const ParticipantComponent = ({ user, myPage, activityId, onUserRemoved }) => {
     const navigation = useNavigation();
@@ -24,8 +20,7 @@ const ParticipantComponent = ({ user, myPage, activityId, onUserRemoved }) => {
             });
         }
     }
-  
-    // ✅ פופאפ אישור
+
     const confirmRemove = (userID) => {
         Alert.alert(
             "Remove Participant",
@@ -46,36 +41,33 @@ const ParticipantComponent = ({ user, myPage, activityId, onUserRemoved }) => {
 
     const onRemove = async (userID) => {
         try {
-            const docRef = doc(db, "activities", activityId);
-            await updateDoc(docRef, {
-                activityParticipants: arrayRemove(userID),
-            });
-            await updateDoc(doc(db, "users", userID), {
-                activities: arrayRemove(activityId),
-            });
-
-            if (onUserRemoved) {
-                onUserRemoved(userID); // עדכון חיצוני אם צריך
-            }
-            const currentActivity =  await getActivityData(activityId);
+            const currentActivity = await getActivityData(activityId);
             const currentChat = userChats && userChats[currentActivity.chatId];
-          
-           
-            await removeUserFromChat(userData,user, currentChat);
-            // remove the user with userID from the chat
+
+            const success = await removeParticipantFromActivity(
+                activityId,
+                user,        
+                userData,     
+                currentChat   
+            );
+
+            if (success && onUserRemoved) {
+                onUserRemoved(userID); 
+            }
+
         } catch (e) {
-            console.error("Error updating document:", e);
+            console.error("Error removing participant:", e);
         }
     };
 
-    
+
 
     return (
         <Pressable onPress={openFriendProfileHandle}>
             {({ pressed }) => (
                 <View style={[styles.root, pressed && userData.userId !== user.userId && styles.pressed]}>
-                    <ImageToShow 
-                        imageUrl={user.imageSouce ? user.imageSouce : user.images['firstImage']} 
+                    <ImageToShow
+                        imageUrl={user.images['firstImage']}
                         imageStyle={styles.imageStyle}
                     />
                     <View style={styles.textContainer}>

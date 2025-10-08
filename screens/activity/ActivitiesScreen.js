@@ -4,14 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
 import Feather from '@expo/vector-icons/Feather';
 import * as Animatable from 'react-native-animatable';
-import { getFirestore, doc, getDoc } from 'firebase/firestore';
-import { getActivityData } from '../../util/actions/activityAction';
 import { ActivityComponent } from '../../components';
 import { GlobalStyles } from '../../constants/styles';
-import { getFirebaseApp } from '../../util/firebase'
-
-const app =getFirebaseApp()
-const db = getFirestore(app);
+import { fetchActivitiesForUser } from "../../util/actions/activityAction"
 
 const ActivitiesScreen = ({ navigation }) => {
   const [activitiesData, setActivitiesData] = useState([]);
@@ -19,73 +14,38 @@ const ActivitiesScreen = ({ navigation }) => {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const userData = useSelector(state => state.auth.userData);
 
-  const fetchUserActivities = useCallback(async (isRefresh = false) => {
+  const loadActivities = useCallback(async (isRefresh = false) => {
     try {
       if (!isRefresh) setIsInitialLoading(true);
-
-      if (!userData?.userId) {
-        console.warn("No user ID found.");
-        setActivitiesData([]);
-        setIsInitialLoading(false);
-        return;
-      }
-
-      const userRef = doc(db, "users", userData.userId);
-      const userSnap = await getDoc(userRef);
-
-      if (!userSnap.exists()) {
-        console.warn("User not found in Firestore.");
-        setActivitiesData([]);
-        setIsInitialLoading(false);
-        return;
-      }
-
-      const updatedUserData = userSnap.data();
-      const activityIds = Array.isArray(updatedUserData.activities) ? updatedUserData.activities : [];
-
-      const fetchedActivities = [];
-
-      for (let activityId of activityIds) {
-        try {
-          const activityData = await getActivityData(activityId);
-          if (activityData) {
-            fetchedActivities.push(activityData);
-          }
-        } catch (err) {
-          console.error("Error fetching activity:", activityId, err);
-        }
-      }
-
-      setActivitiesData(fetchedActivities);
+      const activities = await fetchActivitiesForUser(userData?.userId);
+      setActivitiesData(activities);
     } catch (error) {
-      console.error("Error fetching user activities:", error);
+      console.error("Failed to load activities:", error);
     } finally {
       if (!isRefresh) setIsInitialLoading(false);
     }
   }, [userData?.userId]);
 
   useEffect(() => {
-    fetchUserActivities(false);
-  }, [fetchUserActivities]);
+    loadActivities(false);
+  }, [loadActivities]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await fetchUserActivities(true);
+    await loadActivities(true);
     setRefreshing(false);
-  }, [fetchUserActivities]);
+  }, [loadActivities]);
 
   const isoToDateString = (isoString) => {
     if (!isoString) return null;
     const date = new Date(isoString);
-    if (isNaN(date.getTime())) return null;
-    return date.toISOString().split('T')[0];
+    return isNaN(date.getTime()) ? null : date.toISOString().split('T')[0];
   };
 
   const isoToTimeString = (isoString) => {
     if (!isoString) return null;
     const date = new Date(isoString);
-    if (isNaN(date.getTime())) return null;
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    return isNaN(date.getTime()) ? null : date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
   };
 
   return (
@@ -151,10 +111,7 @@ const ActivitiesScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
+  root: { flex: 1, backgroundColor: '#fff' },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -168,11 +125,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  headerText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: GlobalStyles.colors.textColor,
-  },
+  headerText: { fontSize: 24, fontWeight: 'bold', color: GlobalStyles.colors.textColor },
   addButton: {
     backgroundColor: GlobalStyles.colors.mainColor,
     padding: 10,
@@ -185,21 +138,9 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 4,
   },
-  notFound: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  notFoundText: {
-    textAlign: 'center',
-    fontSize: 16,
-    color: 'grey',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  notFound: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  notFoundText: { textAlign: 'center', fontSize: 16, color: 'grey' },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 });
 
 export default ActivitiesScreen;

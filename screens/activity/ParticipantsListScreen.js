@@ -1,15 +1,9 @@
 import { View, Text, StyleSheet, FlatList, ActivityIndicator } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState, useEffect } from "react";
-import { doc, getDoc } from "firebase/firestore";
 import { Header } from "../../components";
 import { ParticipantComponent } from "./components";
-import { getFirestore } from "firebase/firestore";
-import { getFirebaseApp } from "../../util/firebase";
-
-// אתחול Firestore
-const app = getFirebaseApp()
-const db = getFirestore(app);
+import { fetchActivityParticipants, fetchUsersDetails } from "../../util/actions/activityAction";
 
 const ParticipantsListScreen = ({ navigation, route }) => {
   const myPage = route.params?.myPage; 
@@ -30,7 +24,7 @@ const ParticipantsListScreen = ({ navigation, route }) => {
   };
 
   useEffect(() => {
-    const fetchActivityParticipants = async () => {
+    const fetchData = async () => {
       if (!activityId) {
         console.error("No activity ID provided.");
         setIsLoading(false);
@@ -38,54 +32,24 @@ const ParticipantsListScreen = ({ navigation, route }) => {
       }
 
       try {
-        const docRef = doc(db, "activities", activityId);
-        const docSnap = await getDoc(docRef);
+        const participantsIds = await fetchActivityParticipants(activityId);
+        setActivityParticipants(participantsIds || []);
 
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          setActivityParticipants(data.activityParticipants || []);
-          await fetchUsersDetails(data.activityParticipants || []);
-        } else {
-          console.error("Activity not found.");
-        }
+        const users = await fetchUsersDetails(participantsIds);
+        setUsersData(users);
       } catch (error) {
-        console.error("Error fetching activity data:", error);
+        console.error("Error fetching participants data:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchActivityParticipants();
-  }, [activityId, refreshKey]); // מאזין לשינוי ומרענן את הנתונים
+    fetchData();
+  }, [activityId, refreshKey]);
 
-  const fetchUsersDetails = async (userIds) => {
-    if (!userIds.length) {
-      setUsersData([]);
-      return;
-    }
-
-    try {
-      const users = [];
-      for (const userId of userIds) {
-        const userRef = doc(db, "users", userId);
-        const userSnap = await getDoc(userRef);
-
-        if (userSnap.exists()) {
-          users.push({ id: userId, ...userSnap.data() });
-        } else {
-          console.warn(`User with ID ${userId} not found.`);
-        }
-      }
-
-      setUsersData(users);
-    } catch (error) {
-      console.error("Error fetching users data:", error);
-    }
-  };
-
-  function backArrowHandle() {
+  const backArrowHandle = () => {
     navigation.goBack();
-  }
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -106,10 +70,10 @@ const ParticipantsListScreen = ({ navigation, route }) => {
               user={item} 
               myPage={myPage} 
               activityId={activityId}
-              onUserRemoved={onUserRemoved} // מעביר את הפונקציה
+              onUserRemoved={onUserRemoved}
             />
           )}
-          extraData={refreshKey} // גורם לרענון הרשימה
+          extraData={refreshKey}
         />
       ) : (
         <View style={styles.notFound}>
