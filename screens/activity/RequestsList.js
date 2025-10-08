@@ -1,164 +1,93 @@
 import { View, Text, StyleSheet, FlatList, ActivityIndicator } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState, useEffect } from "react";
-import { arrayRemove, arrayUnion, doc, getDoc, updateDoc } from "firebase/firestore";
 import { FriendRequestComponent } from "./components";
 import { Header, PageContainer } from "../../components";
-import { getFirestore } from "firebase/firestore";
 import { createSelector } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
 import SubmitButton from "../../components/buttons/SubmitButton";
 import { GlobalStyles } from "../../constants/styles";
 import { addUsersToChat } from "../../util/actions/chatAction";
-import { getUserData } from "../../util/actions/userAction";
-import { getFirebaseApp } from "../../util/firebase";
-
-// אתחול Firestore
-const app = getFirebaseApp()
-const db = getFirestore(app);
+import { fetchUsersDetails, fetchActivityRequests, approveActivityRequests } from "../../util/actions/activityAction";
 
 const RequestsList = ({ navigation, route }) => {
   const activityId = route.params?.activityId;
   const [isLoading, setIsLoading] = useState(true);
   const [usersData, setUsersData] = useState([]);
-  const [activityRequests, setActivityRequests] = useState([]);
-  const [buttonLoading, setButtonLoading] = useState(false);
   const [activityData, setActivityData] = useState({});
+  const [buttonLoading, setButtonLoading] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const userData = useSelector(state => state.auth.userData);
-  
+
   const getChats = createSelector(
     state => state.chats.chatsData, 
-    chatsData => Object.values(chatsData).sort((a,b)=>{
-      return new Date(b.updatedAt) - new Date(a.updatedAt);
-    }) 
+    chatsData => Object.values(chatsData).sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt))
   );
-
   const storedChats = useSelector(getChats);
 
-  const isGroupChatDisabeld = selectedUsers.length === 0;
+  const isGroupChatDisabled = selectedUsers.length === 0;
 
   useEffect(() => {
-    const fetchActivityRequests = async () => {
+    const loadActivityRequests = async () => {
       if (!activityId) {
         console.error("No activity ID provided.");
         setIsLoading(false);
         return;
       }
 
+      setIsLoading(true);
+
       try {
-        const docRef = doc(db, "activities", activityId);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-
-          setActivityData(data);
-          
-          //console.log("Activity Data:", data);
-
-          setActivityRequests(data.activityRequests || []);
-          await fetchUsersDetails(data.activityRequests || []);
-        } else {
-          console.error("Activity not found.");
-        }
+        const { activityData, requests } = await fetchActivityRequests(activityId);
+        setActivityData(activityData || {});
+        const users = await fetchUsersDetails(requests || []);
+        setUsersData(users);
       } catch (error) {
-        console.error("Error fetching activity data:", error);
+        console.error("Error loading activity requests:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchActivityRequests();
+    loadActivityRequests();
   }, [activityId]);
 
   const addUserToSelectedArray = (userId) => {
     const newSelectedUsers = selectedUsers.includes(userId) 
-    ? selectedUsers.filter(id => id !== userId) : selectedUsers.concat(userId);
-
+      ? selectedUsers.filter(id => id !== userId) 
+      : selectedUsers.concat(userId);
     setSelectedUsers(newSelectedUsers);
-  
-  }
+  };
 
+  const backArrowHandle = () => {
+    navigation.goBack();
+  };
 
-  
-  
-
-
-  const fetchUsersDetails = async (userIds) => {
-    if (!userIds.length) {
-      setUsersData([]);
-      return;
-    }
-
+  const handleApproveRequests = async () => {
+    if (!selectedUsers.length) return;
 
     try {
-      const users = [];
+      setButtonLoading(true);
+      const usersAdded = await approveActivityRequests(
+        activityId, 
+        selectedUsers, 
+        usersData, 
+        storedChats, 
+        userData, 
+        addUsersToChat
+      );
 
-      for (const userId of userIds) {
-          const currentUserData = await getUserData(userId);
-          users.push(currentUserData);
-      }
-
-      setUsersData(users);
+      setUsersData(usersData.filter(user => !selectedUsers.includes(user.userId)));
+      setSelectedUsers([]);
     } catch (error) {
-      console.error("Error fetching users data:", error);
+      console.error("Failed to approve requests:", error);
+    } finally {
+      setButtonLoading(false);
     }
   };
 
-  function backArrowHandle() {
-    navigation.goBack();
-  }
-
-  const ApproveRequest = async () => {
-      try {
-        setButtonLoading(true);
-        const docRef = doc(db, "activities", activityId);
-        const docSnap = await getDoc(docRef);
-  
-        if (!docSnap.exists()) {
-          console.error("Activity not found");
-          return;
-        }
-       
-        const activityData = docSnap.data();
-        if (!activityData.activityRequests) {
-          await updateDoc(docRef, { activityRequests: [] });
-        }
-        const usersToAdd = [];
-        for (const userId of selectedUsers){
-          const currentUser = usersData.find(user => user.userId === userId);
-          usersToAdd.push(currentUser);
-         
-          await updateDoc(docRef, {
-            activityParticipants: arrayUnion(userId),
-          });
-    
-          await updateDoc(docRef, {
-            activityRequests: arrayRemove(userId),
-          });
-    
-          await updateDoc(doc(db, "users", userId), {
-            activities: arrayUnion(activityId),
-          });
-        }
-
-       const currentchat = storedChats && storedChats.find(chat => chat.key === activityData.chatId);
-      
-      
-       await addUsersToChat(userData, usersToAdd, currentchat);
-
-       setUsersData(usersData.filter(user => !selectedUsers.includes(user.userId)));
-       setSelectedUsers([]);
-       setButtonLoading(false);
-
-      } catch (e) {
-        console.error("Error updating document:", e);
-      }
-    };
-
   return (
-    < >
+    <>
       <View style={styles.root}>
         <Header title="Requests List" onBackPress={backArrowHandle} />
       </View>
@@ -169,41 +98,35 @@ const RequestsList = ({ navigation, route }) => {
         </View>
       ) : usersData.length > 0 ? (
         <FlatList 
-             data={usersData}
-             keyExtractor={(item) => item.userId} 
-             renderItem={({ item }) => 
-              <FriendRequestComponent 
-             userId={item.userId}
-             imageSource={item.images['firstImage']}
-             title={`${item.firstName} ${item.lastName}`}
-             isChecked={selectedUsers.includes(item.userId)}
-             onSelectPress={addUserToSelectedArray}
-           />
-           }
-         />
+          data={usersData}
+          keyExtractor={(item) => item.userId}
+          renderItem={({ item }) => (
+            <FriendRequestComponent
+              userId={item.userId}
+              imageSource={item.images?.firstImage}
+              title={`${item.firstName} ${item.lastName}`}
+              isChecked={selectedUsers.includes(item.userId)}
+              onSelectPress={addUserToSelectedArray}
+            />
+          )}
+        />
       ) : (
         <View style={styles.notFound}>
           <Ionicons name="people" size={55} color="grey" />
           <Text style={styles.notFoundText}>No Requests Yet</Text>
         </View>
       )}
+
       <PageContainer>
-        {
-          buttonLoading && 
-          <View >
-              <ActivityIndicator
-              size={'small'}
-              color={GlobalStyles.colors.mainColor}
-              />
-          </View>
-        }
+        {buttonLoading && (
+          <ActivityIndicator size="small" color={GlobalStyles.colors.mainColor} />
+        )}
         <SubmitButton
           title="Approve"
-          onPress={ApproveRequest}
+          onPress={handleApproveRequests}
           color={GlobalStyles.colors.primary}
-          disabeld={isGroupChatDisabeld || isLoading}
-          style={{marginBottom:15,marginTop:10}}
-        
+          disabeld={isGroupChatDisabled || isLoading}
+          style={{ marginBottom:15, marginTop:10 }}
         />
       </PageContainer>
     </>

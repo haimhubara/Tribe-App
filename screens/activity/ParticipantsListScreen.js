@@ -64,7 +64,7 @@ const ParticipantsListScreen = ({ navigation, route }) => {
       ) : usersData.length > 0 ? (
         <FlatList
           data={usersData} 
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item.userId}
           renderItem={({ item }) => (
             <ParticipantComponent 
               user={item} 

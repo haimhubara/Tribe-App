@@ -1,262 +1,149 @@
 import React, { useState } from "react";
-import { GlobalStyles } from "../../constants/styles";
-import {Text,StyleSheet,View,ScrollView,KeyboardAvoidingView,TouchableWithoutFeedback,Keyboard,TouchableOpacity,ActivityIndicator } from "react-native";
+import {Text,StyleSheet,View,ScrollView,KeyboardAvoidingView,TouchableWithoutFeedback,Keyboard,TouchableOpacity,ActivityIndicator} from "react-native";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {PageContainer, LocationPicker, HobbiesPicker, Header, DatePicker, InputPicker, TimePicker } from "../../components";
-import { GalInput } from "./components"
+import {PageContainer,LocationPicker,HobbiesPicker,Header,DatePicker,InputPicker,TimePicker} from "../../components";
+import { GalInput, ImageGenerator } from "./components";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { getFirestore } from "firebase/firestore";
-import {  doc, updateDoc, addDoc,getDoc, collection,arrayUnion } from "firebase/firestore"; 
-import { ImageGenerator } from "./components";
-import { uploadImageToCloudinary,deleteImageFromCloudinary } from "../../util/cloudinary";
+import * as Haptics from "expo-haptics";
 import { useSelector } from "react-redux";
-import { createChat, sendStartMessage, updateChatData } from "../../util/actions/chatAction";
-import * as Haptics from 'expo-haptics';
-import { getFirebaseApp } from "../../util/firebase";
-
+import { GlobalStyles } from "../../constants/styles";
+import { createActivity, updateActivity } from "../../util/actions/activityAction";
 
 const AddNewEventScreen = ({ navigation, route }) => {
-  const [name, setName] = useState(route.params?.name||null );
-  const [description, setDescription] = useState(route.params?.description ||null);
+  const [name, setName] = useState(route.params?.name || null);
+  const [description, setDescription] = useState(route.params?.description || null);
   const [date, setDate] = useState(route.params?.date ? new Date(route.params.date) : null);
-  const [selectedNumPartitions, setSelectedNumPartitions] = useState(route.params?.selectedNumPartitions||1);
-  const [isPartitionsVisible, setPartitionsVisible] = useState(false);
-  const [selectedGender, setSelectedGender] = useState(route.params?.gender||"Any");
-  const [ages, setAges] = useState(route.params?.ages|| [18, 35] );
-  const [languages, setLanguage] = useState(route.params?.languages||"");
-  const [selectedCategories, setSelectedCategories] = useState(route.params?.categories||"");
+  const [selectedNumPartitions, setSelectedNumPartitions] = useState(route.params?.selectedNumPartitions || 1);
+  const [selectedGender, setSelectedGender] = useState(route.params?.gender || "Any");
+  const [ages, setAges] = useState(route.params?.ages || [18, 35]);
+  const [languages, setLanguage] = useState(route.params?.languages || "");
+  const [selectedCategories, setSelectedCategories] = useState(route.params?.categories || "");
   const [time, setTime] = useState(route.params?.time ? new Date(route.params.time) : null);
-  const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
-  const [generatedImage, setGeneratedImage] = useState(route.params?.activityImage||null);
-  const [location,setLocation]=useState(route.params?.locationObject||null);
+  const [generatedImage, setGeneratedImage] = useState(route.params?.activityImage || null);
+  const [location, setLocation] = useState(route.params?.locationObject || null);
   const [imageChanged, setImageChanged] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const userData = useSelector(state => state.auth.userData);
-
+  const userData = useSelector((state) => state.auth.userData);
   const ifGoBack = route.params?.ifGoBack;
 
-  // Initialize Firebase
-  const app = getFirebaseApp()
-  
-  // Initialize Cloud Firestore and get a reference to the service
-  const db = getFirestore(app);
-
   const onInuptChange = (id, text) => {
-    if (id === "name") {
-      setName(text);
-    } else if (id === "number_of_partitions") {
-      setSelectedNumPartitions(text);
-    } else if (id === "description") {
-      setDescription(text);
-    } else if( id==="date"){
-      const selectedDate = new Date(text);
-      const today = new Date();
-    
-      selectedDate.setHours(0, 0, 0, 0);
-      today.setHours(0, 0, 0, 0);
-    
-      if (selectedDate < today) {
-        alert("The selected date has already passed. Please choose a future date.");
-        setDate(null);
-        return;
-      }
-    
-      setDate(selectedDate);
-    }else if (id === "time") {
-      // הוספת תאריך נוכחי כדי למנוע שגיאה
-      const today = new Date();
-      const [hours, minutes] = text.split(":").map(Number);
-      const parsedTime = new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes);
-  
-      setTime(parsedTime);
-      hideTimePicker();
-    }else if(id==="languages"){
-      setLanguage(text);
-    }else if(id==="categories"){
-      setSelectedCategories(text);
-    }else if(id==="image"){
-      setGeneratedImage(text);
-      setImageChanged(true);
-    }else if(id==="location"){
-      setLocation(text);
-    }else if(id==="gender"){
-      setSelectedGender(text);
+    switch (id) {
+      case "name":
+        setName(text);
+        break;
+      case "description":
+        setDescription(text);
+        break;
+      case "date":
+        const selectedDate = new Date(text);
+        const today = new Date();
+        selectedDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+        if (selectedDate < today) {
+          alert("The selected date has already passed.");
+          setDate(null);
+          return;
+        }
+        setDate(selectedDate);
+        break;
+      case "time":
+        const now = new Date();
+        const [hours, minutes] = text.split(":").map(Number);
+        setTime(new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes));
+        break;
+      case "languages":
+        setLanguage(text);
+        break;
+      case "categories":
+        setSelectedCategories(text);
+        break;
+      case "image":
+        setGeneratedImage(text);
+        setImageChanged(true);
+        break;
+      case "location":
+        setLocation(text);
+        break;
+      case "gender":
+        setSelectedGender(text);
+        break;
+      case "number_of_partitions":
+        setSelectedNumPartitions(text);
+        break;
+      default:
+        break;
     }
   };
-
-  const parseDateString = (dateInput) => {
-    if (!dateInput) return null;
-    
-    if (dateInput instanceof Date) {
-      return dateInput;
-    }
-  
-    if (typeof dateInput === "string") {
-      const [year, month, day] = dateInput.split('-').map(Number);
-      if (isNaN(year) || isNaN(month) || isNaN(day)) return null;
-      const parsedDate = new Date(year, month - 1, day + 1);
-      return isNaN(parsedDate.getTime()) ? null : parsedDate;
-    }
-  
-    return null;
-  };
-  
 
   const multiSliderValuesChange = (values) => {
     const [newMin, newMax] = values;
     const [prevMin, prevMax] = ages;
-  
-    const diffMin = Math.abs(newMin - prevMin);
-    const diffMax = Math.abs(newMax - prevMax);
-  
-    if ((diffMin === 1 && newMin !== prevMin) || (diffMax === 1 && newMax !== prevMax)) {
-      Haptics.selectionAsync(); // רטט קצר, עדין ונעים
+
+    if (Math.abs(newMin - prevMin) === 1 || Math.abs(newMax - prevMax) === 1) {
+      Haptics.selectionAsync();
     }
-  
     setAges(values);
   };
-  
 
-  const defaultState = {
-    name: null,
-    description: null,
-    date: null,
-    time: null,
-    selectedNumPartitions: 1,
-    selectedGender: "Any",
-    ages: [18, 35],
-    languages: "",
-    selectedCategories: "",
-  };
-  
   const resetForm = () => {
-    setName(defaultState.name);
-    setDescription(defaultState.description);
-    setDate(defaultState.date);
-    setTime(defaultState.time);
-    setSelectedNumPartitions(defaultState.selectedNumPartitions);
-    setSelectedGender(defaultState.selectedGender);
-    setAges(defaultState.ages);
-    setLanguage(defaultState.languages);
-    setSelectedCategories(defaultState.selectedCategories);
+    setName(null);
+    setDescription(null);
+    setDate(null);
+    setTime(null);
+    setSelectedNumPartitions(1);
+    setSelectedGender("Any");
+    setAges([18, 35]);
+    setLanguage("");
+    setSelectedCategories("");
     setLocation(null);
+    setGeneratedImage(null);
   };
- 
-const handleSubmit = async () => {
-    if (name == null || description == null || date == null || time == null) {
-        alert("You Missed Something");
-        return;
-    } else if ((selectedCategories == "") || (languages == "")||(location== null)||(generatedImage==null)) {
-        alert("You Missed Something");
-        return;
+
+  const handleSubmit = async () => {
+    if (!name || !description || !date || !time || !selectedCategories || !languages || !location || !generatedImage) {
+      alert("You missed something.");
+      return;
     }
+
+    const activityData = {
+      name,
+      description,
+      date,
+      time,
+      selectedNumPartitions,
+      selectedGender,
+      ages,
+      languages,
+      selectedCategories,
+      generatedImage,
+      location,
+      imageChanged,
+    };
 
     try {
+      setIsLoading(true);
 
-        setIsLoading(true);
+      if (ifGoBack && route.params?.activityId && route.params?.chatId) {
+        await updateActivity(route.params.activityId, activityData, userData.userId, route.params.chatId);
+        alert("Event updated successfully!");
+      } else {
+        await createActivity(activityData, userData.userId);
+        alert("Event created successfully!");
+        resetForm();
+      }
 
-        let imageUrl=generatedImage;
-        
-
-        if (generatedImage && imageChanged) {
-            if (route.params?.activityId) {
-                // שליפת ה-URL הישן מה-Firebase
-                const docRef = doc(db, "activities", route.params.activityId);
-                const docSnap = await getDoc(docRef);
-                
-            }
-
-           // העלאת התמונה החדשה
-            imageUrl = await uploadImageToCloudinary(generatedImage);
-            
-          
-        }
-
-        if (route.params?.ifGoBack) {
-            if (route.params?.activityId) {
-                //update activity
-                const parsedDate = parseDateString(date);
-                const docRef = doc(db, "activities", route.params?.activityId);
-                await updateDoc(docRef, {
-                    name,
-                    description,
-                    date: parsedDate ? parsedDate.toISOString() : null,
-                    time: time ? time.toISOString() : null,
-                    selectedNumPartitions,
-                    gender: selectedGender,
-                    ageRange: ages,
-                    languages,
-                    categories: selectedCategories,
-                    imageUrl: imageUrl,
-                    userID: userData.userId,
-                    location:location,
-                    
-                });
-               
-                await updateChatData(route.params?.chatId, userData.userId, {chatImage:imageUrl,chatName:name});
-
-                alert("Event updated successfully!");
-                navigation.popToTop();
-                // navigation.navigate("SearchScreen");
-            } else {
-                alert("Error: No activity ID provided.");
-            }
-        } else {
-
-          let chataData = [];
-          chataData.push(userData.userId);
-          const chatId = await createChat(userData.userId,chataData,name,true);
-          await sendStartMessage(chatId,userData.userId,`hi and wellcome to ${name} activity`);
-          await updateChatData(chatId, userData.userId, {chatImage:imageUrl});
-
-          const docRef=await addDoc(collection(db, "activities"), {
-                name,
-                description,
-                date: parseDateString(date).toISOString(),
-                time: time instanceof Date ? time.toISOString() : new Date().toISOString(),
-                selectedNumPartitions,
-                gender: selectedGender,
-                ages,
-                chatId,
-                languages,
-                categories: selectedCategories,
-                imageUrl: imageUrl,
-                userID: userData.userId,
-                activityRequests: [],
-                activityParticipants:[],
-                location:location,
-
-            });
-            await updateDoc(docRef, {
-              activityParticipants: arrayUnion(userData.userId),
-            });
-
-            await updateDoc(doc(db, "users", userData.userId), {
-              activities: arrayUnion(docRef.id),
-              });
-
-            alert("Event created successfully!");
-            resetForm();
-            // navigation.navigate("Search");
-             navigation.popToTop();
-        }
-    } catch (e) {
-        console.error("Error adding document: " + route.params?.activityId, e);
-    }finally{
+      navigation.popToTop();
+    } catch (error) {
+      console.error("Error handling event:", error);
+      alert("An error occurred while saving the event.");
+    } finally {
       setIsLoading(false);
     }
-    
-};
-
-
-
-  const hideTimePicker = () => {
-    setTimePickerVisibility(false);
   };
 
   return (
