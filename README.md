@@ -21,16 +21,15 @@
 ## 🧱 Project Structure
 
 ```
-Tribe-App/          
-├─ src/                   
-│   ├─ assets/      # Images, icons, fonts           
-│   ├─ components/  # Reusable UI components      
-│   ├─ constants/   # Global styles, colors, etc           
-│   ├─ hooks/       # Custom React hook      
-│   ├─ navigation/  # React Navigation setup          
-│   ├─ screens/     # App screens (Chat, Profile, etc.)    
-│   ├─ store/       # Redux slices and store config     
-│   └─ util/        # Helper functions (e.g., Firebase, Cloudinary)
+Tribe-App/                           
+├─ assets/      # Images, icons, fonts           
+├─ components/  # Reusable UI components      
+├─ constants/   # Global styles, colors, etc           
+├─ hooks/       # Custom React hook      
+├─ navigation/  # React Navigation setup          
+├─ screens/     # App screens (Chat, Profile, etc.)    
+├─ store/       # Redux slices and store config     
+└─ util/        # Helper functions (e.g., Firebase, Cloudinary)
 └─ README.md
 ```
 ---
