@@ -40,7 +40,6 @@ Tribe-App/
 - **Firebase (Auth, Firestore, Realtime DB, Storage)**
 - **Redux Toolkit**
 - **Cloudinary (for media uploads)**
-- **FastAPI + MySQL (optional backend for advanced APIs)**
 
 ---
 
