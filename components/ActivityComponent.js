@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Image, StyleSheet, Platform } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 const formatDateFromISO = (isoString) => {
     if (!isoString) return { date: "", day: "" };
@@ -63,7 +64,7 @@ const ActivityComponent = ({ imageUrl, name, description, date, location, partic
                         <Text style={styles.description} numberOfLines={1}>{description}</Text>
                         {location?.address && (
                             <View style={styles.metaItem}>
-                                <Icon name="map-marker" size={14} color="#888" />
+                                <FontAwesome name="map-marker" size={14} color="#888" />
                                 <Text style={styles.metaText} numberOfLines={1}>
                                     {location.address}
                                 </Text>
@@ -72,7 +73,7 @@ const ActivityComponent = ({ imageUrl, name, description, date, location, partic
                     </View>
                 </View>
                 <View style={styles.participantsWrapper}>
-                    <Icon name="users" size={14} color="#888" />
+                    <FontAwesome name="users" size={14} color="#888" />
                     <Text style={styles.participantsCount}>{participants || 0}</Text>
                 </View>
             </View>
