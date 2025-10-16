@@ -209,9 +209,9 @@ const Sidebar = ({ applyFilters }) => {
                         <DatePicker label="Start From:" date={dateStart} setDate={setDateStart} iconName="calendar" IconPack={FontAwesome} onInputChange={onInputChange} id="dateStart"/>
                         <DatePicker label="End In:" date={dateEnd} setDate={setDateEnd} iconName="calendar" IconPack={FontAwesome} onInputChange={onInputChange} id="dateEnd" />
                         <View style={styles.components}>
-                            <TimePicker label="Start From:" time={timeStart} setTime={setTimeStart} iconName="clockcircleo" IconPack={AntDesign} onInuptChange={onInputChange} id="timeStart"/>
+                            <TimePicker label="Start From:" time={timeStart} setTime={setTimeStart} iconName="clock-circle" IconPack={AntDesign} onInuptChange={onInputChange} id="timeStart"/>
                         </View>
-                        <TimePicker label="End In:" time={timeEnd} setTime={setTimeEnd} iconName="clockcircleo" IconPack={AntDesign} onInuptChange={onInputChange} id="timeEnd"/>
+                        <TimePicker label="End In:" time={timeEnd} setTime={setTimeEnd} iconName="clock-circle" IconPack={AntDesign} onInuptChange={onInputChange} id="timeEnd"/>
                         
                     </View>
                 );
