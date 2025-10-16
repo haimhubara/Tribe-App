@@ -18,41 +18,87 @@ import Feather from '@expo/vector-icons/Feather';
 
 
 
-const SwapImageItem = ({ imageUri , editStyle ,imageId , type}) => {
-     const [cameraPermissionInformation, requestPermission] = useCameraPermissions();
-     const [loading, setLoading] = useState(false);
-     const dispach = useDispatch();
-     const { width, height } = useWindowDimensions();
-     const [modalVisible, setModalVisible] = useState(false);
-     const [modalVideoVisible, setModalVideoVisible] = useState(false);
-     const defaultImage = "https://via.placeholder.com/150/FFFFFF?text=No+Image";
-     const [isImageUploded, setIsImageUploaded] = useState(false);
-     const [videoUri, setVideoUri] = useState(null);
-     const [takeVideo, setTakeVideo] = useState(true);
-
-     
-     const userData = useSelector(state => state.auth.userData);
+const SwapImageItem = ({ imageUri, editStyle, imageId, type }) => {
+    const [cameraPermissionInformation, requestPermission] = useCameraPermissions();
+    const [loading, setLoading] = useState(false);
+    const dispach = useDispatch();
+    const { width, height } = useWindowDimensions();
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalVideoVisible, setModalVideoVisible] = useState(false);
+    const defaultImage = "https://via.placeholder.com/150/FFFFFF?text=No+Image";
+    const [isImageUploded, setIsImageUploaded] = useState(false);
+    const [videoUri, setVideoUri] = useState(null);
+    const [takeVideo, setTakeVideo] = useState(true);
 
 
-      async function verifyPermissions() {
-            if (cameraPermissionInformation.status === PermissionStatus.UNDETERMINED) {
-                const permissionResponse = await requestPermission();
-                return permissionResponse.granted;
-            }
-            if (cameraPermissionInformation.status === PermissionStatus.DENIED) {
-                Alert.alert("Permission Denied", "Camera permissions are required to use this feature. Please enable them in your device settings.");
-                return false;
-            }
-            return true;
+    const userData = useSelector(state => state.auth.userData);
+
+
+    async function verifyPermissions() {
+        if (cameraPermissionInformation.status === PermissionStatus.UNDETERMINED) {
+            const permissionResponse = await requestPermission();
+            return permissionResponse.granted;
         }
+        if (cameraPermissionInformation.status === PermissionStatus.DENIED) {
+            Alert.alert("Permission Denied", "Camera permissions are required to use this feature. Please enable them in your device settings.");
+            return false;
+        }
+        return true;
+    }
 
     const editPressHandle = () => {
         setModalVisible(true);
-        
+
     }
 
-   
-   
+    const deleteImage = async () => {
+        if (!userData.images[imageId] || userData.images[imageId] === defaultImage) return;
+
+        try {
+            setLoading(true);
+
+            const publicId = userData.images[imageId].split('/').pop().split('.')[0];
+            await deleteImageFromCloudinary(publicId);
+
+            const images = { ...userData.images, [imageId]: defaultImage };
+            await updateSignInUserData(userData.userId, { images });
+            dispach(updateLoggedInUserData({ newData: { images } }));
+
+            setIsImageUploaded(true);
+            setTimeout(() => setIsImageUploaded(false), 3000);
+
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+            setModalVisible(false);
+        }
+    };
+
+    const deleteVideo = async () => {
+        if (!userData.videoUrl) return;
+
+        try {
+            setLoading(true);
+
+            const publicId = userData.videoUrl.split('/').pop().split('.')[0];
+            await deleteVideoFromCloudinary(publicId);
+
+            await updateSignInUserData(userData.userId, { videoUrl: "" });
+            dispach(updateLoggedInUserData({ newData: { videoUrl: "" } }));
+
+            setIsImageUploaded(true);
+            setTimeout(() => setIsImageUploaded(false), 3000);
+
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+            setModalVisible(false);
+        }
+    };
+
+
     async function handleNewImageSelection(result) {
         if (result.canceled) {
             Alert.alert("Error", "Image picking was canceled.");
@@ -67,39 +113,39 @@ const SwapImageItem = ({ imageUri , editStyle ,imageId , type}) => {
         try {
             setLoading(true);
             if (imageUri === defaultImage) {
-                let images = { ...userData.images }; 
+                let images = { ...userData.images };
                 const imageCloudinaryUrl = await uploadImageToCloudinary(newImageUri);
                 images[imageId] = imageCloudinaryUrl;
-              
-        
+
+
                 await updateSignInUserData(userData.userId, { images });
-                dispach(updateLoggedInUserData({newData:{ images }}));
+                dispach(updateLoggedInUserData({ newData: { images } }));
                 setIsImageUploaded(true);
-            }else{
+            } else {
                 const oldImageUrl = userData.images[imageId];
                 const publicId = oldImageUrl.split('/').pop().split('.')[0];
-                let images = { ...userData.images }; 
+                let images = { ...userData.images };
                 await deleteImageFromCloudinary(publicId);
                 const imageCloudinaryUrl = await uploadImageToCloudinary(newImageUri);
                 images[imageId] = imageCloudinaryUrl;
                 await updateSignInUserData(userData.userId, { images });
-                dispach(updateLoggedInUserData({newData:{ images }}));
+                dispach(updateLoggedInUserData({ newData: { images } }));
                 setIsImageUploaded(true);
             }
-            setTimeout(()=>{
+            setTimeout(() => {
                 setIsImageUploaded(false);
-            },3000);
+            }, 3000);
         } catch (error) {
             console.log(error);
-       
-        }finally {
-         setLoading(false);
+
+        } finally {
+            setLoading(false);
         }
         setModalVisible(false);
     }
 
     async function handleNewVideoSelection(newVideoUrl) {
-       
+
         if (!newVideoUrl) {
             Alert.alert("Error", "No video found.");
             return;
@@ -107,35 +153,35 @@ const SwapImageItem = ({ imageUri , editStyle ,imageId , type}) => {
         try {
             setLoading(true);
 
-                const oldVideoUrl = userData.videoUrl;
-                const publicId = oldVideoUrl.split('/').pop().split('.')[0];
-                if(oldVideoUrl !== ""){
-                    await deleteVideoFromCloudinary(publicId);
-                }
-                const videoCloudinaryUrl = await uploadVideoToCloudinary(newVideoUrl);
-                await updateSignInUserData(userData.userId, { videoUrl:videoCloudinaryUrl});
-                dispach(updateLoggedInUserData({newData:{ videoUrl:videoCloudinaryUrl }}));
-                setIsImageUploaded(true);
+            const oldVideoUrl = userData.videoUrl;
+            const publicId = oldVideoUrl.split('/').pop().split('.')[0];
+            if (oldVideoUrl !== "") {
+                await deleteVideoFromCloudinary(publicId);
+            }
+            const videoCloudinaryUrl = await uploadVideoToCloudinary(newVideoUrl);
+            await updateSignInUserData(userData.userId, { videoUrl: videoCloudinaryUrl });
+            dispach(updateLoggedInUserData({ newData: { videoUrl: videoCloudinaryUrl } }));
+            setIsImageUploaded(true);
 
-        
-            setTimeout(()=>{
+
+            setTimeout(() => {
                 setIsImageUploaded(false);
-            },3000);
+            }, 3000);
         } catch (error) {
             console.log(error);
-       
-        }finally {
-         setLoading(false);
+
+        } finally {
+            setLoading(false);
         }
         setModalVisible(false);
     }
-        
+
     async function openCamera() {
         const hasPermission = await verifyPermissions();
         if (!hasPermission) {
             return;
         }
-    
+
         const result = await launchCameraAsync({
             allowsEditing: true,
             quality: 0.5,
@@ -145,7 +191,7 @@ const SwapImageItem = ({ imageUri , editStyle ,imageId , type}) => {
 
         await handleNewImageSelection(result);
     }
-    
+
     async function openGallery() {
         const result = await launchImageLibraryAsync({
             allowsEditing: true,
@@ -169,114 +215,121 @@ const SwapImageItem = ({ imageUri , editStyle ,imageId , type}) => {
         setModalVideoVisible(false);
         setTakeVideo(true);
         setVideoUri(null);
-        if(videoUri){
+        if (videoUri) {
             await handleNewVideoSelection(videoUri);
-          
+
         }
     }
 
- 
+
 
     return (
         <View style={[styles.container, { width }]}>
-    
-          {  type === "image" && imageUri !== defaultImage &&
-               <Image 
+
+            {type === "image" && imageUri !== defaultImage &&
+                <Image
 
                     source={typeof imageUri === "string" && imageUri.startsWith("http") ? { uri: imageUri } : imageUri}
-                    style={[styles.image, { width:width*0.9, height:width*0.9}]} 
+                    style={[styles.image, { width: width * 0.9, height: width * 0.9 }]}
                     resizeMode="cover"
                 />
-          }
-          
-          
-          {type ==="video" && 
-            <VideoScreen
-                 videoSource={imageUri}
-            />
-          }
+            }
 
-          {
-            type === "image" && imageUri === defaultImage &&
-            <View style={styles.textContainer}> 
-                <Feather name="image" size={40} color={GlobalStyles.colors.mainColorDark} />
-                <Text style={styles.text}>Add Image</Text>
-            </View>
-          }
 
-          <TouchableOpacity style={[styles.rootIconContainer,editStyle]} onPress={editPressHandle}>
-                <FontAwesome name='pencil' size={18} color={'white'}/>
-          </TouchableOpacity>
-
-         <View  style={{ marginTop: 10 }}>
-              
-            {loading && (
-                <ActivityIndicator
-                    size={'small'}
-                    color={GlobalStyles.colors.mainColor}
-                
+            {type === "video" &&
+                <VideoScreen
+                    videoSource={imageUri}
                 />
-            )}
-            {isImageUploded && <Text>{type === 'image' ? 'Image Saved!' : 'Video Saved!'}</Text>}
-        </View>
+            }
 
-        {/* Modal הצגת אפשרויות */}
-        <Modal
-            transparent={true}
-            animationType="slide"
-            visible={modalVisible && !loading} 
-            onRequestClose={() => setModalVisible(false)}
-        >
-           
-            <View style={styles.modalOverlay}>
-              
-                 <View style={styles.modalContainer}>
+            {
+                type === "image" && imageUri === defaultImage &&
+                <View style={styles.textContainer}>
+                    <Feather name="image" size={40} color={GlobalStyles.colors.mainColorDark} />
+                    <Text style={styles.text}>Add Image</Text>
+                </View>
+            }
+
+            <TouchableOpacity style={[styles.rootIconContainer, editStyle]} onPress={editPressHandle}>
+                <FontAwesome name='pencil' size={18} color={'white'} />
+            </TouchableOpacity>
+
+            <View style={{ marginTop: 10 }}>
+
+                {loading && (
+                    <ActivityIndicator
+                        size={'small'}
+                        color={GlobalStyles.colors.mainColor}
+
+                    />
+                )}
+                {isImageUploded && <Text>{type === 'image' ? 'Image Saved!' : 'Video Saved!'}</Text>}
+            </View>
+
+            {/* Modal הצגת אפשרויות */}
+            <Modal
+                transparent={true}
+                animationType="slide"
+                visible={modalVisible && !loading}
+                onRequestClose={() => setModalVisible(false)}
+            >
+
+                <View style={styles.modalOverlay}>
+
+                    <View style={styles.modalContainer}>
                         <Text style={styles.modalTitle}>Choose an option</Text>
-            
-                        <Pressable style={styles.modalButton} onPress={ type ==="image" ? openCamera : recordVideo }>
-                            <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+
+                        <Pressable style={styles.modalButton} onPress={type === "image" ? openCamera : recordVideo}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                                 <Icon name={type === 'image' ? "camera" : 'video-camera'} size={18} color="white" />
-                                <Text style={[styles.modalButtonText, { marginLeft: 5 }]}>{type === "image" ?'Open Camera' : 'Record video'}</Text>
+                                <Text style={[styles.modalButtonText, { marginLeft: 5 }]}>{type === "image" ? 'Open Camera' : 'Record video'}</Text>
                             </View>
                         </Pressable>
-                    
+
                         <Pressable style={styles.modalButton} onPress={type === 'image' ? openGallery : selectVideo}>
-                            <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                                 <Icon name="photo" size={18} color="white" />
                                 <Text style={[styles.modalButtonText, { marginLeft: 5 }]}>Open Gallery</Text>
                             </View>
                         </Pressable>
-                    
+
+                        <Pressable style={styles.modalButton} onPress={type === 'image' ? deleteImage : deleteVideo}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                                <Feather name="delete" size={18} color="white" />
+                                <Text style={[styles.modalButtonText, { marginLeft: 5 }]}>{type === "image" ? "Delete image" : "Delete video"} </Text>
+                            </View>
+                        </Pressable>
+
                         <Pressable style={styles.modalCancel} onPress={() => setModalVisible(false)}>
                             <Text style={styles.modalCancelText}>Cancel</Text>
                         </Pressable>
                     </View>
-              
-            </View>
 
-        </Modal>
+                </View>
 
-        <Modal
-            transparent={false}
-            animationType="slide"
-            visible={modalVideoVisible && !loading} 
-            onRequestClose={() => setModalVideoVisible(false)}
-        >
-           <ReplaceVideo
-                videoUri={videoUri}
-                setVideoUri={setVideoUri}
-                onBackPress={() => setModalVideoVisible(false)}
-                setTakeVideo={setTakeVideo}
-                onSave={saveVideo}
-           />
-           
-        </Modal>
+            </Modal>
+
+            <Modal
+                transparent={false}
+                animationType="slide"
+                visible={modalVideoVisible && !loading}
+                onRequestClose={() => setModalVideoVisible(false)}
+            >
+                <ReplaceVideo
+                    videoUri={videoUri}
+                    setVideoUri={setVideoUri}
+                    onBackPress={() => setModalVideoVisible(false)}
+                    setTakeVideo={setTakeVideo}
+                    onSave={saveVideo}
+                />
+
+            </Modal>
 
 
-        
+
 
         </View>
-      
+
     );
 };
 
@@ -285,33 +338,33 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom:10
+        marginBottom: 10
     },
     image: {
-        borderRadius: 4,  
-        borderWidth: 0.2,  
-        borderColor: 'black', 
-        overflow: 'hidden', 
-        shadowColor: 'black',  
+        borderRadius: 4,
+        borderWidth: 0.2,
+        borderColor: 'black',
+        overflow: 'hidden',
+        shadowColor: 'black',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 6,
-        elevation: 4,  
+        elevation: 4,
     },
     rootIconContainer: {
         position: 'absolute',
-        bottom:-10,
-        right:10,
+        bottom: -10,
+        right: 10,
         flexDirection: "row",
-        backgroundColor:GlobalStyles.colors.mainColorDark,
-        borderRadius:40,
-        padding:16
+        backgroundColor: GlobalStyles.colors.mainColorDark,
+        borderRadius: 40,
+        padding: 16
     },
-    containerStyle:{
-        backgroundColor:GlobalStyles.colors.mainColor,
-        paddingVertical:8,
-        paddingHorizontal:8,
-  
+    containerStyle: {
+        backgroundColor: GlobalStyles.colors.mainColor,
+        paddingVertical: 8,
+        paddingHorizontal: 8,
+
     },
     iconText: {
         color: "white",
@@ -361,30 +414,30 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     video: {
-        width:"90%",
+        width: "90%",
         height: 340,
         borderRadius: 10,
         overflow: "hidden",
         marginBottom: 20,
     },
-    text:{
-        justifyContent:'center',
-        alignItems:'center',
-        fontFamily:'regular',
-        fontSize:20,letterSpacing:0.3,
-        color:GlobalStyles.colors.mainColorDark
-      },
-      textContainer:{
-        width:'90%',
-        height:'97%',
-        justifyContent:'center',
-        alignItems:'center',
-        borderWidth:0.6, 
-        borderColor:GlobalStyles.colors.lightGrey,
-        borderRadius:4,
-        backgroundColor:GlobalStyles.colors.nearlyWhite
-      }
-    
+    text: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontFamily: 'regular',
+        fontSize: 20, letterSpacing: 0.3,
+        color: GlobalStyles.colors.mainColorDark
+    },
+    textContainer: {
+        width: '90%',
+        height: '97%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 0.6,
+        borderColor: GlobalStyles.colors.lightGrey,
+        borderRadius: 4,
+        backgroundColor: GlobalStyles.colors.nearlyWhite
+    }
+
 });
 
 export default SwapImageItem;

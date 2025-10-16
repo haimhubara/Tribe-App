@@ -6,7 +6,6 @@ import backgroundImage from '../../assets/images/droplet.jpeg';
 import { useSelector } from 'react-redux';
 import { Bubble, ReplyTo } from "./components";
 import { createChat, sendImageMessage, sendTextMessage } from '../../util/actions/chatAction';
-
 import Modal from 'react-native-modal';
 import { GlobalStyles } from '../../constants/styles';
 import {openCamera, pickImageHandle } from '../../util/actions/imageAction';
@@ -14,9 +13,10 @@ import { uploadImageToCloudinary } from "../../util/cloudinary";
 import { createSelector } from '@reduxjs/toolkit';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import CustomHeaderButton from '../../components/buttons/CustomHeaderButton';
-import { useFocusEffect } from '@react-navigation/native';
+import { useHideTabBarOnFocus } from '../../hooks';
 
 const ChatScreen = ({ navigation, route }) => {
+  useHideTabBarOnFocus()
   const storedUsers = useSelector(state => state.users.storedUsers);
   const flatList = useRef(null);
   const userData = useSelector(state => state.auth.userData);
@@ -145,20 +145,6 @@ const ChatScreen = ({ navigation, route }) => {
     }
   }, [messageText, chatId,title]);
 
-  useFocusEffect(
-  useCallback(() => {
-    const parentNav = navigation.getParent();
-    if (parentNav) {
-      parentNav.setOptions({ tabBarStyle: { display: 'none' } });
-    }
-
-    return () => {
-      if (parentNav) {
-        parentNav.setOptions({ tabBarStyle: { display: 'flex', backgroundColor: '#fff' } });
-      }
-    };
-  }, [navigation])
-);
   const pickImage = useCallback( async () => {
       try {
           const tempUri = await pickImageHandle();

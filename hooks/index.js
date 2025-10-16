@@ -1,0 +1,1 @@
+export {useHideTabBarOnFocus} from './useHideTabBarOnFocus'
